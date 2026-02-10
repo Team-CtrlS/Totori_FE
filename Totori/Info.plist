@@ -4,8 +4,6 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Hakgyoansim Allimjang TTF B.ttf</string>
-		<string>Hakgyoansim Allimjang TTF R.ttf</string>
 		<string>NotoSansKR-Regular.ttf</string>
 		<string>NotoSansKR-SemiBold.ttf</string>
 		<string>NotoSansKR-Bold.ttf</string>
