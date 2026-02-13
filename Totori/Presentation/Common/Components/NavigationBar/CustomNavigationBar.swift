@@ -60,7 +60,7 @@ struct CustomNavigationBar<RightContent: View>: View {
             rightContent
                 .padding(.trailing, 20)
         }
-        .frame(height: 50)
+        .frame(height: 66)
         .overlay( centerView )
         .background(Color.white)
     }
