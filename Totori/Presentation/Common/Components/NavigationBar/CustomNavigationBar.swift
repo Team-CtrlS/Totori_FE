@@ -15,10 +15,12 @@ enum NavigationBarType {
 
 struct CustomNavigationBar<RightContent: View>: View {
     
+    @Environment(\.dismiss) private var dismiss
+    
     // MARK: - Properties
     
     let centerType: NavigationBarType
-    let leftAction: (() -> Void)?
+    let showsBackButton: Bool
     let rightContent: RightContent
     
     // MARK: - Inits
@@ -26,28 +28,30 @@ struct CustomNavigationBar<RightContent: View>: View {
     //화살표가 있는 경우
     init (
         centerType: NavigationBarType,
-        leftAction: (() -> Void)? = nil,
+        showsBackButton: Bool = true,
         @ViewBuilder rightContent: () -> RightContent
     ) {
         self.centerType = centerType
-        self.leftAction = leftAction
+        self.showsBackButton = showsBackButton
         self.rightContent = rightContent()
     }
     
     //화살표가 없는 경우
     init(
         centerType: NavigationBarType,
-        leftAction: (() -> Void)? = nil,
+        showsBackButton: Bool = true,
     ) where RightContent == EmptyView {
         self.centerType = centerType
-        self.leftAction = leftAction
+        self.showsBackButton = showsBackButton
         self.rightContent = EmptyView()
     }
     
     var body: some View {
         HStack {
-            if let action = leftAction {
-                Button(action: action) {
+            if showsBackButton {
+                Button{
+                    dismiss()
+                } label: {
                     Image(.leftPurple)
                         .padding(20)
                 }
