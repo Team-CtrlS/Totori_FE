@@ -29,6 +29,7 @@ enum CTAStyle {
         }
     }
 }
+
 struct CTAButton: View {
     
     // MARK: - Properties
