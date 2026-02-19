@@ -55,9 +55,9 @@ enum NavDirection {
     var assetImage: Image {
         switch self {
         case .prev:
-            return Image("circle_left")
+            return Image(.circleLeft)
         case .next:
-            return Image("circle_right")
+            return Image(.circleRight)
         }
     }
 }
