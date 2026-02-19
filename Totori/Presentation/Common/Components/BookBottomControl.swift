@@ -21,9 +21,9 @@ enum CenterControlType {
     var assetImage: Image? {
         switch self {
         case .speaker:
-            return Image("sound_wave_2")
+            return Image(.soundWave2)
         case .mic, .micRinging:
-            return Image("mic")
+            return Image(.mic)
         case .none:
             return nil
         }
@@ -31,12 +31,10 @@ enum CenterControlType {
 
     var roundColor: Color {
         switch self {
-        case .speaker:
+        case .speaker, .micRinging:
             return .point
         case .mic:
             return .main
-        case .micRinging:
-            return .point
         case .none:
             return .clear
         }
