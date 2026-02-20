@@ -10,14 +10,14 @@ import SwiftUI
 enum ChipType {
     case profile(name: String, imageURL: String?)
     case trophy
-    case acron(amount: Int)
+    case acorn(amount: Int)
     case question
     
     var text: String? {
         switch self {
         case .profile(let name, _):
             return name
-        case .acron(let amount):
+        case .acorn(let amount):
             return "\(amount)"
         case .trophy, .question:
             return nil
@@ -28,7 +28,7 @@ enum ChipType {
         switch self {
         case .profile:
             return 5
-        case .acron, .trophy, .question:
+        case .acorn, .trophy, .question:
             return 8
         }
     }
@@ -97,8 +97,8 @@ struct ChipView: View {
                     .scaledToFit()
                     .frame(width: 24, height: 24)
             
-        case .acron(_):
-            Image(.acronPurple)
+        case .acorn(_):
+            Image(.acornPurple)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 24, height: 24)
