@@ -39,7 +39,7 @@ struct CustomNavigationBar<RightContent: View>: View {
     //화살표가 없는 경우
     init(
         centerType: NavigationBarType,
-        showsBackButton: Bool = true,
+        showsBackButton: Bool = true
     ) where RightContent == EmptyView {
         self.centerType = centerType
         self.showsBackButton = showsBackButton
