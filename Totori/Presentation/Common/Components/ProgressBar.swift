@@ -27,34 +27,19 @@ enum ProgressBarStyle {
     case gray
     case gradient
 
-    // 채워지는 색
     var fillColor: Color {
         switch self {
-        case .purple: return .main
-        case .pink:   return .point
-        case .gray:   return .textGray
-        case .gradient:
-            // gradient는 fillColor 안 쓰지만, 컴파일 편의상 기본값
-            return .main
-        }
-    }
-
-    // 배경색
-    var backgroundColor: Color {
-        switch self {
-        case .purple, .pink:
-            return .tGray
-        case .gray:
-            return Color.black.opacity(0.06)
-        case .gradient:
-            return Color.black.opacity(0.08)
+        case .purple:   return .main
+        case .pink:     return .point
+        case .gray:     return .textGray
+        case .gradient: return .main
         }
     }
 
     // 그라데이션
     var gradient: LinearGradient {
         LinearGradient(
-            colors: [.point, .main],
+            colors: [.pointGradient, .mainGradient],
             startPoint: .leading,
             endPoint: .trailing
         )
@@ -66,25 +51,39 @@ enum ProgressBarStyle {
     }
 }
 
+enum TrackColor {
+    case white
+    case gray
+    case lightgray
+    
+    var fillColor: Color {
+        switch self {
+        case .white: return .white
+        case .gray: return .tGray
+        case .lightgray: return .tLightGray
+        }
+    }
+}
+
 // MARK: - Progress Bar
 
 struct TotoriProgressBar: View {
-    
-    let progress: CGFloat   // 0.0 ~ 1.0 사이 진척정도
+
+    let progress: CGFloat   // 0.0 ~ 1.0 사이 진척도
     let height: ProgressBarHeight
     let style: ProgressBarStyle
-    let cornerRadius: CGFloat
+    let trackColor: TrackColor
 
     init(
         progress: CGFloat,
         height: ProgressBarHeight = .h8,
         style: ProgressBarStyle = .purple,
-        cornerRadius: CGFloat? = nil
+        trackColor: TrackColor = .gray
     ) {
-        self.progress = max(0, min(progress, 1)) // clamp
+        self.progress = max(0, min(progress, 1))
         self.height = height
         self.style = style
-        self.cornerRadius = cornerRadius ?? height.value / 2
+        self.trackColor = trackColor
     }
 
     var body: some View {
@@ -94,24 +93,22 @@ struct TotoriProgressBar: View {
 
             ZStack(alignment: .leading) {
 
-                // 트랙
+                // 배경
                 Capsule()
-                    .fill(style.backgroundColor)
+                    .fill(trackColor.fillColor)
 
-                // 프로그래스바
-                if style.isGradient {
-                    Capsule()
-                        .fill(style.gradient)
-                        .frame(width: fillWidth)
-                } else {
-                    Capsule()
-                        .fill(style.fillColor)
-                        .frame(width: fillWidth)
+                // 진행 바
+                Group {
+                    if style.isGradient {
+                        Capsule().fill(style.gradient)
+                    } else {
+                        Capsule().fill(style.fillColor)
+                    }
                 }
+                .frame(width: fillWidth)
             }
         }
-        .frame(height: height.value) // width는 부모에 맞춤
-        .accessibilityLabel("Progress")
-        .accessibilityValue("\(Int(progress * 100)) percent")
+        .frame(height: height.value)
     }
+
 }
