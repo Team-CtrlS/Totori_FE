@@ -51,7 +51,7 @@ enum ProgressBarStyle {
     }
 }
 
-enum TrackColor {
+enum BackgroundColor {
     case white
     case gray
     case lightgray
@@ -72,18 +72,18 @@ struct TotoriProgressBar: View {
     let progress: CGFloat   // 0.0 ~ 1.0 사이 진척도
     let height: ProgressBarHeight
     let style: ProgressBarStyle
-    let trackColor: TrackColor
+    let backColor: BackgroundColor
 
     init(
         progress: CGFloat,
         height: ProgressBarHeight = .h8,
         style: ProgressBarStyle = .purple,
-        trackColor: TrackColor = .gray
+        backColor: BackgroundColor = .gray
     ) {
         self.progress = max(0, min(progress, 1))
         self.height = height
         self.style = style
-        self.trackColor = trackColor
+        self.backColor = backColor
     }
 
     var body: some View {
@@ -95,7 +95,7 @@ struct TotoriProgressBar: View {
 
                 // 배경
                 Capsule()
-                    .fill(trackColor.fillColor)
+                    .fill(backColor.fillColor)
 
                 // 진행 바
                 Group {
