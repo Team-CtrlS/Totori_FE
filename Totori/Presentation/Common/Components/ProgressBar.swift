@@ -27,27 +27,23 @@ enum ProgressBarStyle {
     case gray
     case gradient
 
-    var fillColor: Color {
+    var shapeStyle: AnyShapeStyle {
         switch self {
-        case .purple:   return .main
-        case .pink:     return .point
-        case .gray:     return .textGray
-        case .gradient: return .main
+        case .purple:
+            return AnyShapeStyle(Color.main)
+        case .pink:
+            return AnyShapeStyle(Color.point)
+        case .gray:
+            return AnyShapeStyle(Color.textGray)
+        case .gradient:
+            return AnyShapeStyle(
+                LinearGradient(
+                    colors: [.pointGradient, .mainGradient],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
         }
-    }
-
-    // 그라데이션
-    var gradient: LinearGradient {
-        LinearGradient(
-            colors: [.pointGradient, .mainGradient],
-            startPoint: .leading,
-            endPoint: .trailing
-        )
-    }
-
-    var isGradient: Bool {
-        if case .gradient = self { return true }
-        return false
     }
 }
 
@@ -98,14 +94,9 @@ struct TotoriProgressBar: View {
                     .fill(backColor.fillColor)
 
                 // 진행 바
-                Group {
-                    if style.isGradient {
-                        Capsule().fill(style.gradient)
-                    } else {
-                        Capsule().fill(style.fillColor)
-                    }
-                }
-                .frame(width: fillWidth)
+                Capsule()
+                    .fill(style.shapeStyle)
+                    .frame(width: fillWidth)
             }
         }
         .frame(height: height.value)
