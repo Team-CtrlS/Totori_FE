@@ -79,7 +79,7 @@ struct WordLearningView: View {
                 onNext()
             }
             .padding(.horizontal, 20)
-            .padding(.bottom, 22)
+            .padding(.bottom, 60)
         }
         .background(Color.white.ignoresSafeArea())
     }
