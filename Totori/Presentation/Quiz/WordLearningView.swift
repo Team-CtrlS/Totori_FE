@@ -24,14 +24,13 @@ struct WordLearningView: View {
         .init(text: "긍정"),
         .init(text: "정원")
     ]
+    private let progress: CGFloat = 0.25
+    private let acornCount: Int = 1
 
     // MARK: - State
 
     @State private var selectedID: UUID? = nil
     @State private var isPlaying: Bool = false
-
-    // TODO: 진행도 받아서 수정
-    private let progress: CGFloat = 0.25
 
     var body: some View {
         VStack(spacing: 0) {
@@ -71,7 +70,7 @@ struct WordLearningView: View {
             Spacer()
             
             // 도토리 획득 상황
-            acornRewards(count: 1)
+            acornRewards(count: acornCount)
             
             Spacer()
 
