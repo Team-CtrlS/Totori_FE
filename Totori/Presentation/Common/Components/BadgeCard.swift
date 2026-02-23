@@ -35,7 +35,7 @@ struct BadgeCard: View {
                     
                     padding(6)
                     
-                    TotoriProgressBar(
+                    ProgressBar(
                         progress: CGFloat(progress),
                         height: .h12,
                         style: .pink

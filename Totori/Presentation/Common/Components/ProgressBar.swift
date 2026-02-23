@@ -68,7 +68,7 @@ enum ProgressBarStyle {
 
 // MARK: - Progress Bar
 
-struct TotoriProgressBar: View {
+struct ProgressBar: View {
     
     let progress: CGFloat   // 0.0 ~ 1.0 사이 진척정도
     let height: ProgressBarHeight
