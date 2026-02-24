@@ -62,7 +62,6 @@ struct MainView: View {
                                 ForEach(0..<viewModel.storyBooks.count, id: \.self) { index in
                                     let bookType = viewModel.storyBooks[index]
                                     
-                                    
                                     // TODO: - 페이지 연결
                                     NavigationLink(destination: Text("테스트")) {
                                         StoryBookView(type: viewModel.storyBooks[index])
