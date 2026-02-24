@@ -32,8 +32,7 @@ struct BadgeCard: View {
                     Text(subtitle)
                         .font(.NotoSans_14_R)
                         .foregroundColor(.textGray)
-                    
-                    padding(6)
+                        .padding(.bottom, 6)
                     
                     TotoriProgressBar(
                         progress: CGFloat(progress),
