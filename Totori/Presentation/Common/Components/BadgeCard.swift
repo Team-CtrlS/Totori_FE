@@ -34,7 +34,7 @@ struct BadgeCard: View {
                         .foregroundColor(.textGray)
                         .padding(.bottom, 6)
                     
-                    TotoriProgressBar(
+                    ProgressBar(
                         progress: CGFloat(progress),
                         height: .h12,
                         style: .pink
