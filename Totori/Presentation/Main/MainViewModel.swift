@@ -8,60 +8,51 @@
 import Combine
 import Foundation
 
-final class MainViewModel: ObservableObject {
+// MARK: - Model
+
+struct FeaturedBook {
+    let coverURL: String?
+    let title: String
+    let subtitle: String
+    let rewardCount: Int
+    let progress: Double
+    let currentGame: Int
+    let totalGame: Int
+    let currentBookmark: Int
+    let totalBookmark: Int
+}
+
+// MARK: - ViewModel
+
+class MainViewModel: ObservableObject {
+    // chip
+    @Published var userName: String = "김밤톨"
+    @Published var userImage: String? = nil
+    @Published var acornCount: Int = 4
     
-    struct State {
-        var profileName: String = "김밤톨"
-        var profileImageURL: String? = nil
-        var acornAmount: Int = 5
-        
-        var collectorTItle: String = "도토리 수집가"
-        var collectorSubtitle: String = "도토리 총 10개 모으기 (4/10)"
-        var collectorProgress: Double = 0.4
-        
-        var books: [BookType] = []
-    }
+    // badgeCard
+    @Published var goalTitle: String = "도토리 수집가"
+    @Published var goalSubtitle: String = "도토리 총 10개 모으기 (4/10)"
+    @Published var goalProgress: Double = 0.4
     
-    enum Action {
-        case tapProfile
-        case tapTrophy
-        case tapAcorn
-        case tapQuestion
-        
-        case tapCollector
-        case tapBook(BookType)
-    }
+    // recentBook
+    @Published var featuredBook = FeaturedBook(
+            coverURL: nil,
+            title: "도토리 숲의 비밀 모험",
+            subtitle: "목표 달성까지 얼마 안 남았어!",
+            rewardCount: 2,
+            progress: 0.3,
+            currentGame: 1,
+            totalGame: 3,
+            currentBookmark: 1,
+            totalBookmark: 3
+        )
     
-    @Published private(set) var state: State = .init()
-    
-    init() {
-        loadMock()
-    }
-    
-    func send(_ action: Action) {
-        switch action {
-        case .tapProfile:
-            print("tapProfile")
-        case .tapTrophy:
-            print("tapTrophy")
-        case .tapAcorn:
-            print("tapAcorn")
-        case .tapQuestion:
-            print("tapQuestion")
-            
-        case .tapCollector:
-            print("tapCollector")
-        case .tapBook:
-            print("tapBook")
-        }
-    }
-    
-    private func loadMock() {
-        state.books = [
+    // bookList
+    @Published var storyBooks: [BookType] = [
             .create(title: "이야기 시작하기"),
             .unread(title: "도토리 숲의 비밀 모험", cover: nil, purpleBackground: false),
             .unread(title: "도토리 숲의 비밀 모험", cover: nil, purpleBackground: false),
             .finished(title: "도토리 숲의 비밀 모험", cover: nil, purpleBackground: true)
         ]
-    }
 }
