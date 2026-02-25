@@ -10,27 +10,27 @@ import SwiftUI
 enum BookType {
     case create(title: String = "이야기 시작하기")
     case unread(title: String, cover: URL?, purpleBackground: Bool)
-    case reading(title: String, cover: URL?)
+    case reading(title: String, cover: URL?, progress: CGFloat)
     case finished(title: String, cover: URL?, purpleBackground: Bool)
-
+    
     var titleText: String? {
         switch self {
         case .create(let title): return title
         case .unread(let title, _, _): return title
-        case .reading(let title, _): return title
+        case .reading(let title, _, _): return title
         case .finished(let title, _, _): return title
         }
     }
-
+    
     var cover: URL? {
         switch self {
-        case .unread(_, let url, _), .reading(_, let url), .finished(_, let url, _):
+        case .unread(_, let url, _), .reading(_, let url, _), .finished(_, let url, _):
             return url
         case .create:
             return nil
         }
     }
-
+    
     enum Kind { case create, unread, reading, finished }
     var kind: Kind {
         switch self {
@@ -40,7 +40,7 @@ enum BookType {
         case .finished: return .finished
         }
     }
-
+    
     var isPurpleBackground: Bool {
         switch self {
         case .unread(_, _, let isPurple), .finished(_, _, let isPurple):
@@ -72,7 +72,7 @@ extension StoryBookStyle {
                 backgroundColor: .white,
                 badge: nil
             )
-
+            
         case .unread:
             return .init(
                 titleColor: .tBlack,
@@ -81,7 +81,7 @@ extension StoryBookStyle {
                 backgroundColor: type.isPurpleBackground ? .main20 : .white,
                 badge: nil
             )
-
+            
         case .reading:
             return .init(
                 titleColor: .tBlack,
@@ -90,7 +90,7 @@ extension StoryBookStyle {
                 backgroundColor: .white,
                 badge: nil
             )
-
+            
         case .finished:
             return .init(
                 titleColor: .tBlack,
@@ -108,13 +108,13 @@ extension StoryBookStyle {
 struct StoryBookView: View {
     let type: BookType
     private var style: StoryBookStyle { .make(for: type) }
-
+    
     var body: some View {
         VStack(spacing: 6) {
             ZStack {
                 RoundedRectangle(cornerRadius: 14)
                     .fill(style.backgroundColor)
-
+                
                 book
                     .padding(16)
             }
@@ -128,7 +128,7 @@ struct StoryBookView: View {
                         .offset(x: -4.5, y: 12.7)
                 }
             }
-
+            
             if let title = type.titleText {
                 Text(title)
                     .font(style.titleFont)
@@ -137,16 +137,16 @@ struct StoryBookView: View {
             }
         }
     }
-
+    
     // MARK: - book
-
+    
     private var book: some View {
         HStack(spacing: 0) {
             Rectangle()
                 .fill(style.spineColor)
                 .frame(width: 7)
                 .clipShape(.rect(topLeadingRadius: 9, bottomLeadingRadius: 9))
-
+            
             ZStack(alignment: .topTrailing) {
                 coverBackgroundView
                 overlayView
@@ -154,13 +154,13 @@ struct StoryBookView: View {
             .clipShape(.rect(bottomTrailingRadius: 9, topTrailingRadius: 9))
         }
     }
-
+    
     @ViewBuilder
     private var coverBackgroundView: some View {
         switch type.kind {
         case .create:
             Rectangle().fill(.tGray)
-
+            
         case .unread, .reading, .finished:
             // TODO: - Kingfisher 설치 후 아래 코드 수정 필요
             Rectangle()
@@ -172,19 +172,27 @@ struct StoryBookView: View {
                 )
         }
     }
-
+    
     @ViewBuilder
     private var overlayView: some View {
-        switch type.kind {
+        switch type {
         case .create:
             Image(.plus)
                 .frame(width: 23, height: 23)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-
-        case .reading:
-            // TODO: - progressbar 컴포넌트로 수정
-            EmptyView()
-
+            
+        case .reading(_, _, let progress):
+            VStack {
+                Spacer()
+                
+                ProgressBar(
+                    progress: progress,
+                    height: .h8,
+                    style: .purple,
+                    backColor: .lightgray
+                )
+            }
+            
         case .unread, .finished:
             EmptyView()
         }
