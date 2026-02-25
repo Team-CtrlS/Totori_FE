@@ -194,12 +194,10 @@ struct WordQuizRepeatView: View {
     private func handleCenterTap() {
         switch stage {
         case .mic:
-            // TODO: 나중에 STT/TTS 판정 결과로 분기
-            // 일단 임시로 무조건 성공으로 이동하도록
+            // TODO: 나중에 STT/TTS 판정 결과로 분기 (일단 임시로 무조건 성공으로 이동하도록 설정)
             stage = .success
 
         case .fail:
-            // 다시하기 → 마이크로
             stage = .mic
 
         case .success:

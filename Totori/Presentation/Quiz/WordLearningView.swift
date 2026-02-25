@@ -169,16 +169,13 @@ struct WordLearningView: View {
     // 단어버튼 선택 로직
     private func handleTap(itemID: UUID) {
         if selectedID == itemID {
-            // 같은 row 다시 누르면 play/pause 토글
             isPlaying.toggle()
         } else {
-            // 다른 row 선택
             selectedID = itemID
             isPlaying = true
         }
 
         // TODO: 실제 오디오 로직 연결
-        // if isPlaying { play(itemID) } else { pause(itemID) }
     }
 
     // 다음 화면/다음 단계 이동
