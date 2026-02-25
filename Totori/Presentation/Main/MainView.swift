@@ -121,7 +121,7 @@ struct FeaturedBookCard: View {
                 }
                 .padding(.bottom, 13)
                 
-                acornRewards(count: book.rewardCount)
+                AcornRewards(count: book.rewardCount)
                     .padding(.bottom, 4)
                 
                 ProgressBar(progress: book.progress, height: .h6, style: .purple)
@@ -147,19 +147,6 @@ struct FeaturedBookCard: View {
         .padding(20)
         .background(Color.white)
         .clipShape(.rect(bottomLeadingRadius: 26, bottomTrailingRadius: 26))
-    }
-    
-    // TODO: - 이것도 컴포넌트로 빼기
-    @ViewBuilder
-    private func acornRewards(count: Int) -> some View {
-        HStack(spacing: 10) {
-            ForEach(0..<3, id: \.self) { index in
-                Image(index < count ? .acornActive : .acornInactive)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-            }
-        }
     }
 }
 
