@@ -55,7 +55,7 @@ struct WordLearningView: View {
             Spacer()
             
             // 도토리 획득 상황
-            acornRewards(count: successQuizCount)
+            AcornRewards(count: successQuizCount)
             
             Spacer()
 
@@ -133,20 +133,6 @@ struct WordLearningView: View {
             .clipShape(RoundedRectangle(cornerRadius: 26))
         }
         .buttonStyle(.plain)
-    }
-    
-    // MARK: - 도토리 획득 상황
-    
-    @ViewBuilder
-    private func acornRewards(count: Int) -> some View {
-        HStack(spacing: 10) {
-            ForEach(0..<3, id: \.self) { index in
-                Image(index < count ? .acornActive : .acornInactive)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-            }
-        }
     }
 
     // MARK: - Actions / Logic
