@@ -50,12 +50,12 @@ enum WordQuizStage {
 }
 
 struct WordQuizRepeatView: View {
+    
+    let successQuizCount: Int
+    let word: String
 
+    // MARK: - State
     @State private var stage: WordQuizStage = .mic
-
-    // MARK: - Sample Inputs
-    private let word: String = "응원"
-    private let acornCount: Int = 1
     
     var onTapCenter: (() -> Void)? = nil
     var onPrev: (() -> Void)? = nil
@@ -101,7 +101,7 @@ struct WordQuizRepeatView: View {
             Spacer()
 
             // 도토리 획득 상황
-            acornRewards(count: acornCount)
+            AcornRewards(count: successQuizCount)
 
             Spacer()
 
@@ -173,20 +173,6 @@ struct WordQuizRepeatView: View {
         .buttonStyle(.plain)
         .allowsHitTesting(isEnabled)
     }
-
-    // MARK: - 도토리 획득 상황
-    
-    @ViewBuilder
-    private func acornRewards(count: Int) -> some View {
-        HStack(spacing: 10) {
-            ForEach(0..<3, id: \.self) { index in
-                Image(index < count ? .acornActive : .acornInactive)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-            }
-        }
-    }
     
     // MARK: - Actions
 
@@ -206,5 +192,8 @@ struct WordQuizRepeatView: View {
 }
 
 #Preview {
-    WordQuizRepeatView()
+    WordQuizRepeatView(
+        successQuizCount: 2,
+        word: "응원"
+    )
 }
