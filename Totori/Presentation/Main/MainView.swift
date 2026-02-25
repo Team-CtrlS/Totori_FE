@@ -131,18 +131,6 @@ struct FeaturedBookCard: View {
                     Spacer()
                     
                     HStack(alignment: .center, spacing: 2) {
-                        Image(.game)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 14, height: 14)
-                            .offset(y: 2)
-                        
-                        Text("\(book.currentGame)/\(book.totalGame)")
-                            .font(.NotoSans_14_R)
-                            .foregroundColor(.textGray)
-                    }
-                    
-                    HStack(alignment: .center, spacing: 2) {
                         Image(.bookmark)
                             .resizable()
                             .scaledToFit()
