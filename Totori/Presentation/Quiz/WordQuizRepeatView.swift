@@ -174,7 +174,6 @@ struct WordQuizRepeatView: View {
         .allowsHitTesting(isEnabled)
     }
 
-
     // MARK: - 도토리 획득 상황
     
     @ViewBuilder
