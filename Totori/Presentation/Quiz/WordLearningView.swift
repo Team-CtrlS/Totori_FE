@@ -156,7 +156,7 @@ struct WordLearningView: View {
     private func acornRewards(count: Int) -> some View {
         HStack(spacing: 10) {
             ForEach(0..<3, id: \.self) { index in
-                Image(index < count ? .acornActive : .acronInactive)
+                Image(index < count ? .acornActive : .acornInactive)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 40, height: 40)
