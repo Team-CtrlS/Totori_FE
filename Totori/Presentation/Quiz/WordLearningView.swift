@@ -9,17 +9,7 @@ import SwiftUI
 
 struct WordLearningView: View {
 
-    // MARK: - Model
-
-    struct WordItem: Identifiable, Equatable {
-        let id = UUID()
-        let text: String
-    }
-
-    // MARK: - Sample Inputs
-    
-    private let progress: CGFloat = 0.25
-    private let acornCount: Int = 1
+    let successQuizCount: Int
 
     // MARK: - State
     @StateObject private var viewModel = WordLearningViewModel()
@@ -65,7 +55,7 @@ struct WordLearningView: View {
             Spacer()
             
             // 도토리 획득 상황
-            acornRewards(count: acornCount)
+            acornRewards(count: successQuizCount)
             
             Spacer()
 
@@ -180,5 +170,5 @@ struct WordLearningView: View {
 }
 
 #Preview {
-    WordLearningView()
+    WordLearningView(successQuizCount: 2)
 }

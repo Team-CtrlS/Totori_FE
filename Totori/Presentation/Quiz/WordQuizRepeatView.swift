@@ -50,12 +50,12 @@ enum WordQuizStage {
 }
 
 struct WordQuizRepeatView: View {
+    
+    let successQuizCount: Int
+    let word: String
 
+    // MARK: - State
     @State private var stage: WordQuizStage = .mic
-
-    // MARK: - Sample Inputs
-    private let word: String = "응원"
-    private let acornCount: Int = 1
     
     var onTapCenter: (() -> Void)? = nil
     var onPrev: (() -> Void)? = nil
@@ -101,7 +101,7 @@ struct WordQuizRepeatView: View {
             Spacer()
 
             // 도토리 획득 상황
-            acornRewards(count: acornCount)
+            acornRewards(count: successQuizCount)
 
             Spacer()
 
@@ -206,5 +206,8 @@ struct WordQuizRepeatView: View {
 }
 
 #Preview {
-    WordQuizRepeatView()
+    WordQuizRepeatView(
+        successQuizCount: 2,
+        word: "응원"
+    )
 }
