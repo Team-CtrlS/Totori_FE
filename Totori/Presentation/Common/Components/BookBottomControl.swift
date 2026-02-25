@@ -135,7 +135,7 @@ struct CircleNavButton: View {
             direction.assetImage
                 .resizable()
                 .scaledToFit()
-                .frame(width: 42, height: 42)
+                .frame(width: 50, height: 50)
                 .opacity(isEnabled ? 1 : 0.5)
         }
         .buttonStyle(.plain)

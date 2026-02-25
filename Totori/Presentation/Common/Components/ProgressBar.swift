@@ -64,8 +64,9 @@ enum BackgroundColor {
 // MARK: - Progress Bar
 
 struct ProgressBar: View {
-    
-    let progress: CGFloat   // 0.0 ~ 1.0 사이 진척정도
+
+    let progress: CGFloat   // 0.0 ~ 1.0 사이 진척도
+
     let height: ProgressBarHeight
     let style: ProgressBarStyle
     let backColor: BackgroundColor
