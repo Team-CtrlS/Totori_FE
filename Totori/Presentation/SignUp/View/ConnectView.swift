@@ -119,7 +119,7 @@ struct ConnectView: View {
             isPinFocused = false
         }
         .padding(.horizontal, 20)
-        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
         .onAppear {
             if viewModel.role == .parent {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

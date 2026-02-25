@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct LoginView: View {
+    let role: SignUpType
+    
+    @State private var navigateToSignUp: Bool = false
+    
     @State private var idInput: String = ""
     @State private var passwordInput: String = ""
     
@@ -68,7 +72,7 @@ struct LoginView: View {
             
             HStack {
                 Button(action: {
-                    print("회원가입 클릭")
+                    navigateToSignUp = true
                 }) {
                     Text("회원가입")
                         .font(.NotoSans_14_R)
@@ -137,9 +141,13 @@ struct LoginView: View {
             }
         }
         .padding(.horizontal, 20)
+        .navigationDestination(isPresented: $navigateToSignUp) {
+            SignUpView(viewModel: SignUpViewModel(role: role))
+        }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
 #Preview {
-    LoginView()
+    LoginView(role: .child)
 }

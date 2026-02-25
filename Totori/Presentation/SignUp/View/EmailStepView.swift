@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct EmailStepView: View {
-    @ObservedObject var viewModel = SignUpViewModel()
+    @ObservedObject var viewModel: SignUpViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -35,5 +35,5 @@ struct EmailStepView: View {
 }
 
 #Preview {
-    EmailStepView()
+    EmailStepView(viewModel: SignUpViewModel(role: .child))
 }

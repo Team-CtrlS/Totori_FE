@@ -8,6 +8,7 @@ import Combine
 import SwiftUI
 
 class SignUpViewModel: ObservableObject {
+    let role: SignUpType
     
     @Published var currentStep: Int = 1
     
@@ -15,6 +16,13 @@ class SignUpViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var passwordConfirm: String = ""
     @Published var name: String = ""
+    
+    @Published var navigateToFinalView: Bool = false
+    @Published var navigateToConnectView: Bool = false
+    
+    init(role: SignUpType) {
+            self.role = role
+        }
     
     var hasCurrentInput: Bool {
         switch currentStep {
@@ -52,6 +60,12 @@ class SignUpViewModel: ObservableObject {
         } else {
             //TODO: - main
             print("최종 회원가입 로직 실행: \(email), \(password), \(name)")
+            
+            if role == .child {
+                navigateToFinalView = true
+            } else if role == .parent {
+                navigateToConnectView = true
+            }
         }
     }
     

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SignUpView: View {
     
-    @StateObject private var viewModel = SignUpViewModel()
+    @StateObject var viewModel: SignUpViewModel
     
     //시스템 뒤로가기 대신 커스텀 뒤로가기 사용
     @Environment(\.dismiss) var dismiss
@@ -60,6 +60,14 @@ struct SignUpView: View {
                 
             }
             .padding(.horizontal, 20)
+            .navigationDestination(isPresented: $viewModel.navigateToFinalView) {
+                FinalView()
+            }
+            .navigationDestination(isPresented: $viewModel.navigateToConnectView) {
+                
+                ConnectView(viewModel: ConnectViewModel(role: viewModel.role))
+            }
+            .navigationBarBackButtonHidden(true)
         }
     }
     
@@ -85,5 +93,5 @@ struct SignUpView: View {
 }
 
 #Preview {
-    SignUpView()
+    SignUpView(viewModel: SignUpViewModel(role: .child))
 }

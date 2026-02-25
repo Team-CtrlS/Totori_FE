@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PasswordConfirmStepView: View {
-    @ObservedObject var viewModel = SignUpViewModel()
+    @ObservedObject var viewModel: SignUpViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -52,5 +52,5 @@ struct PasswordConfirmStepView: View {
 }
 
 #Preview {
-    PasswordConfirmStepView()
+    PasswordConfirmStepView(viewModel: SignUpViewModel(role: .child))
 }

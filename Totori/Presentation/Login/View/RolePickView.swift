@@ -3,6 +3,7 @@ import SwiftUI
 struct RolePickView: View {
     @State private var isShowingModal: Bool = false
     @State private var selectedRole: SignUpType? = nil
+    @State private var navigateToLogin: Bool = false
     
     var body: some View {
         ZStack {
@@ -92,14 +93,18 @@ struct RolePickView: View {
                         }
                     },
                     onContinew: {
-                        print("다음화면 넘어가기")
-                        withAnimation {
-                            isShowingModal = false
-                        }
+                        isShowingModal = false
+                        navigateToLogin = true
                     }
                 )
             }
         }
+        .navigationDestination(isPresented: $navigateToLogin) {
+            if let role = selectedRole {
+                LoginView(role: role)
+            }
+        }
+        .navigationBarBackButtonHidden(true)
     }
 }
 

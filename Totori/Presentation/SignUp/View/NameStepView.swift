@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NameStepView: View {
-    @ObservedObject var viewModel = SignUpViewModel()
+    @ObservedObject var viewModel: SignUpViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -35,5 +35,5 @@ struct NameStepView: View {
 }
 
 #Preview {
-    NameStepView()
+    NameStepView(viewModel: SignUpViewModel(role: .child))
 }
