@@ -17,17 +17,12 @@ struct WordLearningView: View {
     }
 
     // MARK: - Sample Inputs
-
-    private let words: [WordItem] = [
-        .init(text: "응원"),
-        .init(text: "당연"),
-        .init(text: "긍정"),
-        .init(text: "정원")
-    ]
+    
     private let progress: CGFloat = 0.25
     private let acornCount: Int = 1
 
     // MARK: - State
+    @StateObject private var viewModel = WordLearningViewModel()
 
     @State private var selectedID: UUID? = nil
     @State private var isPlaying: Bool = false
@@ -37,10 +32,10 @@ struct WordLearningView: View {
 
             // 헤더 (칩 + 프로그레스바)
             header(
-                name: "김밤톨",
-                profileUrl: "https://picsum.photos/100",
-                acornAmount: 10,
-                progress: 0.4
+                name: viewModel.userName,
+                profileUrl: viewModel.profileUrl,
+                acornAmount: viewModel.acornCount,
+                progress: viewModel.progress
             )
             .padding(.horizontal, 20)
 
@@ -56,7 +51,7 @@ struct WordLearningView: View {
 
             // 단어 리스트
             VStack(spacing: 20) {
-                ForEach(words) { item in
+                ForEach(viewModel.words) { item in
                     wordRow(
                         title: item.text,
                         isSelected: selectedID == item.id,
