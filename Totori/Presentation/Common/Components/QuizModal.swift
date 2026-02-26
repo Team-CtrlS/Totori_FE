@@ -89,19 +89,3 @@ struct QuizModal: View {
         .frame(width: 353, height: 291)
     }
 }
-
-// MARK: - Preview
-
-#Preview("Retry") {
-    ZStack {
-        Color(.lightGray).ignoresSafeArea()
-        QuizModal(type: .retry(userName: "지희"))
-    }
-}
-
-#Preview("Perfect") {
-    ZStack {
-        Color(.lightGray).ignoresSafeArea()
-        QuizModal(type: .perfect(userName: "지희"))
-    }
-}
