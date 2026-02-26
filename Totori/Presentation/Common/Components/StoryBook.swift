@@ -11,7 +11,7 @@ enum BookType {
     case create(title: String = "이야기 시작하기")
     case unread(title: String, cover: URL?, purpleBackground: Bool)
     case reading(title: String, cover: URL?)
-    case finished(title: String, cover: URL?, purpleBackground: Bool)
+    case finished(title: String?, cover: URL?, purpleBackground: Bool)
 
     var titleText: String? {
         switch self {
