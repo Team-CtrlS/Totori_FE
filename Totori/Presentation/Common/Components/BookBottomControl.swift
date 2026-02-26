@@ -11,6 +11,7 @@ enum CenterControlType {
     case speaker
     case mic
     case micRinging
+    case acorn
     case none
 
     var isHidden: Bool {
@@ -24,6 +25,8 @@ enum CenterControlType {
             return Image(.soundWave2)
         case .mic, .micRinging:
             return Image(.mic)
+        case .acorn:
+            return Image(.icLogoPurple)
         case .none:
             return nil
         }
@@ -35,6 +38,8 @@ enum CenterControlType {
             return .point
         case .mic:
             return .main
+        case .acorn:
+            return .white
         case .none:
             return .clear
         }
