@@ -132,7 +132,6 @@ struct WordQuizRepeatView: View {
         ZStack {
             Color.black.opacity(0.5)
                 .ignoresSafeArea()
-                .contentShape(Rectangle())
                 .onTapGesture {
                     isShowingQuizModal = false
                     stage = .fail
@@ -140,7 +139,6 @@ struct WordQuizRepeatView: View {
             
             // modal
             QuizModal(type: .retry(userName: "지희"))
-                .onTapGesture { }
         }
     }
 
