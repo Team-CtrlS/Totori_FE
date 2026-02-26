@@ -56,68 +56,92 @@ struct WordQuizRepeatView: View {
 
     // MARK: - State
     @State private var stage: WordQuizStage = .mic
+    @State private var isShowingQuizModal: Bool = false
     
     var onTapCenter: (() -> Void)? = nil
     var onPrev: (() -> Void)? = nil
     var onNext: (() -> Void)? = nil
-
+    
     var body: some View {
-        VStack(spacing: 0) {
-            
-            // 헤더 (칩 + 프로그레스바)
-            header(
-                name: "김밤톨",
-                profileUrl: "https://picsum.photos/100",
-                acornAmount: 10,
-                progress: 0.4
-            )
-            .padding(.horizontal, 20)
-
-            Spacer().frame(height: 60)
-
-            Text("이제 차례대로 소리 내어 읽어볼까?")
-                .font(.NotoSans_24_SB)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 20)
-
-            Spacer().frame(height: 40)
-
-            // 단어 카드
-            RoundedRectangle(cornerRadius: 26)
-                .fill(stage.cardColor)
-                .frame(height: 162)
-                .overlay(
-                    Text(word)
-                        .font(.NotoSans_30_B)
-                        .foregroundStyle(.black)
+        ZStack {
+            VStack(spacing: 0) {
+                
+                // 헤더 (칩 + 프로그레스바)
+                header(
+                    name: "김밤톨",
+                    profileUrl: "https://picsum.photos/100",
+                    acornAmount: 10,
+                    progress: 0.4
                 )
                 .padding(.horizontal, 20)
 
-            Spacer()
+                Spacer().frame(height: 60)
 
-            // 원형 버튼
-            centerActionButton
+                Text("이제 차례대로 소리 내어 읽어볼까?")
+                    .font(.NotoSans_24_SB)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
 
-            Spacer()
+                Spacer().frame(height: 40)
 
-            // 도토리 획득 상황
-            AcornRewards(count: successQuizCount)
+                // 단어 카드
+                RoundedRectangle(cornerRadius: 26)
+                    .fill(stage.cardColor)
+                    .frame(height: 162)
+                    .overlay(
+                        Text(word)
+                            .font(.NotoSans_30_B)
+                            .foregroundStyle(.black)
+                    )
+                    .padding(.horizontal, 20)
 
-            Spacer()
+                Spacer()
 
-            // 하단 이동 버튼
-            BookBottomControls(
-                centerType: .none,
-                isPrevEnabled: true,
-                isNextEnabled: true,
-                onTapPrev: { onPrev },
-                onTapNext: { onNext }
-            )
-            .padding(.horizontal, 20)
-            .padding(.bottom, 60)
-            
+                // 원형 버튼
+                centerActionButton
+
+                Spacer()
+
+                // 도토리 획득 상황
+                AcornRewards(count: successQuizCount)
+
+                Spacer()
+
+                // 하단 이동 버튼
+                BookBottomControls(
+                    centerType: .none,
+                    isPrevEnabled: true,
+                    isNextEnabled: true,
+                    onTapPrev: { onPrev },
+                    onTapNext: { onNext }
+                )
+                .padding(.horizontal, 20)
+                .padding(.bottom, 60)
+                
+            }
+            .background(Color.white.ignoresSafeArea())
+
+            // 모달
+            if isShowingQuizModal {
+                modalOverlay
+            }
         }
-        .background(Color.white.ignoresSafeArea())
+    }
+    
+    private var modalOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.5)
+                .ignoresSafeArea()
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    isShowingQuizModal = false
+                    stage = .fail
+                }
+            
+            // modal
+            QuizModal(type: .retry(userName: "지희"))
+                .onTapGesture { }
+        }
     }
 
     // MARK: - Header
@@ -179,8 +203,8 @@ struct WordQuizRepeatView: View {
     private func handleCenterTap() {
         switch stage {
         case .mic:
-            // TODO: 나중에 STT/TTS 판정 결과로 분기 (일단 임시로 무조건 성공으로 이동하도록 설정)
-            stage = .success
+            // TODO: 나중에 STT/TTS 판정 결과로 분기 (일단 임시로 무조건 실패로 이동하도록 설정)
+            isShowingQuizModal = true
 
         case .fail:
             stage = .mic
