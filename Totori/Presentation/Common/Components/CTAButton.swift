@@ -9,6 +9,7 @@ import SwiftUI
 
 enum CTAStyle {
     case purple
+    case purple60
     case pink
     case backgroundColor
     case gray
@@ -16,6 +17,7 @@ enum CTAStyle {
     var backgroundColor: Color {
         switch self {
         case .purple: return .main
+        case .purple60: return .main60
         case .pink: return .point
         case .backgroundColor: return .background
         case .gray: return .tGray
@@ -24,7 +26,7 @@ enum CTAStyle {
     
     var titleColor: Color {
         switch self {
-        case .purple, .pink: return .white
+        case .purple, .purple60, .pink: return .white
         case .backgroundColor, .gray: return .tBlack
         }
     }
