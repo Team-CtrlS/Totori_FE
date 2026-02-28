@@ -46,7 +46,6 @@ struct BottomControl: View {
     var onCenterTap: (() -> Void)? = nil
     var onPrevTap: (() -> Void)? = nil
     
-    // ⭐️ 애니메이션을 위한 State
     @State private var isAnimating: Bool = false
     
     var body: some View {
