@@ -99,7 +99,7 @@ struct makeStoryBookView: View {
 
 struct AutoScrollView: View {
     @State private var offset: CGFloat = 0
-    let itemWidth: CGFloat = 310
+    let itemWidth: CGFloat = 330
     let spacing: CGFloat = 10
     
     var body: some View {
@@ -122,19 +122,19 @@ struct AutoScrollView: View {
     private func tipBox(index: Int) -> some View {
             let titles = [
                 "새로운 이야기에 대해...",
-                "나의 최애 동물은?",
-                "누구와 함께 모험을 떠날까?"
+                "도토리에 대해....",
+                "도토리 전시장에 대해..."
             ]
             
             let descriptions = [
                 "이야깃거리가 떠오르지 않는다면 아침에\n무슨 일이 있었는지 이야기해봐!",
-                "좋아하는 동물로 동화를 만들어줄게\n동물 말고 캐릭터도 좋아",
-                "친구나 가족, 혹은 상상 속의 친구를\n동화 속 주인공으로 초대해 봐!"
+                "퀴즈의 답을 맞히면 도토리를 얻을 수 있어!\n도토리로 신나는 이야기를 만들어보자!",
+                "목표를 달성하면 도토리 훈장을 받을 수 있어!\n어떤 훈장들을 모았는지 확인해 보는 건 어때?"
             ]
             
             let safeIndex = index % 3
             
-            return HStack(spacing: 21.52) {
+            return HStack(spacing: 21) {
                 Image(.arconBadge)
                     .resizable()
                     .scaledToFit()
