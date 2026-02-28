@@ -2,7 +2,7 @@
 //  BadgeEarnedViewModel.swift
 //  Totori
 //
-//  Created by user on 2/28/26.
+//  Created by 복지희 on 2/28/26.
 //
 
 import Combine
