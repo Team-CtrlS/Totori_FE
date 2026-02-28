@@ -22,8 +22,8 @@ struct ProfileBadgeView: View {
 
             // TODO: 설정아이콘 우측에 추가
             CustomNavigationBar(
-                centerType: .logo,
-                showsBackButton: false
+                centerType: .textLogo,
+                showsBackButton: true
             )
 
             ScrollView(showsIndicators: false) {
