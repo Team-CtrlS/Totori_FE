@@ -30,15 +30,9 @@ enum ResultCardType {
     var message: String {
         switch self {
         case .retry(let userName):
-            return """
-            더 좋은 결과를 얻을 수 있을거야!
-            힘내서 다시 해보자, \(userName)!
-            """
+            return "더 좋은 결과를 얻을 수 있을거야!\n힘내서 다시 해보자, \(userName)!"
         case .perfect(let userName):
-            return """
-            벌써 훌륭하게 해내다니, 역시 \(userName)!
-            앞으로의 활약도 계속 응원할게!
-            """
+            return "벌써 훌륭하게 해내다니, 역시 \(userName)!\n앞으로의 활약도 계속 응원할게!"
         }
     }
 
@@ -87,21 +81,5 @@ struct QuizModal: View {
 
         }
         .frame(width: 353, height: 291)
-    }
-}
-
-// MARK: - Preview
-
-#Preview("Retry") {
-    ZStack {
-        Color(.lightGray).ignoresSafeArea()
-        QuizModal(type: .retry(userName: "지희"))
-    }
-}
-
-#Preview("Perfect") {
-    ZStack {
-        Color(.lightGray).ignoresSafeArea()
-        QuizModal(type: .perfect(userName: "지희"))
     }
 }
