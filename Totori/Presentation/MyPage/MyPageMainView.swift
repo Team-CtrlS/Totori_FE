@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ProfileBadgeView: View {
+struct MyPageMainView: View {
 
     @StateObject private var viewModel = MyPageMainViewModel()
 
@@ -184,5 +184,5 @@ struct ProfileBadgeView: View {
 }
 
 #Preview {
-    ProfileBadgeView()
+    MyPageMainView()
 }
