@@ -16,6 +16,7 @@ extension Font {
     static let NotoSans_18_R: Font = .custom("NotoSansKR-Regular", size: 18)
     static let NotoSans_16_R: Font = .custom("NotoSansKR-Regular", size: 16)
     static let NotoSans_14_R: Font = .custom("NotoSansKR-Regular", size: 14)
+    static let NotoSans_12_R: Font = .custom("NotoSansKR-Regular", size: 12)
     
     // NotoSans_SB
     static let NotoSans_30_SB: Font = .custom("NotoSansKR-SemiBold", size: 30)
