@@ -20,11 +20,19 @@ struct MyPageMainView: View {
     var body: some View {
         VStack(spacing: 0) {
 
-            // TODO: 설정아이콘 우측에 추가
             CustomNavigationBar(
                 centerType: .textLogo,
                 showsBackButton: true
-            )
+            ) {
+                Button {
+                    print("설정 화면 이동")
+                } label: {
+                    Image(.setting)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }
 
             ScrollView(showsIndicators: false) {
                 VStack() {
