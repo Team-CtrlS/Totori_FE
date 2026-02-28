@@ -25,7 +25,16 @@ struct BadgeEarnedView: View {
             VStack(spacing: 40) {
                 Spacer()
 
-                badgeImageBox
+                // TODO: 뱃지 이미지 viewModel에서 받아온 imageUrl값의 이미지 사용하도록 수정
+                Image(.badgeMixed)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 150, height: 150)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 32)
+                            .stroke(Color.white, lineWidth: 7.5)
+                    )
+                    .shadow(color: Color.black.opacity(0.1), radius: 30, x: 0, y: 0)
 
                 titleCard
 
@@ -36,25 +45,6 @@ struct BadgeEarnedView: View {
                 Spacer()
             }
         }
-    }
-
-    // MARK: - Badge Box
-
-    private var badgeImageBox: some View {
-        let boxSize: CGFloat = 150
-        let corner: CGFloat = 32
-
-        return ZStack {
-            Image(.badgeMixed)
-                .resizable()
-                .scaledToFit()
-                .frame(width: boxSize, height: boxSize)
-
-            RoundedRectangle(cornerRadius: corner)
-                .stroke(Color.white, lineWidth: 7.5)
-                .frame(width: boxSize, height: boxSize)
-        }
-        .shadow(color: Color.black.opacity(0.1), radius: 30, x: 0, y: 0)
     }
 
     // MARK: - Title Card
