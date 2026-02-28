@@ -42,7 +42,7 @@ struct ReadStoryBookView: View {
             }
             
             bottomSheetView
-                .offset(y: viewModel.isPanelVisible ? 400 : 0)
+                .offset(y: viewModel.isPanelVisible ? 0 : 305)
                 .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.isPanelVisible)
         }
     }
@@ -53,7 +53,7 @@ struct ReadStoryBookView: View {
                 .fill(.tGray)
                 .frame(width: 50, height: 6)
                 .padding(.horizontal, 171.5)
-                .padding(.top, 20)
+                .padding(.vertical, 20)
                 .onTapGesture {
                     viewModel.togglePanel()
                 }
