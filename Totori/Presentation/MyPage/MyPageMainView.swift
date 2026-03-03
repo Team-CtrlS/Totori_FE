@@ -46,14 +46,8 @@ struct MyPageMainView: View {
                                 .zIndex(showPopover ? 10 : 1)
                             
                             HStack(spacing: 14) {
-                                statCard(
-                                    value: "\(viewModel.totalAcorn)개",
-                                    style: .acorn
-                                )
-                                statCard(
-                                    value: "\(viewModel.readBookCount)권",
-                                    style: .book
-                                )
+                                statCardAcorn(value: "\(viewModel.totalAcorn)개")
+                                statCardBook(value: "\(viewModel.readBookCount)권")
                             }
 
                             BadgeCard(
@@ -226,56 +220,56 @@ struct MyPageMainView: View {
 
     // MARK: - Stat Cards
     
-    private struct statCard: View {
-
-        enum Style {
-            case acorn
-            case book
-            
-            var backgroundColor: Color{
-                switch self {
-                case .acorn:
-                    return Color.main60
-                case .book:
-                    return Color.point50
-                }
-            }
-            
-            var iconImage: Image {
-                switch self {
-                case .acorn:
-                    return Image(.icLogoPurple)
-                case .book:
-                    return Image(.badgeIcon)
-                }
-            }
-            
-            var title: String {
-                switch self {
-                case .acorn:
-                    return "모은 도토리"
-                case .book:
-                    return "읽은 이야기"
-                }
-            }
-        }
+    private struct statCardAcorn: View {
 
         let value: String
-        let style: Style
 
         var body: some View {
 
             ZStack {
                 RoundedRectangle(cornerRadius: 26)
-                    .fill(style.backgroundColor)
+                    .fill(Color.main60)
                 
                 VStack(spacing: 0) {
-                    Text(style.title)
+                    Text("모은 도토리")
                         .font(.NotoSans_12_R)
                         .foregroundStyle(Color.gray)
                     
                     HStack(alignment: .center, spacing: 0) {
-                        style.iconImage
+                        Image(.icLogoPurple)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50, height: 50)
+                        
+                        Text(value)
+                            .font(.NotoSans_30_B)
+                            .foregroundStyle(Color.tBlack)
+                            .frame(height: 50)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 20)
+            }
+        }
+    }
+    
+    private struct statCardBook: View {
+
+        let value: String
+
+        var body: some View {
+
+            ZStack {
+                RoundedRectangle(cornerRadius: 26)
+                    .fill(Color.point50)
+                
+                VStack(spacing: 0) {
+                    Text("읽은 이야기")
+                        .font(.NotoSans_12_R)
+                        .foregroundStyle(Color.gray)
+                    
+                    HStack(alignment: .center, spacing: 0) {
+                        Image(.badgeIcon)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
