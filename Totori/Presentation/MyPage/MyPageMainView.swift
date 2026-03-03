@@ -12,6 +12,7 @@ struct MyPageMainView: View {
     @StateObject private var viewModel = MyPageMainViewModel()
     
     @State private var showPopover = false
+    @State private var goBadgeList = false
 
     private let columns: [GridItem] = Array(
         repeating: GridItem(.flexible(), spacing: 8),
@@ -60,9 +61,12 @@ struct MyPageMainView: View {
                                 subtitle: viewModel.badgeSubTitle,
                                 progress: viewModel.progress,
                                 onTap: {
-                                    print("뱃지 리스트로 이동")
+                                    goBadgeList = true
                                 }
                             )
+                            .navigationDestination(isPresented: $goBadgeList) {
+                                MyPageBadgeView()
+                            }
                         }
                         .padding(.horizontal, 20)
                         .padding(.vertical, 20)
@@ -71,7 +75,7 @@ struct MyPageMainView: View {
                         // 뱃지 리스트
                         Text("뱃지 전시장")
                             .font(.NotoSans_16_SB)
-                            .foregroundStyle(Color.tBlack)
+                            .foregroundColor(Color.tBlack)
                             .padding(.top, 12)
                             .padding(.bottom, 32)
 
