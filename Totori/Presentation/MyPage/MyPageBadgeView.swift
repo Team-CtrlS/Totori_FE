@@ -14,7 +14,7 @@ struct MyPageBadgeView: View {
     var body: some View {
         VStack(spacing: 0) {
 
-            CustomNavigationBar(centerType: .text("도토리 전시장"))
+            CustomNavigationBar(centerType: .text("뱃지 전시장"))
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {

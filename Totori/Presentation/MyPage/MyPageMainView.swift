@@ -69,7 +69,7 @@ struct MyPageMainView: View {
                         .background(Color.background)
 
                         // 뱃지 리스트
-                        Text("도토리 전시장")
+                        Text("뱃지 전시장")
                             .font(.NotoSans_16_SB)
                             .foregroundStyle(Color.tBlack)
                             .padding(.top, 12)
