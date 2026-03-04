@@ -11,7 +11,7 @@ struct MyPageMainView: View {
 
     @StateObject private var viewModel = MyPageMainViewModel()
     
-    @State private var showPopover = false
+    @State private var showPopOver = false
     @State private var goBadgeList = false
 
     private let columns: [GridItem] = Array(
@@ -43,7 +43,7 @@ struct MyPageMainView: View {
                         // backgroundColor 부분
                         VStack(spacing: 20) {
                             profileCard
-                                .zIndex(showPopover ? 10 : 1)
+                                .zIndex(showPopOver ? 10 : 1)
                             
                             HStack(spacing: 14) {
                                 statCardAcorn(value: "\(viewModel.totalAcorn)개")
@@ -88,12 +88,12 @@ struct MyPageMainView: View {
             }
             .background(Color.white.ignoresSafeArea())
             
-            if showPopover {
-                Color.white.opacity(0.001) // 투명하지만 터치는 인식됨
+            if showPopOver {
+                Color.clear
                     .ignoresSafeArea()
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: 0.2)) {
-                            showPopover = false
+                            showPopOver = false
                         }
                     }
             }
@@ -117,7 +117,7 @@ struct MyPageMainView: View {
                     // 수정버튼
                     Button {
                         withAnimation(.easeInOut(duration: 0.2)) {
-                            showPopover.toggle()
+                            showPopOver.toggle()
                         }
                     } label: {
                         Circle()
@@ -132,8 +132,8 @@ struct MyPageMainView: View {
                     }
                     .buttonStyle(.plain)
                     .overlay(alignment: .top) {
-                        if showPopover {
-                            PopoverContent()
+                        if showPopOver {
+                            PopOverContent()
                                 .offset(y: 54)
                         }
                     }
@@ -147,10 +147,10 @@ struct MyPageMainView: View {
             }
             .padding(.vertical, 40)
             
-            if showPopover {
+            if showPopOver {
                 Color.clear
                     .onTapGesture {
-                        showPopover = false
+                        showPopOver = false
                     }
                     .ignoresSafeArea()
             }
@@ -159,7 +159,7 @@ struct MyPageMainView: View {
     
     // MARK: - Popover Card
 
-    struct PopoverContent: View {
+    struct PopOverContent: View {
         var body: some View {
             VStack(alignment: .leading, spacing: 0) {
                 menuButton(
