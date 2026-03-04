@@ -37,7 +37,8 @@ struct BadgeCard: View {
                     ProgressBar(
                         progress: CGFloat(progress),
                         height: .h12,
-                        style: .pink
+                        style: .pink,
+                        backColor: .white
                     )
                 }
                 

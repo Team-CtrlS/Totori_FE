@@ -2,7 +2,7 @@
 //  BadgeEarnedView.swift
 //  Totori
 //
-//  Created by user on 2/26/26.
+//  Created by 복지희 on 2/26/26.
 //
 
 import SwiftUI
