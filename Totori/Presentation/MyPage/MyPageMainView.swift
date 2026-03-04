@@ -39,8 +39,6 @@ struct MyPageMainView: View {
 
                 ScrollView(showsIndicators: false) {
                     VStack() {
-
-                        // backgroundColor 부분
                         VStack(spacing: 20) {
                             profileCard
                                 .zIndex(showPopOver ? 10 : 1)
@@ -200,8 +198,8 @@ struct MyPageMainView: View {
             title: String,
             color: Color,
             isAdd: Bool = false,
-            action: @escaping () -> Void)
-        -> some View {
+            action: @escaping () -> Void
+        ) -> some View {
             Button(action: action) {
                 HStack(spacing: 15) {
                     if isAdd {
