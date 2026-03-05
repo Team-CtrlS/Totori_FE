@@ -11,7 +11,7 @@ import SwiftUI
 struct TotoriApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            StartView()
         }
     }
 }
