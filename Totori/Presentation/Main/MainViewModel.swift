@@ -50,9 +50,10 @@ class MainViewModel: ObservableObject {
     
     // bookList
     @Published var storyBooks: [BookType] = [
-            .create(title: "이야기 시작하기"),
             .unread(title: "도토리 숲의 비밀 모험", cover: nil, purpleBackground: false),
             .reading(title: "도토리 숲의 비밀 모험", cover: nil, progress: 0.4),
+            .finished(title: "도토리 숲의 비밀 모험", cover: nil, purpleBackground: true),
+            .finished(title: "도토리 숲의 비밀 모험", cover: nil, purpleBackground: true),
             .finished(title: "도토리 숲의 비밀 모험", cover: nil, purpleBackground: true)
         ]
 }

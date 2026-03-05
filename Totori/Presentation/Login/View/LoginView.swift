@@ -11,6 +11,7 @@ struct LoginView: View {
     let role: SignUpType
     
     @State private var navigateToSignUp: Bool = false
+    @State private var navigateToMain = false
     
     @State private var idInput: String = ""
     @State private var passwordInput: String = ""
@@ -65,7 +66,9 @@ struct LoginView: View {
                     type: .purple,
                     width: 353,
                     action: {
-                        print("로그인")
+                        //TODO: - 로그인 확인 로직 추가
+                        navigateToMain = true
+                        print("메인화면으로 이동")
                     })
             }
             .padding(.bottom, 20)
@@ -145,6 +148,10 @@ struct LoginView: View {
             SignUpView(viewModel: SignUpViewModel(role: role))
         }
         .navigationBarBackButtonHidden(true)
+        .navigationDestination(isPresented: $navigateToMain) {
+            MainView()
+                .navigationBarBackButtonHidden(true)
+        }
     }
 }
 

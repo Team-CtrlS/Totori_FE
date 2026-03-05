@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct FinalView: View {
+    @State private var navigateToMain = false
+    
     var body: some View {
         ZStack(){
             VStack(alignment: .leading) {
@@ -34,7 +36,7 @@ struct FinalView: View {
                     type: .purple,
                     width: 353,
                     action: {
-                        //TODO: 메인화면 연결하기
+                        navigateToMain = true
                         print("메인화면으로 이동")
                     }
                 )
@@ -50,6 +52,10 @@ struct FinalView: View {
                 .frame(width: 170, height: 170)
             
             Spacer()
+        }
+        .navigationDestination(isPresented: $navigateToMain) {
+            MainView()
+                .navigationBarBackButtonHidden(true)
         }
     }
 }
