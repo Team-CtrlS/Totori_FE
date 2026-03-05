@@ -70,6 +70,10 @@ struct BookInfoView: View {
                 .padding(.horizontal, 20)
             }
         }
+        .navigationDestination(isPresented: $viewModel.navigateToReadStoryBook){
+            ReadStoryBookView()
+                .navigationBarBackButtonHidden(true)
+        }
     }
 }
 

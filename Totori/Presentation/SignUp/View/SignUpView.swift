@@ -64,7 +64,6 @@ struct SignUpView: View {
                 FinalView()
             }
             .navigationDestination(isPresented: $viewModel.navigateToConnectView) {
-                
                 ConnectView(viewModel: ConnectViewModel(role: viewModel.role))
             }
             .navigationBarBackButtonHidden(true)
