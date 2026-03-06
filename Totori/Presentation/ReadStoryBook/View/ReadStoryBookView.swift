@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ReadStoryBookView: View {
     @StateObject private var viewModel = ReadStoryBookViewModel()
+    @Environment(\.dismiss) private var dismiss
     
     @State private var showModal: Bool = false
     @State private var navigateToStart: Bool = false
