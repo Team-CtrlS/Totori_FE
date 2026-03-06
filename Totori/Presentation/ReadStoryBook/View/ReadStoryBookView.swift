@@ -9,10 +9,14 @@ import SwiftUI
 
 struct ReadStoryBookView: View {
     @StateObject private var viewModel = ReadStoryBookViewModel()
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         ZStack(alignment: .bottom) {
+            
             TabView(selection: $viewModel.currentIndex) {
+                
+                //TODO: - 중간중간 퀴즈화면 넣기 (1: 6, 2: 7, 3: 8)
                 ForEach(viewModel.displayPages.indices, id: \.self) { index in
                     GeometryReader { proxy in
                         let pageDate = viewModel.displayPages[index]
@@ -44,6 +48,16 @@ struct ReadStoryBookView: View {
             bottomSheetView
                 .offset(y: viewModel.isPanelVisible ? 0 : 305)
                 .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.isPanelVisible)
+            
+            VStack {
+                Image(.close)
+                    .padding(.leading, 333)
+                    .onTapGesture {
+                        dismiss()
+                    }
+                
+                Spacer()
+            }
         }
     }
     
