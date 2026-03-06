@@ -42,7 +42,11 @@ struct MainView: View {
                             Spacer()
                             
                             HStack(spacing: 10) {
-                                ChipView(type: .trophy)
+                                ChipView(type: .trophy,
+                                         action: {
+                                    navigateToMyPage = true
+                                }
+                                )
                                 ChipView(type: .acorn(amount: viewModel.acornCount))
                                 ChipView(type: .question)
                             }
@@ -68,11 +72,11 @@ struct MainView: View {
                         LazyVGrid(columns: columns, spacing: 20) {
                             NavigationLink(
                                 destination: makeStoryBookView()
-                                .navigationBarBackButtonHidden(true)
+                                    .navigationBarBackButtonHidden(true)
                             ) {
-                                    StoryBookView(type: .create(title: "이야기 시작하기"))
-                                }
-                                .buttonStyle(.plain)
+                                StoryBookView(type: .create(title: "이야기 시작하기"))
+                            }
+                            .buttonStyle(.plain)
                             
                             ForEach(0..<viewModel.storyBooks.count, id: \.self) { index in
                                 let bookType = viewModel.storyBooks[index]
