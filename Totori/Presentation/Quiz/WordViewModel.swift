@@ -42,7 +42,7 @@ final class WordViewModel: ObservableObject {
     @Published var currentIndex: Int = 0
     @Published var stage: WordQuizStage = .mic
     @Published var isShowingQuizModal: Bool = false
-    @Published var isFinished: Bool = false // TODO: 4개 단어 모두 끝났을 때 true (모달 띄워야함)
+    @Published var isFinished: Bool = false
 
     // 현재 학습 중인 단어
     var currentWord: String {
@@ -51,22 +51,38 @@ final class WordViewModel: ObservableObject {
     }
 
     // MARK: - Logic
-    
-    //TODO: 삭제!!!!!!
-    init() {
-        setupQuiz()
-    }
-    
-    // 퀴즈 초기 세팅
+
     func setupQuiz() {
         self.words.shuffle()
         self.currentIndex = 0
         self.stage = .mic
         self.isFinished = false
     }
+    
+    func handleMicAction() {
+        switch stage {
+        case .mic:
+            startSpeaking()
+        case .speaking:
+            checkAnswer()
+        case .fail:
+            retryCurrentWord()
+        case .success:
+            break
+        }
+    }
+    
+    private func startSpeaking() {
+        stage = .speaking
+        // TODO: 녹음 기능으로 변경
+        print("STT 시작")
+    }
+    
+    private func checkAnswer() {
+        // TODO: 정답여부 결과값 받아오기(일단 임시로 랜덤 설정)
+        print("STT 종료 및 결과 판정")
+        let isCorrect = Bool.random()
         
-    // 정답 판정
-    func checkAnswer(isCorrect: Bool) {
         if isCorrect {
             stage = .success
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {

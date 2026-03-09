@@ -9,12 +9,13 @@ import SwiftUI
 
 enum WordQuizStage {
     case mic
+    case speaking
     case success
     case fail
 
     var cardColor: Color {
         switch self {
-        case .mic:
+        case .mic, .speaking:
             return .point50
         case .success:
             return .main40
@@ -25,7 +26,7 @@ enum WordQuizStage {
 
     var centerIcon: Image {
         switch self {
-        case .mic:
+        case .mic, .speaking:
             return Image(.mic)
         case .success:
             return Image(.check)
@@ -36,7 +37,7 @@ enum WordQuizStage {
     
     var centerIconColor: Color {
         switch self {
-        case .mic:
+        case .mic, .speaking:
             return .point
         case .success:
             return .main
@@ -52,6 +53,8 @@ struct WordQuizRepeatView: View {
 
     // MARK: - State
     @ObservedObject var viewModel = WordViewModel()
+    
+    @State private var isAnimating: Bool = false
     
     var body: some View {
         ZStack {
@@ -115,6 +118,9 @@ struct WordQuizRepeatView: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
+        .onChange(of: viewModel.stage) { oldStage, newStage in
+            updateAnimationState(for: newStage)
+        }
     }
     
     private var modalOverlay: some View {
@@ -167,17 +173,28 @@ struct WordQuizRepeatView: View {
 
     private var centerActionButton: some View {
         let size: CGFloat = 80
-        let isEnabled = (viewModel.stage == .mic) || (viewModel.stage == .fail)
+        let isEnabled = (viewModel.stage != .success)
         
         return Button {
-            if viewModel.stage == .mic {
-                // TODO: 실제 정답/실패 판단 api 호출로 변경. 임의로 랜덤 설정
-                viewModel.checkAnswer(isCorrect: Bool.random())
-            } else if viewModel.stage == .fail {
-                viewModel.retryCurrentWord()
-            }
+            viewModel.handleMicAction()
         } label: {
             ZStack {
+                if viewModel.stage == .speaking {
+                    ForEach(0..<3, id: \.self) { index in
+                        Circle()
+                            .stroke(Color.point.opacity(0.3), lineWidth: 13)
+                            .frame(width: 80, height: 80)
+                            .scaleEffect(isAnimating ? 2.0 : 1.0)
+                            .opacity(isAnimating ? 0.0 : 1.0)
+                            .animation(
+                                Animation.easeOut(duration: 3.0)
+                                    .repeatForever(autoreverses: false)
+                                    .delay(Double(index) * 0.5),
+                                value: isAnimating
+                            )
+                    }
+                }
+                
                 Circle()
                     .fill(viewModel.stage.centerIconColor)
                     .frame(width: size, height: size)
@@ -190,5 +207,16 @@ struct WordQuizRepeatView: View {
         }
         .buttonStyle(.plain)
         .allowsHitTesting(isEnabled)
+    }
+    
+    private func updateAnimationState(for stage: WordQuizStage) {
+        if stage == .speaking {
+            isAnimating = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isAnimating = true
+            }
+        } else {
+            isAnimating = false
+        }
     }
 }
