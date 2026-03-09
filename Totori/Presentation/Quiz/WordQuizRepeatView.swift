@@ -51,7 +51,7 @@ struct WordQuizRepeatView: View {
     let successQuizCount: Int
 
     // MARK: - State
-    @StateObject var viewModel = WordViewModel()
+    @ObservedObject var viewModel = WordViewModel()
     
     var body: some View {
         ZStack {
@@ -114,6 +114,7 @@ struct WordQuizRepeatView: View {
                 modalOverlay
             }
         }
+        .toolbar(.hidden, for: .navigationBar)
     }
     
     private var modalOverlay: some View {
@@ -190,10 +191,4 @@ struct WordQuizRepeatView: View {
         .buttonStyle(.plain)
         .allowsHitTesting(isEnabled)
     }
-}
-
-#Preview {
-    WordQuizRepeatView(
-        successQuizCount: 2
-    )
 }
