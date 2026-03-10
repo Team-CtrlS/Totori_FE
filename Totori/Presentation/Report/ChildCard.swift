@@ -26,7 +26,7 @@ struct ChildCard: View {
                             .scaledToFill()
                     } placeholder: {
                         Circle()
-                            .fill(Color.white)
+                            .fill(Color.tGray)
                     }
                     .clipShape(Circle())
                     .frame(width: 50, height: 50)

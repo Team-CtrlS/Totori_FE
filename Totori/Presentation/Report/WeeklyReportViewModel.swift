@@ -41,6 +41,12 @@ enum DayOfWeek: String, Codable, CaseIterable {
     var isWeekend: Bool { self == .sat || self == .sun }
 }
 
+struct BookItem: Codable, Identifiable {
+    let id: Int
+    let title: String
+    let isCompleted: Bool
+}
+
 struct WeeklyLearningDay: Codable, Identifiable {
     var id: String { date }
     let date: String
@@ -73,20 +79,31 @@ struct WCPMDaily: Codable, Identifiable {
 // MARK: - ViewModel
 
 final class WeeklyReportViewModel: ObservableObject {
-
+    
+    @Published var selectedDate: String = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: Date())
+    }()
+    
     @Published var child = Child (
         name: "김밤톨",
         age: 7,
         profileUrl: "https://picsum.photos/100"
     )
     @Published var weeklyLearning: [WeeklyLearningDay] = [
-        .init(date: "2026-03-02", dayOfWeek: .mon, studied: true,  bookCount: 2),
-        .init(date: "2026-03-03", dayOfWeek: .tue, studied: false, bookCount: 0),
-        .init(date: "2026-03-04", dayOfWeek: .wed, studied: true,  bookCount: 1),
-        .init(date: "2026-03-05", dayOfWeek: .thu, studied: true,  bookCount: 1),
-        .init(date: "2026-03-06", dayOfWeek: .fri, studied: true,  bookCount: 4),
-        .init(date: "2026-03-07", dayOfWeek: .sat, studied: false,  bookCount: 0),
-        .init(date: "2026-03-08", dayOfWeek: .sun, studied: false,  bookCount: 0)
+        .init(date: "2026-03-10", dayOfWeek: .mon, studied: true,  bookCount: 2),
+        .init(date: "2026-03-11", dayOfWeek: .tue, studied: false, bookCount: 0),
+        .init(date: "2026-03-12", dayOfWeek: .wed, studied: true,  bookCount: 1),
+        .init(date: "2026-03-13", dayOfWeek: .thu, studied: true,  bookCount: 1),
+        .init(date: "2026-03-14", dayOfWeek: .fri, studied: true,  bookCount: 4),
+        .init(date: "2026-03-15", dayOfWeek: .sat, studied: false,  bookCount: 0),
+        .init(date: "2026-03-16", dayOfWeek: .sun, studied: false,  bookCount: 0)
+    ]
+    @Published var selectedBooks: [BookItem] = [
+        .init(id: 1, title: "도토리 숲의 비밀 모험", isCompleted: false),
+        .init(id: 2, title: "반딧불이를 만나요", isCompleted: true),
+        .init(id: 3, title: "돔돔의 영어교실", isCompleted: true)
     ]
     @Published var quizAccuracy = QuizAccuracy (
         correctCount: 15,
