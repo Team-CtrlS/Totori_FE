@@ -1,0 +1,121 @@
+//
+//  WeeklyReportViewModel.swift
+//  Totori
+//
+//  Created by 복지희 on 3/5/26.
+//
+
+import Combine
+import Foundation
+
+// MARK: - Model
+
+struct Child: Codable {
+    let name: String
+    let age: Int
+    let profileUrl: String?
+}
+
+enum DayOfWeek: String, Codable, CaseIterable {
+    // TODO: 백엔드 응답값에 맞춰서 수정
+    case mon = "MON"
+    case tue = "TUE"
+    case wed = "WED"
+    case thu = "THU"
+    case fri = "FRI"
+    case sat = "SAT"
+    case sun = "SUN"
+
+    var koreanShort: String {
+        switch self {
+        case .mon: return "월"
+        case .tue: return "화"
+        case .wed: return "수"
+        case .thu: return "목"
+        case .fri: return "금"
+        case .sat: return "토"
+        case .sun: return "일"
+        }
+    }
+
+    var isWeekend: Bool { self == .sat || self == .sun }
+}
+
+struct WeeklyLearningDay: Codable, Identifiable {
+    var id: String { date }
+    let date: String
+    let dayOfWeek: DayOfWeek
+    let studied: Bool
+    let bookCount: Int
+}
+
+struct QuizAccuracy: Codable {
+    let correctCount: Int
+    let totalCount: Int
+}
+
+struct Completion: Codable {
+    let completedBookCount: Int
+    let totalBookCount: Int
+}
+
+struct WCPM: Codable {
+    let average: Double
+    let daily: [WCPMDaily]
+}
+
+struct WCPMDaily: Codable, Identifiable {
+    var id: String { date }
+    let date: String
+    let value: Double
+}
+
+// MARK: - ViewModel
+
+final class WeeklyReportViewModel: ObservableObject {
+
+    @Published var child = Child (
+        name: "김밤톨",
+        age: 7,
+        profileUrl: "https://picsum.photos/100"
+    )
+    @Published var weeklyLearning: [WeeklyLearningDay] = [
+        .init(date: "2026-03-02", dayOfWeek: .mon, studied: true,  bookCount: 2),
+        .init(date: "2026-03-03", dayOfWeek: .tue, studied: false, bookCount: 0),
+        .init(date: "2026-03-04", dayOfWeek: .wed, studied: true,  bookCount: 1),
+        .init(date: "2026-03-05", dayOfWeek: .thu, studied: true,  bookCount: 1),
+        .init(date: "2026-03-06", dayOfWeek: .fri, studied: true,  bookCount: 4),
+        .init(date: "2026-03-07", dayOfWeek: .sat, studied: false,  bookCount: 0),
+        .init(date: "2026-03-08", dayOfWeek: .sun, studied: false,  bookCount: 0)
+    ]
+    @Published var quizAccuracy = QuizAccuracy (
+        correctCount: 15,
+        totalCount: 30
+    )
+    @Published var completion = Completion (
+        completedBookCount: 3,
+        totalBookCount: 6
+    )
+    @Published var wcpm = WCPM (
+        average: 73,
+        daily: [
+            .init(date: "2026-03-02", value: 67),
+            .init(date: "2026-03-03", value: 67),
+            .init(date: "2026-03-04", value: 70),
+            .init(date: "2026-03-05", value: 72),
+            .init(date: "2026-03-06", value: 73),
+            .init(date: "2026-03-07", value: 74),
+            .init(date: "2026-03-08", value: 76),
+        ]
+    )
+
+    var quizAccuracyProgress: Double {
+        guard quizAccuracy.totalCount > 0 else { return 0 }
+        return Double(quizAccuracy.correctCount) / Double(quizAccuracy.totalCount)
+    }
+    
+    var completionProgress: Double {
+        guard completion.totalBookCount > 0 else { return 0 }
+        return Double(completion.completedBookCount) / Double(completion.totalBookCount)
+    }
+}
