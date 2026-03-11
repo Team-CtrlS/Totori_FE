@@ -90,8 +90,16 @@ struct WordQuizRepeatView: View {
                     .padding(.horizontal, 20)
 
                 Spacer()
-
-                centerActionButton
+                
+                if viewModel.stage == .speaking {
+                    BookBottomControls(
+                        centerType: .micRinging,
+                        showsSideButtons: false,
+                        onTapCenter: { viewModel.handleMicAction() }
+                    )
+                } else {
+                    centerActionButton
+                }
 
                 Spacer()
 
@@ -118,9 +126,6 @@ struct WordQuizRepeatView: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
-        .onChange(of: viewModel.stage) { oldStage, newStage in
-            updateAnimationState(for: newStage)
-        }
     }
     
     private var modalOverlay: some View {
@@ -172,32 +177,15 @@ struct WordQuizRepeatView: View {
     // MARK: - Center Button
 
     private var centerActionButton: some View {
-        let size: CGFloat = 80
         let isEnabled = (viewModel.stage != .success)
         
         return Button {
             viewModel.handleMicAction()
         } label: {
             ZStack {
-                if viewModel.stage == .speaking {
-                    ForEach(0..<3, id: \.self) { index in
-                        Circle()
-                            .stroke(Color.point.opacity(0.3), lineWidth: 13)
-                            .frame(width: 80, height: 80)
-                            .scaleEffect(isAnimating ? 2.0 : 1.0)
-                            .opacity(isAnimating ? 0.0 : 1.0)
-                            .animation(
-                                Animation.easeOut(duration: 3.0)
-                                    .repeatForever(autoreverses: false)
-                                    .delay(Double(index) * 0.5),
-                                value: isAnimating
-                            )
-                    }
-                }
-                
                 Circle()
                     .fill(viewModel.stage.centerIconColor)
-                    .frame(width: size, height: size)
+                    .frame(width: 80, height: 80)
 
                 viewModel.stage.centerIcon
                     .resizable()
@@ -207,16 +195,5 @@ struct WordQuizRepeatView: View {
         }
         .buttonStyle(.plain)
         .allowsHitTesting(isEnabled)
-    }
-    
-    private func updateAnimationState(for stage: WordQuizStage) {
-        if stage == .speaking {
-            isAnimating = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                isAnimating = true
-            }
-        } else {
-            isAnimating = false
-        }
     }
 }
