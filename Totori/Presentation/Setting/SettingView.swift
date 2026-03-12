@@ -14,7 +14,7 @@ struct SettingView: View {
         Divider()
             .foregroundStyle(.tGray)
         
-        RowView(title: "개인정보 관리", action: {print("클릭")})
+        RowView(title: "개인정보 관리", action: {print("클릭")})  // TODO: - 페이지 연결
         RowView(title: "알림 설정", action: {print("클릭")})
         RowView(title: "보호자 연결", action: {print("클릭")})
         RowView(title: "도움말(FAQ)", action: {print("클릭")})
