@@ -71,9 +71,9 @@ struct WCPM: Codable {
 }
 
 struct WCPMDaily: Codable, Identifiable {
-    var id: String { date }
-    let date: String
-    let value: Double
+    var id: Int
+    let book: String
+    let wcpm: Double
 }
 
 // MARK: - ViewModel
@@ -116,13 +116,13 @@ final class WeeklyReportViewModel: ObservableObject {
     @Published var wcpm = WCPM (
         average: 73,
         daily: [
-            .init(date: "2026-03-02", value: 67),
-            .init(date: "2026-03-03", value: 67),
-            .init(date: "2026-03-04", value: 70),
-            .init(date: "2026-03-05", value: 72),
-            .init(date: "2026-03-06", value: 73),
-            .init(date: "2026-03-07", value: 74),
-            .init(date: "2026-03-08", value: 76),
+            .init(id:1, book: "도토리 숲의 비밀 모험", wcpm: 67),
+            .init(id:2, book: "반딧불이를 만나요", wcpm: 81),
+            .init(id:3, book: "돔돔의 영어교실", wcpm: 70),
+            .init(id:4, book: "공주님의 하루", wcpm: 60),
+            .init(id:5, book: "식물과 나", wcpm: 66),
+            .init(id:6, book: "비가 내려요", wcpm: 62),
+            .init(id:7, book: "책읽기는 재밌어", wcpm: 79),
         ]
     )
 

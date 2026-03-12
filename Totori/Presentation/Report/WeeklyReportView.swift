@@ -10,6 +10,9 @@ import SwiftUI
 struct WeeklyReportView: View {
 
     @StateObject private var viewModel = WeeklyReportViewModel()
+    
+    @State private var isBookListExpanded: Bool = false
+    @State private var selectedChartId: Int? = nil
 
     var body: some View {
         VStack(spacing: 20) {
@@ -67,7 +70,19 @@ struct WeeklyReportView: View {
                 if !viewModel.selectedBooks.isEmpty {
                     VStack(spacing: 0) {
                         ForEach(viewModel.selectedBooks) { book in
-                            bookRow(book: book)
+                            HStack(spacing: 4) {
+                                Image(book.isCompleted ? .bookmarkPink : .bookmarkLightGray)
+
+                                Text(book.title)
+                                    .font(.NotoSans_16_R)
+                                    .foregroundColor(.black)
+                                
+                                Spacer()
+                                
+                                Image(.rightGray)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
                         }
                     }
                     .padding(.vertical, 20)
@@ -125,23 +140,6 @@ struct WeeklyReportView: View {
         .padding(.vertical, 20)
     }
 
-    @ViewBuilder
-    private func bookRow(book: BookItem) -> some View {
-        HStack(spacing: 4) {
-            Image(book.isCompleted ? .bookmarkPink : .bookmarkLightGray)
-
-            Text(book.title)
-                .font(.NotoSans_16_R)
-                .foregroundColor(.black)
-            
-            Spacer()
-            
-            Image(.rightGray)
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 10)
-    }
-
     // MARK: - 도서 완독률
     private var quizAccuracyCard: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -193,8 +191,9 @@ struct WeeklyReportView: View {
                     BarChart(
                         data: viewModel.wcpm.daily.map {
                             ChartData(
-                                label: String(format: "%.1f", $0.value),
-                                value: $0.value
+                                id: $0.id,
+                                label: String(format: "%.1f", $0.wcpm),
+                                value: $0.wcpm
                             )
                         },
                         thresholds: [viewModel.wcpm.average],
@@ -205,23 +204,44 @@ struct WeeklyReportView: View {
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
-                        )
+                        ),
+                        selectedId: $selectedChartId
                     )
+                    .allowsHitTesting(isBookListExpanded)
                 }
                 .padding(20)
                 .frame(height: 157)
 
                 Divider()
                     .background(Color.tGray)
+                
+                if isBookListExpanded {
+                    VStack(spacing: 0) {
+                        ForEach(viewModel.wcpm.daily) { daily in
+                            wcpmBook(wcpmDaily: daily)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
                         
                 Button {
-                    print("목록 펼치기 클릭")
+                    withAnimation(.easeInOut) {
+                        isBookListExpanded.toggle()
+                        selectedChartId = nil
+                    }
                 } label: {
                     VStack(spacing: 4) {
-                        Text("도서 목록 펼치기")
-                            .font(.NotoSans_16_R)
-                        Image(.rightGray)
-                            .rotationEffect(.degrees(90))
+                        if !isBookListExpanded {
+                            Text("도서 목록 펼치기")
+                                .font(.NotoSans_16_R)
+                            Image(.rightGray)
+                                .rotationEffect(.degrees(90))
+                        } else {
+                            Image(.rightGray)
+                                .rotationEffect(.degrees(270))
+                                .padding(.bottom, 10)
+                        }
                     }
                     .foregroundColor(Color.black)
                     .frame(maxWidth: .infinity)
@@ -250,6 +270,31 @@ struct WeeklyReportView: View {
             }
         }
         .padding(.bottom, 18)
+    }
+    
+    @ViewBuilder
+    private func wcpmBook(wcpmDaily: WCPMDaily) -> some View {
+        let isSelected = (selectedChartId == nil) || (selectedChartId == wcpmDaily.id)
+        
+        let isSpecificallySelected = (selectedChartId == wcpmDaily.id)
+        HStack(spacing: 4) {
+            Text(wcpmDaily.book)
+                .font(.NotoSans_16_R)
+                .foregroundColor(.black)
+            
+            Spacer()
+            
+            Text(String(wcpmDaily.wcpm))
+                .font(isSpecificallySelected ? .NotoSans_16_SB : .NotoSans_16_R)
+                .foregroundColor(isSpecificallySelected ? .mainVariation : .textGray)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
+        .background(isSpecificallySelected ? Color.main20 : Color.clear)
+        .contentShape(Rectangle())
+            .onTapGesture {
+                selectedChartId = isSpecificallySelected ? nil : wcpmDaily.id
+            }
     }
     
     // MARK: - footer
