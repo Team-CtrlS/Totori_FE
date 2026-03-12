@@ -75,6 +75,7 @@ struct BookBottomControls: View {
     // 활성화 여부
     let isPrevEnabled: Bool
     let isNextEnabled: Bool
+    let showsSideButtons: Bool
     
     let onTapPrev: () -> Void
     let onTapNext: () -> Void
@@ -84,13 +85,15 @@ struct BookBottomControls: View {
         centerType: CenterControlType,
         isPrevEnabled: Bool = true,
         isNextEnabled: Bool = true,
-        onTapPrev: @escaping () -> Void,
-        onTapNext: @escaping () -> Void,
+        showsSideButtons: Bool = true,
+        onTapPrev: @escaping () -> Void = {},
+        onTapNext: @escaping () -> Void = {},
         onTapCenter: @escaping () -> Void = {}
     ) {
         self.centerType = centerType
         self.isPrevEnabled = isPrevEnabled
         self.isNextEnabled = isNextEnabled
+        self.showsSideButtons = showsSideButtons
         self.onTapPrev = onTapPrev
         self.onTapNext = onTapNext
         self.onTapCenter = onTapCenter
@@ -99,12 +102,13 @@ struct BookBottomControls: View {
     var body: some View {
         HStack {
             
-            // 왼쪽 화살표
-            CircleNavButton(
-                direction: .prev,
-                isEnabled: isPrevEnabled,
-                action: onTapPrev
-            )
+            if showsSideButtons{
+                CircleNavButton(
+                    direction: .prev,
+                    isEnabled: isPrevEnabled,
+                    action: onTapPrev
+                )
+            }
             
             Spacer()
             
@@ -117,12 +121,13 @@ struct BookBottomControls: View {
             
             Spacer()
             
-            // 오른쪽 화살표
-            CircleNavButton(
-                direction: .next,
-                isEnabled: isNextEnabled,
-                action: onTapNext
-            )
+            if showsSideButtons {
+                CircleNavButton(
+                    direction: .next,
+                    isEnabled: isNextEnabled,
+                    action: onTapNext
+                )
+            }
         }
     }
 }
@@ -203,13 +208,13 @@ struct CenterActionButton: View {
     }
     
     private func updateAnimationState() {
-            if type.showsRinging {
-                isAnimating = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    isAnimating = true
-                }
-            } else {
-                isAnimating = false
+        if type.showsRinging {
+            isAnimating = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isAnimating = true
             }
+        } else {
+            isAnimating = false
         }
+    }
 }

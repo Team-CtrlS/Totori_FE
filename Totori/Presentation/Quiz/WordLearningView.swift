@@ -12,61 +12,73 @@ struct WordLearningView: View {
     let successQuizCount: Int
 
     // MARK: - State
-    @StateObject private var viewModel = WordLearningViewModel()
+    @StateObject private var viewModel = WordViewModel()
 
-    @State private var selectedID: UUID? = nil
+    @State private var selectedID: String? = nil
     @State private var isPlaying: Bool = false
+    
+    @State private var isNavigatingToQuiz: Bool = false
 
     var body: some View {
-        VStack(spacing: 0) {
+        NavigationStack{
+            VStack(spacing: 0) {
 
-            // 헤더 (칩 + 프로그레스바)
-            header(
-                name: viewModel.userName,
-                profileUrl: viewModel.profileUrl,
-                acornAmount: viewModel.acornCount,
-                progress: viewModel.progress
-            )
-            .padding(.horizontal, 20)
-
-            Spacer().frame(height: 60)
-
-            // 타이틀
-            Text("먼저, 단어를 들어보자!")
-                .font(.NotoSans_24_SB)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                // 헤더 (칩 + 프로그레스바)
+                header(
+                    name: viewModel.userName,
+                    profileUrl: viewModel.profileUrl,
+                    acornAmount: viewModel.acornCount,
+                    progress: viewModel.progress
+                )
                 .padding(.horizontal, 20)
 
-            Spacer().frame(height: 40)
+                Spacer().frame(height: 60)
 
-            // 단어 리스트
-            VStack(spacing: 20) {
-                ForEach(viewModel.words) { item in
-                    wordRow(
-                        title: item.text,
-                        isSelected: selectedID == item.id,
-                        isPlaying: (selectedID == item.id) && isPlaying,
-                        onTap: { handleTap(itemID: item.id) }
-                    )
+                // 타이틀
+                Text("먼저, 단어를 들어보자!")
+                    .font(.NotoSans_24_SB)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
+
+                Spacer().frame(height: 40)
+
+                // 단어 리스트
+                VStack(spacing: 20) {
+                    ForEach(viewModel.words, id: \.self) { item in
+                        wordRow(
+                            title: item,
+                            isSelected: selectedID == item,
+                            isPlaying: (selectedID == item) && isPlaying,
+                            onTap: { handleTap(itemID: item) }
+                        )
+                    }
                 }
-            }
-            .padding(.horizontal, 20)
+                .padding(.horizontal, 20)
 
-            Spacer()
-            
-            // 도토리 획득 상황
-            AcornRewards(count: successQuizCount)
-            
-            Spacer()
+                Spacer()
+                
+                // 도토리 획득 상황
+                AcornRewards(count: successQuizCount)
+                
+                Spacer()
 
-            // 다음 버튼
-            CTAButton(title: "다음", type: .purple) {
-                onNext()
+                // 다음 버튼
+                CTAButton(title: "다음", type: .purple) {
+                    viewModel.setupQuiz()
+                    isNavigatingToQuiz = true
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 60)
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 60)
+            .background(Color.white.ignoresSafeArea())
+            
+            .navigationDestination(isPresented: $isNavigatingToQuiz) {
+                WordQuizRepeatView(
+                    successQuizCount: successQuizCount,
+                    viewModel: viewModel
+                )
+            }
         }
-        .background(Color.white.ignoresSafeArea())
     }
 
     // MARK: - Header
@@ -110,20 +122,20 @@ struct WordLearningView: View {
     ) -> some View {
         Button(action: onTap) {
             HStack(spacing: 10) {
-
+                
                 Image(isPlaying ? .pause : .play)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 50, height: 50)
-
+                
                 Spacer()
-
+                
                 Text(title)
                     .font(.NotoSans_30_B)
                     .foregroundStyle(.black)
-
+                
                 Spacer()
-
+                
                 // 좌우 균형용 더미 공간
                 Color.clear.frame(width: 50)
             }
@@ -138,7 +150,7 @@ struct WordLearningView: View {
     // MARK: - Actions / Logic
 
     // 단어버튼 선택 로직
-    private func handleTap(itemID: UUID) {
+    private func handleTap(itemID: String) {
         if selectedID == itemID {
             isPlaying.toggle()
         } else {
@@ -147,11 +159,6 @@ struct WordLearningView: View {
         }
 
         // TODO: 실제 오디오 로직 연결
-    }
-
-    // 다음 화면/다음 단계 이동
-    private func onNext() {
-        
     }
 }
 
