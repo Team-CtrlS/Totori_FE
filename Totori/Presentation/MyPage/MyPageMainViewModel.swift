@@ -4,7 +4,7 @@
 //
 //  Created by 복지희 on 2/28/26.
 //
-
+import Combine
 import SwiftUI
 
 struct BadgeItem: Identifiable, Equatable {
