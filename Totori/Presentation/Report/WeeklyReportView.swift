@@ -274,7 +274,6 @@ struct WeeklyReportView: View {
     
     @ViewBuilder
     private func wcpmBook(wcpmDaily: WCPMDaily) -> some View {
-        let isSelected = (selectedChartId == nil) || (selectedChartId == wcpmDaily.id)
         
         let isSpecificallySelected = (selectedChartId == wcpmDaily.id)
         HStack(spacing: 4) {
