@@ -14,7 +14,7 @@ struct WordLearningView: View {
     // MARK: - State
     @StateObject private var viewModel = WordViewModel()
 
-    @State private var selectedID: UUID? = nil
+    @State private var selectedID: String? = nil
     @State private var isPlaying: Bool = false
     
     @State private var isNavigatingToQuiz: Bool = false
@@ -44,12 +44,12 @@ struct WordLearningView: View {
 
                 // 단어 리스트
                 VStack(spacing: 20) {
-                    ForEach(viewModel.words) { item in
+                    ForEach(viewModel.words, id: \.self) { item in
                         wordRow(
-                            title: item.text,
-                            isSelected: selectedID == item.id,
-                            isPlaying: (selectedID == item.id) && isPlaying,
-                            onTap: { handleTap(itemID: item.id) }
+                            title: item,
+                            isSelected: selectedID == item,
+                            isPlaying: (selectedID == item) && isPlaying,
+                            onTap: { handleTap(itemID: item) }
                         )
                     }
                 }
@@ -150,7 +150,7 @@ struct WordLearningView: View {
     // MARK: - Actions / Logic
 
     // 단어버튼 선택 로직
-    private func handleTap(itemID: UUID) {
+    private func handleTap(itemID: String) {
         if selectedID == itemID {
             isPlaying.toggle()
         } else {

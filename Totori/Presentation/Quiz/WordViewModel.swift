@@ -8,13 +8,6 @@
 import Combine
 import Foundation
 
-// MARK: - Model
-
-struct WordItem: Identifiable, Equatable {
-    let id = UUID()
-    let text: String
-}
-
 // MARK: - ViewModel
 
 final class WordViewModel: ObservableObject {
@@ -31,12 +24,7 @@ final class WordViewModel: ObservableObject {
     @Published var rewardCount: Int = 1
 
     // wordList
-    @Published var words: [WordItem] = [
-        .init(text: "응원"),
-        .init(text: "당연"),
-        .init(text: "긍정"),
-        .init(text: "정원")
-    ]
+    @Published var words: [String] = [ "응원", "당연", "긍정", "정원" ]
     
     // MARK: - Quiz State
     @Published var currentIndex: Int = 0
@@ -47,7 +35,7 @@ final class WordViewModel: ObservableObject {
     // 현재 학습 중인 단어
     var currentWord: String {
         guard !words.isEmpty && currentIndex < words.count else { return "" }
-        return words[currentIndex].text
+        return words[currentIndex]
     }
 
     // MARK: - Logic
