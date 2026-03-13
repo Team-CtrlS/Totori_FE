@@ -13,46 +13,60 @@ struct WeeklyReportView: View {
     
     @State private var isBookListExpanded: Bool = false
     @State private var selectedChartId: Int? = nil
+    @State private var showPopOver = false
 
     var body: some View {
-        VStack(spacing: 20) {
-
-            CustomNavigationBar(
-                centerType: .text("주간레포트"),
-                showsBackButton: true
-            )
-
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 20) {
-
-                    ChildCard(
-                        imageUrl: viewModel.child.profileUrl,
-                        childName: viewModel.child.name,
-                        childAge: viewModel.child.age
-                    )
-                    .padding(.horizontal, 20)
-
-                    weeklyLearningCard
+        ZStack{
+            VStack(spacing: 20) {
+                
+                CustomNavigationBar(
+                    centerType: .text("주간레포트"),
+                    showsBackButton: true
+                )
+                
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 20) {
+                        
+                        ChildCard(
+                            imageUrl: viewModel.child.profileUrl,
+                            childName: viewModel.child.name,
+                            childAge: viewModel.child.age
+                        )
                         .padding(.horizontal, 20)
-
-                    quizAccuracyCard
+                        
+                        weeklyLearningCard
+                            .padding(.horizontal, 20)
+                        
+                        quizAccuracyCard
+                            .padding(.horizontal, 20)
+                        
+                        wcpmCard
+                            .padding(.horizontal, 20)
+                        
+                        // TODO: navigate 추가
+                        CTAButton(title: "전체 리포트 보러가기", type: .purple) {
+                            print("전체 페이지 이동")
+                        }
                         .padding(.horizontal, 20)
-
-                    wcpmCard
-                        .padding(.horizontal, 20)
-                    
-                    // TODO: navigate 추가
-                    CTAButton(title: "전체 리포트 보러가기", type: .purple) {
-                        print("전체 페이지 이동")
+                        
+                        reportFooter
                     }
-                    .padding(.horizontal, 20)
-                    
-                    reportFooter
                 }
             }
+            .background(Color.backgroundGray)
+            .navigationBarHidden(true)
+            
+            if showPopOver {
+                Color.clear
+                    .contentShape(Rectangle())
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showPopOver = false
+                        }
+                    }
+            }
         }
-        .background(Color.backgroundGray)
-        .navigationBarHidden(true)
     }
 
     // MARK: - 주간 학습 현황
@@ -182,9 +196,28 @@ struct WeeklyReportView: View {
             HStack {
                 Text("주간 WCPM(읽기 유창성) 점수")
                     .font(.NotoSans_16_SB)
+                
                 Spacer()
-                Image(.info)
+                
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        showPopOver.toggle()
+                    }
+                } label: {
+                    Image(.info)
+                }
+                .buttonStyle(.plain)
+                .overlay(alignment: .topTrailing) {
+                    if showPopOver {
+                        PopOverCard(
+                            title: "WCPM(읽기 유창성)이란?",
+                            descript: "현대에서 보편적으로 사용하는 유창\n성 지표 중 하나로, 글을 얼마나 빠르\n고 정확하게 읽는지 나타냅니다."
+                        )
+                        .offset(x: 10, y: 25)
+                    }
+                }
             }
+            .zIndex(1)
             
             VStack(spacing: 0){
                 ZStack {

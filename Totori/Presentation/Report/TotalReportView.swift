@@ -10,37 +10,54 @@ import SwiftUI
 struct TotalReportView: View {
 
     @StateObject private var viewModel = TotalReportViewModel()
+    
+    @State private var showWCPMPopOver = false
+    @State private var showAnalysisPopOver = false
 
     var body: some View {
-        VStack(spacing: 20) {
+        ZStack {
+            VStack(spacing: 20) {
 
-            CustomNavigationBar(
-                centerType: .text("전체레포트"),
-                showsBackButton: true
-            )
+                CustomNavigationBar(
+                    centerType: .text("전체레포트"),
+                    showsBackButton: true
+                )
 
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 20) {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 20) {
 
-                    ChildCard(
-                        imageUrl: viewModel.child.profileUrl,
-                        childName: viewModel.child.name,
-                        childAge: viewModel.child.age
-                    )
-                    .padding(.horizontal, 20)
-
-                    wcpmCard
+                        ChildCard(
+                            imageUrl: viewModel.child.profileUrl,
+                            childName: viewModel.child.name,
+                            childAge: viewModel.child.age
+                        )
                         .padding(.horizontal, 20)
-                    
-                    wrongAnalysisCard
-                        .padding(.horizontal, 20)
-                    
-                    reportFooter
+
+                        wcpmCard
+                            .padding(.horizontal, 20)
+                        
+                        wrongAnalysisCard
+                            .padding(.horizontal, 20)
+                        
+                        reportFooter
+                    }
                 }
             }
+            .background(Color.backgroundGray)
+            .navigationBarHidden(true)
+            
+            if showWCPMPopOver || showAnalysisPopOver {
+                Color.clear
+                    .contentShape(Rectangle())
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showWCPMPopOver = false
+                            showAnalysisPopOver = false
+                        }
+                    }
+            }
         }
-        .background(Color.backgroundGray)
-        .navigationBarHidden(true)
     }
 
     // MARK: - wcpm graph
@@ -53,9 +70,28 @@ struct TotalReportView: View {
             HStack {
                 Text("종합 WCPM(읽기 유창성) 점수")
                     .font(.NotoSans_16_SB)
+                
                 Spacer()
-                Image(.info)
+                
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        showWCPMPopOver.toggle()
+                    }
+                } label: {
+                    Image(.info)
+                }
+                .buttonStyle(.plain)
+                .overlay(alignment: .topTrailing) {
+                    if showWCPMPopOver {
+                        PopOverCard(
+                            title: "WCPM(읽기 유창성)이란?",
+                            descript: "현대에서 보편적으로 사용하는 유창\n성 지표 중 하나로, 글을 얼마나 빠르\n고 정확하게 읽는지 나타냅니다."
+                        )
+                        .offset(x: 30, y: 25)
+                    }
+                }
             }
+            .zIndex(1)
             .padding(.horizontal, 20)
             .padding(.top, 20)
             
@@ -111,8 +147,10 @@ struct TotalReportView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 20)
         }
-        .background(Color.white)
-        .cornerRadius(26)
+        .background(
+            RoundedRectangle(cornerRadius: 26)
+                .fill(Color.white)
+        )
     }
 
     private var chartBackground: some View {
@@ -142,9 +180,28 @@ struct TotalReportView: View {
             HStack {
                 Text("오답 유형 분석")
                     .font(.NotoSans_16_SB)
+                
                 Spacer()
-                Image(.info)
+                
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        showAnalysisPopOver.toggle()
+                    }
+                } label: {
+                    Image(.info)
+                }
+                .buttonStyle(.plain)
+                .overlay(alignment: .topTrailing) {
+                    if showAnalysisPopOver {
+                        PopOverCard(
+                            title: "오답 유형 분석표",
+                            descript: "아동이 동화를 읽으면서 발생하는 발\n음의 오차 및 유형을 나타냅니다."
+                        )
+                        .offset(x: 30, y: 25)
+                    }
+                }
             }
+            .zIndex(1)
             .padding(20)
 
             ForEach(viewModel.wrong, id: \.label) { item in
@@ -173,8 +230,10 @@ struct TotalReportView: View {
             .padding(.horizontal, 20)
         }
         .padding(.bottom, 12)
-        .background(Color.white)
-        .cornerRadius(26)
+        .background(
+            RoundedRectangle(cornerRadius: 26)
+                .fill(Color.white)
+        )
     }
     
     // MARK: - footer
