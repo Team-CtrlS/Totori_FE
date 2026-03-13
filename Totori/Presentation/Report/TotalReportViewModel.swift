@@ -14,6 +14,11 @@ struct WCPMTotal: Codable {
     let average: Double
     let childAverage: Double
     let total: [WCPMMonth]
+    
+    var maxWcpm: Double {
+        let maxInArray = total.map { $0.wcpm }.max() ?? 0.0
+        return max(maxInArray, childAverage)
+    }
 }
 
 struct WCPMMonth: Codable, Identifiable {

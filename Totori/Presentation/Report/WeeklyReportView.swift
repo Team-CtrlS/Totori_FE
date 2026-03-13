@@ -176,7 +176,9 @@ struct WeeklyReportView: View {
     // MARK: - wcpm graph
     private var wcpmCard: some View {
         
-        VStack(alignment: .leading, spacing: 10) {
+        let yAxisBuffer: Double = 20.0
+        
+        return VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("주간 WCPM(읽기 유창성) 점수")
                     .font(.NotoSans_16_SB)
@@ -197,7 +199,7 @@ struct WeeklyReportView: View {
                             )
                         },
                         thresholds: [viewModel.wcpm.average],
-                        maxValue: 90,
+                        maxValue: viewModel.wcpm.maxWcpm + yAxisBuffer,
                         barStyle: AnyShapeStyle(
                             LinearGradient(
                                 colors: [.main, .point],

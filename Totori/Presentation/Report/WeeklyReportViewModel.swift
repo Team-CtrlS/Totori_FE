@@ -68,6 +68,10 @@ struct Completion: Codable {
 struct WCPM: Codable {
     let average: Double
     let daily: [WCPMDaily]
+    
+    var maxWcpm: Double {
+        return daily.map { $0.wcpm }.max() ?? 0.0
+    }
 }
 
 struct WCPMDaily: Codable, Identifiable {

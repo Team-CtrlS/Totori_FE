@@ -47,6 +47,7 @@ struct TotalReportView: View {
     
     private var wcpmCard: some View {
         let diff = viewModel.wcpm.childAverage - viewModel.wcpm.average
+        let yAxisBuffer: Double = 20.0
         
         return VStack(spacing: 20){
             HStack {
@@ -70,7 +71,7 @@ struct TotalReportView: View {
                         )
                     },
                     thresholds: [viewModel.wcpm.average, viewModel.wcpm.childAverage],
-                    maxValue: 90,
+                    maxValue: viewModel.wcpm.maxWcpm + yAxisBuffer,
                     barStyle: AnyShapeStyle(Color.main),
                     selectedId: .constant(nil)
                 )
