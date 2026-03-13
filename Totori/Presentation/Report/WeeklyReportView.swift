@@ -90,6 +90,7 @@ struct WeeklyReportView: View {
 
                 if !viewModel.selectedBooks.isEmpty {
                     VStack(spacing: 0) {
+                        // TODO: 클릭하면 해당 도서설명 부분으로 이동
                         ForEach(viewModel.selectedBooks) { book in
                             HStack(spacing: 4) {
                                 Image(book.isCompleted ? .bookmarkPink : .bookmarkLightGray)
