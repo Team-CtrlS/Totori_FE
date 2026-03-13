@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-// 화면 종류 3가지
 enum WordQuizStage {
     case mic
+    case speaking
     case success
     case fail
 
     var cardColor: Color {
         switch self {
-        case .mic:
+        case .mic, .speaking:
             return .point50
         case .success:
             return .main40
@@ -26,7 +26,7 @@ enum WordQuizStage {
 
     var centerIcon: Image {
         switch self {
-        case .mic:
+        case .mic, .speaking:
             return Image(.mic)
         case .success:
             return Image(.check)
@@ -37,7 +37,7 @@ enum WordQuizStage {
     
     var centerIconColor: Color {
         switch self {
-        case .mic:
+        case .mic, .speaking:
             return .point
         case .success:
             return .main
@@ -45,22 +45,16 @@ enum WordQuizStage {
             return .textGray
         }
     }
-    
-    var isMicEnabled: Bool { self == .mic }
 }
 
 struct WordQuizRepeatView: View {
     
     let successQuizCount: Int
-    let word: String
 
     // MARK: - State
-    @State private var stage: WordQuizStage = .mic
-    @State private var isShowingQuizModal: Bool = false
+    @ObservedObject var viewModel = WordViewModel()
     
-    var onTapCenter: (() -> Void)? = nil
-    var onPrev: (() -> Void)? = nil
-    var onNext: (() -> Void)? = nil
+    @State private var isAnimating: Bool = false
     
     var body: some View {
         ZStack {
@@ -68,10 +62,10 @@ struct WordQuizRepeatView: View {
                 
                 // 헤더 (칩 + 프로그레스바)
                 header(
-                    name: "김밤톨",
-                    profileUrl: "https://picsum.photos/100",
-                    acornAmount: 10,
-                    progress: 0.4
+                    name: viewModel.userName,
+                    profileUrl: viewModel.profileUrl,
+                    acornAmount: viewModel.acornCount,
+                    progress: viewModel.progress
                 )
                 .padding(.horizontal, 20)
 
@@ -86,34 +80,39 @@ struct WordQuizRepeatView: View {
 
                 // 단어 카드
                 RoundedRectangle(cornerRadius: 26)
-                    .fill(stage.cardColor)
+                    .fill(viewModel.stage.cardColor)
                     .frame(height: 162)
                     .overlay(
-                        Text(word)
+                        Text(viewModel.currentWord)
                             .font(.NotoSans_30_B)
                             .foregroundStyle(.black)
                     )
                     .padding(.horizontal, 20)
 
                 Spacer()
-
-                // 원형 버튼
-                centerActionButton
+                
+                if viewModel.stage == .speaking {
+                    BookBottomControls(
+                        centerType: .micRinging,
+                        showsSideButtons: false,
+                        onTapCenter: { viewModel.handleMicAction() }
+                    )
+                } else {
+                    centerActionButton
+                }
 
                 Spacer()
 
-                // 도토리 획득 상황
                 AcornRewards(count: successQuizCount)
 
                 Spacer()
 
-                // 하단 이동 버튼
                 BookBottomControls(
                     centerType: .none,
-                    isPrevEnabled: true,
-                    isNextEnabled: true,
-                    onTapPrev: { onPrev },
-                    onTapNext: { onNext }
+                    isPrevEnabled: viewModel.currentIndex > 0,
+                    isNextEnabled: false,
+                    onTapPrev: { print("이전") },
+                    onTapNext: { print("다음") }
                 )
                 .padding(.horizontal, 20)
                 .padding(.bottom, 60)
@@ -121,11 +120,12 @@ struct WordQuizRepeatView: View {
             }
             .background(Color.white.ignoresSafeArea())
 
-            // 모달
-            if isShowingQuizModal {
+            // modal
+            if viewModel.isShowingQuizModal {
                 modalOverlay
             }
         }
+        .toolbar(.hidden, for: .navigationBar)
     }
     
     private var modalOverlay: some View {
@@ -133,12 +133,14 @@ struct WordQuizRepeatView: View {
             Color.black.opacity(0.5)
                 .ignoresSafeArea()
                 .onTapGesture {
-                    isShowingQuizModal = false
-                    stage = .fail
+                    viewModel.isShowingQuizModal = false
                 }
             
-            // modal
-            QuizModal(type: .retry(userName: "지희"))
+            if(!viewModel.isFinished){
+                QuizModal(type: .retry(userName: viewModel.userName))
+            } else {
+                QuizModal(type: .perfect(userName: viewModel.userName))
+            }
         }
     }
 
@@ -175,18 +177,17 @@ struct WordQuizRepeatView: View {
     // MARK: - Center Button
 
     private var centerActionButton: some View {
-        let size: CGFloat = 80
-        let isEnabled = (stage == .mic) || (stage == .fail)
+        let isEnabled = (viewModel.stage != .success)
         
         return Button {
-            handleCenterTap()
+            viewModel.handleMicAction()
         } label: {
             ZStack {
                 Circle()
-                    .fill(stage.centerIconColor)
-                    .frame(width: size, height: size)
+                    .fill(viewModel.stage.centerIconColor)
+                    .frame(width: 80, height: 80)
 
-                stage.centerIcon
+                viewModel.stage.centerIcon
                     .resizable()
                     .scaledToFit()
                     .frame(width: 40, height: 40)
@@ -195,27 +196,4 @@ struct WordQuizRepeatView: View {
         .buttonStyle(.plain)
         .allowsHitTesting(isEnabled)
     }
-    
-    // MARK: - Actions
-
-    private func handleCenterTap() {
-        switch stage {
-        case .mic:
-            // TODO: 나중에 STT/TTS 판정 결과로 분기 (일단 임시로 무조건 실패로 이동하도록 설정)
-            isShowingQuizModal = true
-
-        case .fail:
-            stage = .mic
-
-        case .success:
-            break
-        }
-    }
-}
-
-#Preview {
-    WordQuizRepeatView(
-        successQuizCount: 2,
-        word: "응원"
-    )
 }

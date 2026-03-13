@@ -4,9 +4,8 @@
 //
 //  Created by 복지희 on 2/28/26.
 //
-
 import Combine
-import Foundation
+import SwiftUI
 
 struct BadgeItem: Identifiable, Equatable {
     let id: Int
