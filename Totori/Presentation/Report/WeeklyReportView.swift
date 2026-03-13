@@ -14,57 +14,64 @@ struct WeeklyReportView: View {
     @State private var isBookListExpanded: Bool = false
     @State private var selectedChartId: Int? = nil
     @State private var showPopOver = false
+    @State private var isNavigatingToTotal: Bool = false
 
     var body: some View {
-        ZStack{
-            VStack(spacing: 20) {
-                
-                CustomNavigationBar(
-                    centerType: .text("주간레포트"),
-                    showsBackButton: true
-                )
-                
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 20) {
-                        
-                        ChildCard(
-                            imageUrl: viewModel.child.profileUrl,
-                            childName: viewModel.child.name,
-                            childAge: viewModel.child.age
-                        )
-                        .padding(.horizontal, 20)
-                        
-                        weeklyLearningCard
+        NavigationStack{
+            ZStack{
+                VStack(spacing: 20) {
+                    
+                    CustomNavigationBar(
+                        centerType: .text("주간레포트"),
+                        showsBackButton: true
+                    )
+                    
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 20) {
+                            
+                            ChildCard(
+                                imageUrl: viewModel.child.profileUrl,
+                                childName: viewModel.child.name,
+                                childAge: viewModel.child.age
+                            )
                             .padding(.horizontal, 20)
-                        
-                        quizAccuracyCard
+                            
+                            weeklyLearningCard
+                                .padding(.horizontal, 20)
+                            
+                            quizAccuracyCard
+                                .padding(.horizontal, 20)
+                            
+                            wcpmCard
+                                .padding(.horizontal, 20)
+                            
+                            // TODO: navigate 추가
+                            CTAButton(title: "전체 리포트 보러가기", type: .purple) {
+                                isNavigatingToTotal = true
+                            }
                             .padding(.horizontal, 20)
-                        
-                        wcpmCard
-                            .padding(.horizontal, 20)
-                        
-                        // TODO: navigate 추가
-                        CTAButton(title: "전체 리포트 보러가기", type: .purple) {
-                            print("전체 페이지 이동")
+                            
+                            reportFooter
                         }
-                        .padding(.horizontal, 20)
-                        
-                        reportFooter
                     }
                 }
-            }
-            .background(Color.backgroundGray)
-            .navigationBarHidden(true)
-            
-            if showPopOver {
-                Color.clear
-                    .contentShape(Rectangle())
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showPopOver = false
+                .background(Color.backgroundGray)
+                .navigationBarHidden(true)
+                
+                .navigationDestination(isPresented: $isNavigatingToTotal) {
+                    TotalReportView()
+                }
+                
+                if showPopOver {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                showPopOver = false
+                            }
                         }
-                    }
+                }
             }
         }
     }
