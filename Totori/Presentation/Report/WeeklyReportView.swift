@@ -11,6 +11,7 @@ struct WeeklyReportView: View {
 
     @StateObject private var viewModel = WeeklyReportViewModel()
     
+    @State private var selectedBookId: Int? = nil
     @State private var isBookListExpanded: Bool = false
     @State private var selectedChartId: Int? = nil
     @State private var showPopOver = false
@@ -90,21 +91,29 @@ struct WeeklyReportView: View {
 
                 if !viewModel.selectedBooks.isEmpty {
                     VStack(spacing: 0) {
-                        // TODO: 클릭하면 해당 도서설명 부분으로 이동
                         ForEach(viewModel.selectedBooks) { book in
-                            HStack(spacing: 4) {
-                                Image(book.isCompleted ? .bookmarkPink : .bookmarkLightGray)
+                            let isSelected = (selectedBookId == book.id)
+                            
+                            Button{
+                                // TODO: 클릭하면 해당 도서설명 부분으로 이동
+                                selectedBookId = book.id
+                                print("도서 설명으로 이동")
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(book.isCompleted ? .bookmarkPink : .bookmarkLightGray)
 
-                                Text(book.title)
-                                    .font(.NotoSans_16_R)
-                                    .foregroundColor(.black)
-                                
-                                Spacer()
-                                
-                                Image(.rightGray)
+                                    Text(book.title)
+                                        .font(.NotoSans_16_R)
+                                        .foregroundColor(.black)
+                                    
+                                    Spacer()
+                                    
+                                    Image(.rightGray)
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                                .background(isSelected ? Color.main20 : Color.clear)
                             }
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
                         }
                     }
                     .padding(.vertical, 20)
