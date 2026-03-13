@@ -10,12 +10,14 @@ import SwiftUI
 enum ProgressBarHeight {
     case h12
     case h8
+    case h7
     case h6
 
     var value: CGFloat {
         switch self {
         case .h12: return 12
         case .h8:  return 8
+        case .h7:  return 7
         case .h6:  return 6
         }
     }
@@ -26,6 +28,11 @@ enum ProgressBarStyle {
     case pink
     case gray
     case gradient
+    case chart0
+    case chart20
+    case chart40
+    case chart60
+    case chart80
 
     var shapeStyle: AnyShapeStyle {
         switch self {
@@ -43,8 +50,19 @@ enum ProgressBarStyle {
                     endPoint: .trailing
                 )
             )
+        case .chart0:
+            return AnyShapeStyle(Color.chart0)
+        case .chart20:
+            return AnyShapeStyle(Color.chart20)
+        case .chart40:
+            return AnyShapeStyle(Color.chart40)
+        case .chart60:
+            return AnyShapeStyle(Color.chart60)
+        case .chart80:
+            return AnyShapeStyle(Color.chart80)
         }
     }
+    
 }
 
 enum BackgroundColor {

@@ -31,11 +31,14 @@ struct BarChart: View {
             ZStack(alignment: .topLeading) {
                 
                 // Threshold Lines
-                ForEach(thresholds, id: \.self) { threshold in
+                ForEach(Array(thresholds.enumerated()), id: \.offset) { index, threshold in
+                    let lineColor = (index == 1) ? Color.textGray : Color.point
+                    
                     thresholdLineView(
                         value: threshold,
                         chartHeight: chartHeight,
-                        width: chartWidth
+                        width: chartWidth,
+                        color: lineColor
                     )
                 }
                 
@@ -74,18 +77,19 @@ struct BarChart: View {
     private func thresholdLineView(
         value: Double,
         chartHeight: CGFloat,
-        width: CGFloat
+        width: CGFloat,
+        color: Color
     ) -> some View {
         let yPosition = chartHeight * (1 - CGFloat(value / maxValue))
         
         return HStack(spacing: 4) {
             Rectangle()
-                .fill(Color.point)
+                .fill(color)
                 .frame(height: 1)
             
             Text("\(Int(value))")
                 .font(.NotoSans_12_R)
-                .foregroundColor(Color.point)
+                .foregroundColor(color)
         }
         .position(x: width / 2, y: yPosition)
     }
