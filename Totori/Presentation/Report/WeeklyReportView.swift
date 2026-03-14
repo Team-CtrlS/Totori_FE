@@ -82,7 +82,7 @@ struct WeeklyReportView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("주간 학습 현황")
                 .font(.NotoSans_16_SB)
-                .foregroundColor(Color.black)
+                .foregroundStyle(.black)
             
             VStack(spacing: 0) {
                 daySelection
@@ -104,7 +104,7 @@ struct WeeklyReportView: View {
 
                                     Text(book.title)
                                         .font(.NotoSans_16_R)
-                                        .foregroundColor(.black)
+                                        .foregroundStyle(.black)
                                     
                                     Spacer()
                                     
@@ -120,7 +120,7 @@ struct WeeklyReportView: View {
                 } else {
                     Text("아동이 생성한 도서가 이곳에 표시됩니다.")
                         .font(.NotoSans_16_R)
-                        .foregroundColor(Color.textGray)
+                        .foregroundStyle(.textGray)
                         .padding(40)
                         .frame(maxWidth: .infinity)
                 }
@@ -141,7 +141,7 @@ struct WeeklyReportView: View {
                     VStack(spacing: 0) {
                         Text(day.dayOfWeek.koreanShort)
                             .font(isSelected ? .NotoSans_16_SB : .NotoSans_16_R)
-                            .foregroundColor(day.dayOfWeek.isWeekend ? .tRed :.textGray)
+                            .foregroundStyle(day.dayOfWeek.isWeekend ? .tRed :.textGray)
                             .padding(.bottom, 10)
 
                         Image(day.studied ? .acornActive : .acornDeactive)
@@ -180,7 +180,7 @@ struct WeeklyReportView: View {
                 Spacer()
                 Text("\(Int((viewModel.quizAccuracyProgress * 100).rounded()))%")
                     .font(.NotoSans_16_SB)
-                    .foregroundColor(.main)
+                    .foregroundStyle(.main)
             }
             .padding(.bottom, 20)
 
@@ -196,7 +196,7 @@ struct WeeklyReportView: View {
                 Spacer()
                 Text("\(viewModel.quizAccuracy.correctCount)/\(viewModel.quizAccuracy.totalCount)")
                     .font(.NotoSans_12_R)
-                    .foregroundColor(.textGray)
+                    .foregroundStyle(.textGray)
             }
         }
         .padding(20)
@@ -295,7 +295,7 @@ struct WeeklyReportView: View {
                                 .padding(.bottom, 10)
                         }
                     }
-                    .foregroundColor(Color.black)
+                    .foregroundStyle(.black)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 10)
                 }
@@ -331,13 +331,13 @@ struct WeeklyReportView: View {
         HStack(spacing: 4) {
             Text(wcpmDaily.book)
                 .font(.NotoSans_16_R)
-                .foregroundColor(.black)
+                .foregroundStyle(.black)
             
             Spacer()
             
             Text(String(wcpmDaily.wcpm))
                 .font(isSpecificallySelected ? .NotoSans_16_SB : .NotoSans_16_R)
-                .foregroundColor(isSpecificallySelected ? .mainVariation : .textGray)
+                .foregroundStyle(isSpecificallySelected ? .mainVariation : .textGray)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 10)

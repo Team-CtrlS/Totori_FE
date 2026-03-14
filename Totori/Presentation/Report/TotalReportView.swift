@@ -122,27 +122,27 @@ struct TotalReportView: View {
             (
                 Text("아동 WCPM(읽기 유창성)평균 점수는 ")
                     .font(.NotoSans_16_R)
-                    .foregroundColor(.black)
+                    .foregroundStyle(.black)
                 
                 + Text("\(String(format: "%.0f", viewModel.wcpm.average))점")
                     .font(.NotoSans_16_SB)
-                    .foregroundColor(.main)
+                    .foregroundStyle(.main)
                 
                 + Text("으로,\n아동 평균인 ")
                     .font(.NotoSans_16_R)
-                    .foregroundColor(.black)
+                    .foregroundStyle(.black)
                 
                 + Text("\(String(format: "%.0f", viewModel.wcpm.childAverage))점")
                     .font(.NotoSans_16_SB)
-                    .foregroundColor(.main)
+                    .foregroundStyle(.main)
                 
                 + Text("보다 ")
                     .font(.NotoSans_16_R)
-                    .foregroundColor(.black)
+                    .foregroundStyle(.black)
                 
                 + Text("\(Int(abs(diff)))점 \(diff >= 0 ? "낮" : "높")습니다.")
                     .font(.NotoSans_16_SB)
-                    .foregroundColor(.main)
+                    .foregroundStyle(.main)
             )
             .padding(.horizontal, 20)
             .padding(.bottom, 20)
@@ -209,13 +209,13 @@ struct TotalReportView: View {
                     HStack(spacing: 0) {
                         Text(item.label)
                             .font(.NotoSans_12_R)
-                            .foregroundColor(.black)
+                            .foregroundStyle(.black)
                         
                         Spacer()
                         
                         Text("\(item.wrongCount)/\(item.totalCount)")
                             .font(.NotoSans_12_R)
-                            .foregroundColor(.textGray)
+                            .foregroundStyle(.textGray)
                     }
                     ProgressBar(
                         progress: CGFloat(item.progress),
