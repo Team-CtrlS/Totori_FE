@@ -117,7 +117,7 @@ struct TotalReportView: View {
             .frame(height: 180)
 
             Divider()
-                .background(Color.tGray)
+                .background(.tGray)
             
             (
                 Text("아동 WCPM(읽기 유창성)평균 점수는 ")
@@ -149,7 +149,7 @@ struct TotalReportView: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 26)
-                .fill(Color.white)
+                .fill(.white)
         )
     }
 
@@ -157,7 +157,7 @@ struct TotalReportView: View {
         HStack(spacing: 0) {
             ForEach(0..<6) { index in
                 Rectangle()
-                    .fill(index % 2 == 0 ? Color.tLightGray : Color.clear)
+                    .fill(index % 2 == 0 ? .tLightGray : .clear)
                     .clipShape(
                         UnevenRoundedRectangle(
                             topLeadingRadius: index == 0 ? 6 : 0,
@@ -232,7 +232,7 @@ struct TotalReportView: View {
         .padding(.bottom, 12)
         .background(
             RoundedRectangle(cornerRadius: 26)
-                .fill(Color.white)
+                .fill(.white)
         )
     }
     
@@ -243,7 +243,7 @@ struct TotalReportView: View {
         VStack(spacing: 0) {
 
             Divider()
-                .background(Color.tGray)
+                .background(.tGray)
 
             Spacer()
 

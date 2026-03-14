@@ -87,7 +87,7 @@ struct WeeklyReportView: View {
             VStack(spacing: 0) {
                 daySelection
                 
-                Divider().background(Color.tGray)
+                Divider().background(.tGray)
 
                 if !viewModel.selectedBooks.isEmpty {
                     VStack(spacing: 0) {
@@ -112,7 +112,7 @@ struct WeeklyReportView: View {
                                 }
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 10)
-                                .background(isSelected ? Color.main20 : Color.clear)
+                                .background(isSelected ? .main20 : .clear)
                             }
                         }
                     }
@@ -153,7 +153,7 @@ struct WeeklyReportView: View {
                         HStack(spacing: 2) {
                             ForEach(0..<min(day.bookCount, 3), id: \.self) { _ in
                                 Circle()
-                                    .fill(Color.main)
+                                    .fill(.main)
                                     .frame(width: 4, height: 4)
                             }
                         }
@@ -162,7 +162,7 @@ struct WeeklyReportView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 72)
-                    .background(isSelected ? Color.main20 : Color.clear)
+                    .background(isSelected ? .main20 : .clear)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
             }
@@ -200,7 +200,7 @@ struct WeeklyReportView: View {
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(.white)
         .cornerRadius(26)
     }
 
@@ -265,7 +265,7 @@ struct WeeklyReportView: View {
                 .frame(height: 157)
 
                 Divider()
-                    .background(Color.tGray)
+                    .background(.tGray)
                 
                 if isBookListExpanded {
                     VStack(spacing: 0) {
@@ -300,7 +300,7 @@ struct WeeklyReportView: View {
                     .padding(.top, 10)
                 }
             }
-            .background(Color.white)
+            .background(.white)
             .cornerRadius(26)
         }
     }
@@ -309,7 +309,7 @@ struct WeeklyReportView: View {
         VStack(spacing: 0) {
             ForEach(0..<5) { index in
                 Rectangle()
-                    .fill(index % 2 == 0 ? Color.graphGray : Color.clear)
+                    .fill(index % 2 == 0 ? .graphGray : .clear)
                     .clipShape(
                         UnevenRoundedRectangle(
                             topLeadingRadius: index == 0 ? 6 : 0,
@@ -341,7 +341,7 @@ struct WeeklyReportView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 10)
-        .background(isSpecificallySelected ? Color.main20 : Color.clear)
+        .background(isSpecificallySelected ? .main20 : .clear)
         .contentShape(Rectangle())
             .onTapGesture {
                 selectedChartId = isSpecificallySelected ? nil : wcpmDaily.id
@@ -354,7 +354,7 @@ struct WeeklyReportView: View {
         VStack(spacing: 0) {
 
             Divider()
-                .background(Color.tGray)
+                .background(.tGray)
 
             Spacer()
 
