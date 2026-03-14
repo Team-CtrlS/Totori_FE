@@ -16,7 +16,7 @@ struct ChildCard: View {
     var body: some View{
         ZStack{
             RoundedRectangle(cornerRadius: 26)
-                .fill(Color.white)
+                .fill(.white)
             
             HStack(spacing: 15) {
                 if let imageUrl, let url = URL(string: imageUrl) {
@@ -26,13 +26,13 @@ struct ChildCard: View {
                             .scaledToFill()
                     } placeholder: {
                         Circle()
-                            .fill(Color.tGray)
+                            .fill(.tGray)
                     }
                     .clipShape(Circle())
                     .frame(width: 50, height: 50)
                 } else {
                     Circle()
-                        .fill(Color.tLightGray)
+                        .fill(.tLightGray)
                         .frame(width: 50, height: 50)
                         .clipShape(Circle())
                 }
@@ -40,11 +40,11 @@ struct ChildCard: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(childName)
                         .font(.NotoSans_24_SB)
-                        .foregroundColor(Color.black)
+                        .foregroundStyle(.black)
 
                     Text("\(childAge)세 아동")
                         .font(.NotoSans_16_R)
-                        .foregroundColor(Color.textGray)
+                        .foregroundStyle(.textGray)
                 }
 
                 Spacer()

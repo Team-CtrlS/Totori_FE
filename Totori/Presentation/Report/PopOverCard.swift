@@ -20,18 +20,18 @@ struct PopOverCard: View {
             
             Text(title)
                 .font(.NotoSans_14_SB)
-                .foregroundColor(.black)
+                .foregroundStyle(.black)
             
             Text(descript)
                 .font(.NotoSans_12_R)
-                .foregroundColor(.black)
+                .foregroundStyle(.black)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(10)
         .frame(width: 200)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
+                .fill(.white)
                 .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: 0)
         )
     }

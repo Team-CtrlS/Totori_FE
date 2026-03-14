@@ -59,7 +59,7 @@ struct BarChart: View {
                                     
                                 Text(item.label)
                                     .font(.NotoSans_12_R)
-                                    .foregroundColor(isSelected ? .black : .textGray)
+                                    .foregroundStyle(isSelected ? .black : .textGray)
                                     .frame(height: labelHeight, alignment: .center)
                                 }
                                 .frame(maxWidth: .infinity)
@@ -89,7 +89,7 @@ struct BarChart: View {
             
             Text("\(String(format: "%.0f", value))")
                 .font(.NotoSans_12_R)
-                .foregroundColor(color)
+                .foregroundStyle(color)
         }
         .position(x: width / 2, y: yPosition)
     }
