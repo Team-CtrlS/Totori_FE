@@ -221,10 +221,7 @@ struct WeeklyReportView: View {
                 .buttonStyle(.plain)
                 .overlay(alignment: .topTrailing) {
                     if showPopOver {
-                        PopOverCard(
-                            title: "WCPM(읽기 유창성)이란?",
-                            descript: "현대에서 보편적으로 사용하는 유창\n성 지표 중 하나로, 글을 얼마나 빠르\n고 정확하게 읽는지 나타냅니다."
-                        )
+                        PopOverCard(type: .wcpm)
                         .offset(x: 10, y: 25)
                     }
                 }

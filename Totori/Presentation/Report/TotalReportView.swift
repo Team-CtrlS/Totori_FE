@@ -83,10 +83,7 @@ struct TotalReportView: View {
                 .buttonStyle(.plain)
                 .overlay(alignment: .topTrailing) {
                     if showWCPMPopOver {
-                        PopOverCard(
-                            title: "WCPM(읽기 유창성)이란?",
-                            descript: "현대에서 보편적으로 사용하는 유창\n성 지표 중 하나로, 글을 얼마나 빠르\n고 정확하게 읽는지 나타냅니다."
-                        )
+                        PopOverCard(type: .wcpm)
                         .offset(x: 30, y: 25)
                     }
                 }
@@ -193,10 +190,7 @@ struct TotalReportView: View {
                 .buttonStyle(.plain)
                 .overlay(alignment: .topTrailing) {
                     if showAnalysisPopOver {
-                        PopOverCard(
-                            title: "오답 유형 분석표",
-                            descript: "아동이 동화를 읽으면서 발생하는 발\n음의 오차 및 유형을 나타냅니다."
-                        )
+                        PopOverCard(type: .error)
                         .offset(x: 30, y: 25)
                     }
                 }
