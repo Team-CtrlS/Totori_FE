@@ -58,7 +58,6 @@ struct WeeklyReportView: View {
                 }
                 .background(Color.backgroundGray)
                 .navigationBarHidden(true)
-                
                 .navigationDestination(isPresented: $isNavigatingToTotal) {
                     TotalReportView()
                 }
