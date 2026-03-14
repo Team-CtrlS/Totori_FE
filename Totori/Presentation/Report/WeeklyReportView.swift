@@ -35,25 +35,21 @@ struct WeeklyReportView: View {
                                 childName: viewModel.child.name,
                                 childAge: viewModel.child.age
                             )
-                            .padding(.horizontal, 20)
                             
                             weeklyLearningCard
-                                .padding(.horizontal, 20)
                             
                             quizAccuracyCard
-                                .padding(.horizontal, 20)
                             
                             wcpmCard
-                                .padding(.horizontal, 20)
                             
                             // TODO: navigate 추가
                             CTAButton(title: "전체 리포트 보러가기", type: .purple) {
                                 isNavigatingToTotal = true
                             }
-                            .padding(.horizontal, 20)
                             
                             reportFooter
                         }
+                        .padding(.horizontal, 20)
                     }
                 }
                 .background(Color.backgroundGray)
