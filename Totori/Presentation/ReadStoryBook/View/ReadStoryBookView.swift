@@ -11,55 +11,30 @@ struct ReadStoryBookView: View {
     @StateObject private var viewModel = ReadStoryBookViewModel()
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            TabView(selection: $viewModel.currentIndex) {
-                ForEach(viewModel.displayPages.indices, id: \.self) { index in
-                    GeometryReader { proxy in
-                        let pageDate = viewModel.displayPages[index]
-                        
-                        AsyncImage(url: URL(string: pageDate.imageUrl)) { phase in
-                            if let image = phase.image {
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                            } else if phase.error != nil {
-                                Color.gray.opacity(0.5)
-                            } else {
-                                Color.white
-                            }
-                        }
-                        .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-                        .clipped()
-                        .ignoresSafeArea()
-                    }
-                    .tag(index)
+        VStack(spacing: 0) {
+            AsyncImage(url: URL(string: viewModel.currentDisplayPage.imageUrl)) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .scaledToFill()
+                } else if phase.error != nil {
+                    Color.gray.opacity(0.5)
+                } else {
+                    Color.white
                 }
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .ignoresSafeArea()
-            .onTapGesture {
-                viewModel.togglePanel()
-            }
             
             bottomSheetView
-                .offset(y: viewModel.isPanelVisible ? 0 : 305)
-                .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.isPanelVisible)
         }
     }
     
     private var bottomSheetView: some View {
         VStack {
-            Capsule()
-                .fill(.tGray)
-                .frame(width: 50, height: 6)
-                .padding(.horizontal, 171.5)
-                .padding(.vertical, 20)
-                .onTapGesture {
-                    viewModel.togglePanel()
-                }
-            
             ProgressBar(progress: viewModel.progressRatio)
                 .padding(.horizontal, 20)
+                .padding(.top, 20)
             
             Text("\(viewModel.currentDisplayPage.text)")
                 .font(.NotoSans_24_R)
@@ -84,20 +59,20 @@ struct ReadStoryBookView: View {
                 onTapCenter: { viewModel.toggleMic() }
             )
             .padding(.horizontal, 20)
-            .padding(.bottom, 40)
+            
+            Spacer()
         }
-        .background(
-            Color.white
-                .clipShape(
-                    .rect(
-                        topLeadingRadius: 30,
-                        bottomLeadingRadius: 0,
-                        bottomTrailingRadius: 0,
-                        topTrailingRadius: 30
-                    )
-                )
-                .ignoresSafeArea(edges: .bottom)
+        .frame(height: 330)
+        .background(Color.white)
+        .clipShape(
+            .rect(
+                topLeadingRadius: 30,
+                bottomLeadingRadius: 0,
+                bottomTrailingRadius: 0,
+                topTrailingRadius: 30
+            )
         )
+        .ignoresSafeArea(edges: .bottom)
     }
 }
 
