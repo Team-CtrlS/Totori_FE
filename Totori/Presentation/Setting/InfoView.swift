@@ -29,6 +29,7 @@ struct InfoView: View {
             Circle()
                 .frame(width: 113, height: 113)
                 .foregroundStyle(.tGray)
+                .padding(.vertical, 30)
             
             infoRow(title: "이름", info: viewModel.name)
             infoRow(title: "생년월일", info: "\(viewModel.birthDate)")

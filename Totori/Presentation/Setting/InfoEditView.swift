@@ -15,7 +15,7 @@ struct InfoEditView: View {
     var body: some View {
         VStack(spacing: 0) {
             CustomNavigationBar(
-                centerType: .text("개인정보 관리"),
+                centerType: .text("개인정보 편집"),
                 showsBackButton: true,
                 rightContent: {
                     NavigationLink {
@@ -33,6 +33,7 @@ struct InfoEditView: View {
             Circle()
                 .frame(width: 113, height: 113)
                 .foregroundStyle(.tGray)
+                .padding(.vertical, 30)
             
             nameEditRow(title: "이름", text: $viewModel.name)
             nameEditRow(title: "이메일", text: $viewModel.email)
