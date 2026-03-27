@@ -10,23 +10,59 @@ import SwiftUI
 struct ReadStoryBookView: View {
     @StateObject private var viewModel = ReadStoryBookViewModel()
     
+    @State private var showModal: Bool = false
+    @State private var navigateToStart: Bool = false
+    
     var body: some View {
-        VStack(spacing: 0) {
-            AsyncImage(url: URL(string: viewModel.currentDisplayPage.imageUrl)) { phase in
-                if let image = phase.image {
-                    image
+        ZStack {
+            VStack {
+                Button(action: {
+                    showModal = true
+                }){
+                    Image(.close)
                         .resizable()
-                        .scaledToFill()
-                } else if phase.error != nil {
-                    Color.gray.opacity(0.5)
-                } else {
-                    Color.white
+                        .scaledToFit()
+                        .frame(width: 40, height: 40)
+                        .padding(.top, 80)
+                        .padding(.leading, 322)
                 }
+                
+                Spacer()
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .ignoresSafeArea()
+            .zIndex(2)
             
-            bottomSheetView
+            VStack(spacing: 0) {
+                AsyncImage(url: URL(string: viewModel.currentDisplayPage.imageUrl)) { phase in
+                    if let image = phase.image {
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    } else if phase.error != nil {
+                        Color.gray.opacity(0.5)
+                    } else {
+                        Color.white
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea()
+                
+                bottomSheetView
+            }
+            
+            if showModal {
+                QuestionModal(
+                    type: .exitReading,
+                    onCancel: { showModal = false },
+                    onConfirm: {
+                        showModal = false
+                        navigateToStart = true
+                    }
+                )
+            }
+        }
+        .navigationDestination(isPresented: $navigateToStart) {
+            MainView()
+                .navigationBarBackButtonHidden(true)
         }
     }
     
