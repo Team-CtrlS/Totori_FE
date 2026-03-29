@@ -33,6 +33,15 @@ enum GenerationStep: Int, CaseIterable {
             return Image(.soundWavePink1)
         }
     }
+    
+    var gifFileName: String {
+        switch self {
+        case .acorn: return "Character_UsingAcorn"
+        case .speak: return "Character_standard"
+        case .listening: return "Character_Listening"
+        case .processing: return "processing_gif_name"
+        }
+    }
 }
 
 class makeStoryBookViewModel: ObservableObject {

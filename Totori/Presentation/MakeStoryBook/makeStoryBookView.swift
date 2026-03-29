@@ -77,10 +77,8 @@ struct makeStoryBookView: View {
     }
     
     private var listeningView: some View {
-        //TODO: - GIF Image로 바꾸기
-        Rectangle()
-            .frame(width: 260, height: 260)
-            .foregroundColor(.gray)
+        GifImage(viewModel.currentStep.gifFileName)
+                    .frame(width: 260, height: 260)
     }
     
     private var processingView: some View {
