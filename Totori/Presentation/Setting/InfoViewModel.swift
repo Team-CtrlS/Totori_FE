@@ -10,9 +10,10 @@ import SwiftUI
 
 class InfoViewModel: ObservableObject {
     @Published var name: String = "김밤톨"
-    @Published var birthDate: String = "20180101"
+    @Published var birthDate: Date = Date()
     @Published var gender: String = "여"
     @Published var phoneNumber: String = "01000000000"
+    @Published var email: String = "test@example.com"
     
     let totalBooks: String = "000권"
     let acorns: String = "23개"
