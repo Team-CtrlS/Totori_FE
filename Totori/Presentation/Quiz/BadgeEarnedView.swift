@@ -14,13 +14,15 @@ struct BadgeEarnedView: View {
 
     var body: some View {
         ZStack {
-            // 배경
             LinearGradient(
                 colors: [Color.point, Color.main],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
+            
+            GifImage("particle")
+                .ignoresSafeArea()
 
             VStack(spacing: 40) {
                 Spacer()
