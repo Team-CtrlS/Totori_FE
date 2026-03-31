@@ -10,7 +10,10 @@ import SwiftUI
 struct BadgeEarnedView: View {
     
     // MARK: - State
+    
     @StateObject private var viewModel = BadgeEarnedViewModel()
+    
+    @State private var navigateToEnd: Bool = false
 
     var body: some View {
         ZStack {
@@ -42,10 +45,15 @@ struct BadgeEarnedView: View {
 
                 CTAButton(title: "닫기", type: .purple60) {
                     print("닫기 버튼 실행")
+                    navigateToEnd = true
                 }
 
                 Spacer()
             }
+        }
+        .navigationDestination(isPresented: $navigateToEnd) {
+            QuizEndView()
+                .navigationBarHidden(true)
         }
     }
 

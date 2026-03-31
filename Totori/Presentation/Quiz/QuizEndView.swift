@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct QuizEndView: View {
+    
+    @State private var navigateToMain: Bool = false
 
     var body: some View {
         VStack(spacing: 20) {
@@ -22,15 +24,19 @@ struct QuizEndView: View {
             cardSection
                 .padding(.horizontal, 20)
 
-            // TODO: home navigate
             CTAButton(title: "홈으로", type: .purple) {
                 print("홈으로 이동")
+                navigateToMain = true
             }
             .padding(.horizontal, 20)
             
             Spacer().frame(height: 80)
         }
         .background(Color.background.ignoresSafeArea())
+        .navigationDestination(isPresented: $navigateToMain) {
+            MainView()
+                .navigationBarHidden(true)
+        }
     }
 
     // MARK: - card section
