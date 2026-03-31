@@ -39,7 +39,7 @@ enum GenerationStep: Int, CaseIterable {
         case .acorn: return "Character_UsingAcorn"
         case .speak: return "Character_standard"
         case .listening: return "Character_Listening"
-        case .processing: return "processing_gif_name"
+        case .processing: return "card_animation"
         }
     }
 }
