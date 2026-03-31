@@ -12,6 +12,7 @@ struct MainView: View {
     
     @State private var navigateToMyPage: Bool = false
     @State private var navigateToBadgeInfo: Bool = false
+    @State private var navigateToSetting: Bool = false
     
     let columns = [
         GridItem(.flexible(), spacing: 10),
@@ -35,7 +36,7 @@ struct MainView: View {
                                 name: viewModel.userName,
                                 imageURL: viewModel.userImage),
                                      action: {
-                                navigateToMyPage = true
+                                navigateToSetting = true
                             }
                             )
                             
@@ -95,6 +96,10 @@ struct MainView: View {
                     }
                 }
             }
+        }
+        .navigationDestination(isPresented: $navigateToSetting) {
+            SettingView()
+                .navigationBarBackButtonHidden(true)
         }
         .navigationDestination(isPresented: $navigateToMyPage) {
             MyPageMainView()

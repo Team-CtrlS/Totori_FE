@@ -13,7 +13,12 @@ struct makeStoryBookView: View {
     var body: some View {
         VStack {
             HStack {
-                ChipView(type: .profile(name: viewModel.userName, imageURL: viewModel.userImage))
+                ChipView(
+                    type: .profile(
+                        name: viewModel.userName,
+                        imageURL: viewModel.userImage
+                    )
+                )
                 
                 Spacer()
                 
@@ -82,11 +87,9 @@ struct makeStoryBookView: View {
     }
     
     private var processingView: some View {
-        //TODO: - GIF 이미지로 바꾸기
         VStack(spacing: 46) {
-            Rectangle()
-                .frame(width: 200, height: 302)
-                .foregroundColor(.gray)
+            GifImage(viewModel.currentStep.gifFileName)
+                            .frame(width: 200, height: 302)
             
             Text("동화 속 세상을 만드는 중...")
                 .font(.NotoSans_20_SB)
