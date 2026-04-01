@@ -1,5 +1,5 @@
 //
-//  makeStoryBookViewModel.swift
+//  MakeStoryBookViewModel.swift
 //  Totori
 //
 //  Created by 정윤아 on 2/27/26.
@@ -44,7 +44,7 @@ enum GenerationStep: Int, CaseIterable {
     }
 }
 
-class makeStoryBookViewModel: ObservableObject {
+class MakeStoryBookViewModel: ObservableObject {
     @Published var currentStep: GenerationStep = .acorn
     @Published var userName: String = "김밤톨"
     @Published var userImage: String? = nil

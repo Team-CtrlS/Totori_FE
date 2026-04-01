@@ -1,5 +1,5 @@
 //
-//  makeStoryBookView.swift
+//  MakeStoryBookView.swift
 //  Totori
 //
 //  Created by 정윤아 on 2/27/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct makeStoryBookView: View {
+struct MakeStoryBookView: View {
     @StateObject private var viewModel = makeStoryBookViewModel()
     
     var body: some View {
