@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ReadStoryBookView: View {
     @StateObject private var viewModel = ReadStoryBookViewModel()
+    @Environment(\.dismiss) private var dismiss
     
     @State private var showModal: Bool = false
     @State private var navigateToStart: Bool = false
@@ -64,52 +65,60 @@ struct ReadStoryBookView: View {
             MainView()
                 .navigationBarBackButtonHidden(true)
         }
-    }
-    
-    private var bottomSheetView: some View {
-        VStack {
-            ProgressBar(progress: viewModel.progressRatio)
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-            
-            Text("\(viewModel.currentDisplayPage.text)")
-                .font(.NotoSans_24_R)
-                .foregroundColor(.tBlack)
-                .padding(20)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(
-                    Rectangle()
-                        .fill(viewModel.isTTSSpeaking ? Color.main20 : Color.clear)
-                        .padding(20)
-                )
-                .onTapGesture {
-                    viewModel.toggleTTS()
-                }
-            
-            BookBottomControls(
-                centerType: viewModel.centerControlType,
-                isPrevEnabled: viewModel.isPrevEnabled,
-                isNextEnabled: viewModel.isNextEnabled,
-                onTapPrev: { viewModel.goPrev() },
-                onTapNext: { viewModel.goNext() },
-                onTapCenter: { viewModel.toggleMic() }
-            )
-            .padding(.horizontal, 20)
-            
-            Spacer()
+        .navigationDestination(isPresented: $viewModel.navigateToBadge) {
+            BadgeEarnedView()
+                .navigationBarBackButtonHidden(true)
         }
-        .frame(height: 330)
-        .background(Color.white)
-        .clipShape(
-            .rect(
-                topLeadingRadius: 30,
-                bottomLeadingRadius: 0,
-                bottomTrailingRadius: 0,
-                topTrailingRadius: 30
+        .navigationDestination(isPresented: $viewModel.navigateToFinish) {
+            QuizEndView()
+                .navigationBarBackButtonHidden(true)
+        }
+}
+
+private var bottomSheetView: some View {
+    VStack {
+        ProgressBar(progress: viewModel.progressRatio)
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+        
+        Text("\(viewModel.currentDisplayPage.text)")
+            .font(.NotoSans_24_R)
+            .foregroundColor(.tBlack)
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                Rectangle()
+                    .fill(viewModel.isTTSSpeaking ? Color.main20 : Color.clear)
+                    .padding(20)
             )
+            .onTapGesture {
+                viewModel.toggleTTS()
+            }
+        
+        BookBottomControls(
+            centerType: viewModel.centerControlType,
+            isPrevEnabled: viewModel.isPrevEnabled,
+            isNextEnabled: viewModel.isNextEnabled,
+            onTapPrev: { viewModel.goPrev() },
+            onTapNext: { viewModel.goNext() },
+            onTapCenter: { viewModel.toggleMic() }
         )
-        .ignoresSafeArea(edges: .bottom)
+        .padding(.horizontal, 20)
+        
+        Spacer()
     }
+    .frame(height: 330)
+    .background(Color.white)
+    .clipShape(
+        .rect(
+            topLeadingRadius: 30,
+            bottomLeadingRadius: 0,
+            bottomTrailingRadius: 0,
+            topTrailingRadius: 30
+        )
+    )
+    .ignoresSafeArea(edges: .bottom)
+}
 }
 
 #Preview{

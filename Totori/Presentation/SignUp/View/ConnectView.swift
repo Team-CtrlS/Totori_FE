@@ -106,8 +106,10 @@ struct ConnectView: View {
                     type: viewModel.pinCode.count == 5 ? .purple : .gray,
                     width: 353,
                     action: {
-                        //TODO: 연결되었는지 확인하는 API 연결
+                        //TODO: - 연결되었는지 확인하는 API 연결
                         print("연결 API 쏘기: \(viewModel.pinCode)")
+                        
+                        //TODO: - 학부모 페이지 연결
                     }
                 )
                 .disabled(viewModel.pinCode.count < 5)

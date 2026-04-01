@@ -10,72 +10,104 @@ import SwiftUI
 struct MainView: View {
     @StateObject private var viewModel = MainViewModel()
     
+    @State private var navigateToMyPage: Bool = false
+    @State private var navigateToBadgeInfo: Bool = false
+    @State private var navigateToSetting: Bool = false
+    
     let columns = [
         GridItem(.flexible(), spacing: 10),
         GridItem(.flexible(), spacing: 10)
     ]
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color.main20.ignoresSafeArea()
+        ZStack {
+            Color.main20.ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                CustomNavigationBar(centerType: .logo, showsBackButton: false)
+                    .zIndex(1)
                 
-                VStack(spacing: 0) {
-                    CustomNavigationBar(centerType: .logo, showsBackButton: false)
-                        .zIndex(1)
-                    
-                    ScrollView {
-                        VStack(spacing: 0) {
-                            
-                            // TODO: - 컴포넌트로 변경(트로피 있/없)
-                            // TODO: - 페이지 연결
-                            HStack {
-                                ChipView(type: .profile(name: viewModel.userName, imageURL: viewModel.userImage))
-                                
-                                Spacer()
-                                
-                                HStack(spacing: 10) {
-                                    ChipView(type: .trophy)
-                                    ChipView(type: .acorn(amount: viewModel.acornCount))
-                                    ChipView(type: .question)
-                                }
+                ScrollView {
+                    VStack(spacing: 0) {
+                        
+                        // TODO: - 컴포넌트로 변경(트로피 있/없)
+                        HStack {
+                            ChipView(type: .profile(
+                                name: viewModel.userName,
+                                imageURL: viewModel.userImage),
+                                     action: {
+                                navigateToSetting = true
                             }
-                            .padding(.horizontal, 20)
-                            .padding(.top, 10)
-                            .padding(.bottom, 20)
-                            .background(.white)
-                            
-                            FeaturedBookCard(book: viewModel.featuredBook)
-                            
-                            // TODO: - 페이지 연결
-                            BadgeCard(
-                                title: viewModel.goalTitle,
-                                subtitle: viewModel.goalSubtitle,
-                                progress: viewModel.goalProgress,
-                                onTap: {
-                                    print("뱃지 카드 눌림!")
-                                }
                             )
-                            .padding(20)
                             
-                            LazyVGrid(columns: columns, spacing: 20) {
-                                ForEach(0..<viewModel.storyBooks.count, id: \.self) { index in
-                                    let bookType = viewModel.storyBooks[index]
-                                    
-                                    // TODO: - 페이지 연결
-                                    NavigationLink(destination: Text("테스트")) {
-                                        StoryBookView(type: viewModel.storyBooks[index])
-                                    }
-                                    .buttonStyle(.plain)
+                            Spacer()
+                            
+                            HStack(spacing: 10) {
+                                ChipView(type: .trophy,
+                                         action: {
+                                    navigateToMyPage = true
                                 }
+                                )
+                                ChipView(type: .acorn(amount: viewModel.acornCount))
+                                ChipView(type: .question)
                             }
-                            .padding(.horizontal, 33)
-                            .padding(.bottom, 40)
-                            
                         }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
+                        .padding(.bottom, 20)
+                        .background(.white)
+                        
+                        FeaturedBookCard(book: viewModel.featuredBook)
+                        
+                        // TODO: - 페이지 연결
+                        BadgeCard(
+                            title: viewModel.goalTitle,
+                            subtitle: viewModel.goalSubtitle,
+                            progress: viewModel.goalProgress,
+                            onTap: {
+                                navigateToBadgeInfo = true
+                            }
+                        )
+                        .padding(20)
+                        
+                        LazyVGrid(columns: columns, spacing: 20) {
+                            NavigationLink(
+                                destination: makeStoryBookView()
+                                    .navigationBarBackButtonHidden(true)
+                            ) {
+                                StoryBookView(type: .create(title: "이야기 시작하기"))
+                            }
+                            .buttonStyle(.plain)
+                            
+                            ForEach(0..<viewModel.storyBooks.count, id: \.self) { index in
+                                let bookType = viewModel.storyBooks[index]
+                                
+                                NavigationLink(
+                                    destination: BookInfoView()                                        .navigationBarBackButtonHidden(true)
+                                ) {
+                                    StoryBookView(type: bookType)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal, 33)
+                        .padding(.bottom, 40)
+                        
                     }
                 }
             }
+        }
+        .navigationDestination(isPresented: $navigateToSetting) {
+            SettingView()
+                .navigationBarBackButtonHidden(true)
+        }
+        .navigationDestination(isPresented: $navigateToMyPage) {
+            MyPageMainView()
+                .navigationBarBackButtonHidden(true)
+        }
+        .navigationDestination(isPresented: $navigateToBadgeInfo) {
+            MyPageBadgeView()
+                .navigationBarBackButtonHidden(true)
         }
     }
 }

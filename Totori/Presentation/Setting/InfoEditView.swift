@@ -12,23 +12,27 @@ struct InfoEditView: View {
     
     @State private var isEditing: Bool = false
     
+    @Environment(\.dismiss) private var dismiss
+    
     var body: some View {
         VStack(spacing: 0) {
             CustomNavigationBar(
                 centerType: .text("개인정보 편집"),
                 showsBackButton: true,
                 rightContent: {
-                    NavigationLink {
-                        InfoView()
-                        //TODO: 수정완료 API 연결
-                    } label: {
+                    Button(action: {
+                        //TODO: - 수정완료 API 연결
+                        dismiss()
+                    }) {
                         Image(.check)
                             .renderingMode(.template)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
                             .foregroundStyle(Color.main)
-                    }})
+                    }
+                }
+            )
             
             Circle()
                 .frame(width: 113, height: 113)
@@ -52,25 +56,25 @@ struct nameEditRow: View {
     @Binding var text: String
     
     var body: some View {
-            HStack(spacing: 0) {
-                Text(title)
-                    .font(.NotoSans_16_R)
-                    .foregroundStyle(.tBlack)
-                
-                Spacer()
-                
-                TextField("", text: $text)
-                    .font(.NotoSans_16_R)
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 1)
-                            .foregroundStyle(.tGray),
-                        alignment: .bottom
-                    )
-                    .frame(maxWidth: 233)
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 21)
+        HStack(spacing: 0) {
+            Text(title)
+                .font(.NotoSans_16_R)
+                .foregroundStyle(.tBlack)
+            
+            Spacer()
+            
+            TextField("", text: $text)
+                .font(.NotoSans_16_R)
+                .overlay(
+                    Rectangle()
+                        .frame(height: 1)
+                        .foregroundStyle(.tGray),
+                    alignment: .bottom
+                )
+                .frame(maxWidth: 233)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 21)
     }
 }
 

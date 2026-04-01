@@ -17,6 +17,9 @@ class ReadStoryBookViewModel: ObservableObject {
     @Published var isTTSSpeaking: Bool = false
     @Published var isPanelVisible: Bool = true
     
+    @Published var navigateToBadge: Bool = false
+    @Published var navigateToFinish: Bool = false
+    
     init() {
         loadData()
     }
@@ -96,13 +99,22 @@ class ReadStoryBookViewModel: ObservableObject {
     }
     
     var isPrevEnabled: Bool { currentIndex > 0 }
-    var isNextEnabled: Bool { currentIndex < displayPages.count - 1 }
+    var isNextEnabled: Bool { !displayPages.isEmpty }
     
     func goNext() {
-        if isNextEnabled { withAnimation { currentIndex += 1 }; resetPageStates() }
+        if currentIndex < displayPages.count - 1{
+            withAnimation { currentIndex += 1 }
+            resetPageStates()
+        } else {
+            checkBadgeCompletion()
+        }
     }
+    
     func goPrev() {
-        if isPrevEnabled { withAnimation { currentIndex -= 1 }; resetPageStates() }
+        if isPrevEnabled {
+            withAnimation { currentIndex -= 1 }
+            resetPageStates()
+        }
     }
     func toggleMic() { withAnimation { isMicRecording.toggle() } }
     func toggleTTS() { withAnimation { isTTSSpeaking.toggle() } }
@@ -111,5 +123,23 @@ class ReadStoryBookViewModel: ObservableObject {
     private func resetPageStates() {
         isMicRecording = false
         isTTSSpeaking = false
+    }
+    
+    private func checkBadgeCompletion() {
+        // TODO: 서버에 뱃지 획득 확인 API 전송
+        print("API Request: 뱃지 획득 여부 확인 중...")
+        
+        //TODO: 뱃지 획득 API 연결
+        let isBadgeEarned = Bool.random()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if isBadgeEarned {
+                print("결과: 뱃지 획득!")
+                self.navigateToBadge = true
+            } else {
+                print("결과: 획득한 뱃지 없음 (완독 화면으로)")
+                self.navigateToFinish = true
+            }
+        }
     }
 }

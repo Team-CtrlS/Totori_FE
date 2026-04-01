@@ -24,7 +24,8 @@ struct BookInfoView: View {
                 //TODO: - 이미지 파일로 교체하기
                 Rectangle()
                     .foregroundColor(.tGray)
-                    .frame(width: .infinity, height: 450)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 450)
                 
                 VStack (alignment: .leading, spacing: 10){
                     HStack {
@@ -69,6 +70,10 @@ struct BookInfoView: View {
                 }
                 .padding(.horizontal, 20)
             }
+        }
+        .navigationDestination(isPresented: $viewModel.navigateToReadStoryBook){
+            ReadStoryBookView()
+                .navigationBarBackButtonHidden(true)
         }
     }
 }

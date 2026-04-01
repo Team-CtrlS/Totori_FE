@@ -23,13 +23,13 @@ struct MyPageBadgeView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 16)
 
-                    BadgeCard(
-                        title: viewModel.closestBadgeTitle,
-                        subtitle: viewModel.closestBadgeSubtitle,
-                        progress: viewModel.closestBadgeProgress,
-                        onTap: { print("현재 뱃지 상세 이동") }
-                    )
-                    .padding(.horizontal, 20)
+//                    BadgeCard(
+//                        title: viewModel.closestBadgeTitle,
+//                        subtitle: viewModel.closestBadgeSubtitle,
+//                        progress: viewModel.closestBadgeProgress,
+//                        onTap: { print("현재 뱃지 상세 이동") }
+//                    )
+//                    .padding(.horizontal, 20)
 
                     // 뱃지 리스트
                     VStack(spacing: 0) {

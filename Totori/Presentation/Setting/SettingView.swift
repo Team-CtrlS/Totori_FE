@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingView: View {
     @State private var showModal: Bool = false
     @State private var navigateToStart: Bool = false
+    @State private var navigateToInfoView: Bool = false
     
     var body: some View {
         ZStack {
@@ -19,20 +20,30 @@ struct SettingView: View {
                 Divider()
                     .foregroundStyle(.tGray)
                 
-                RowView(title: "개인정보 관리", action: {print("클릭")})  // TODO: - 페이지 연결
+                RowView(
+                    title: "개인정보 관리",
+                    action: {
+                        navigateToInfoView = true
+                    }
+                )
                 RowView(title: "알림 설정", action: {print("클릭")})
                 RowView(title: "보호자 연결", action: {print("클릭")})
                 RowView(title: "도움말(FAQ)", action: {print("클릭")})
-                RowView(title: "로그아웃",
-                        titleColor: .red,
-                        icon: true,
-                        action: { showModal = true}
+                RowView(
+                    title: "로그아웃",
+                    titleColor: .red,
+                    icon: true,
+                    action: { showModal = true }
                 )
                 
                 Spacer()
             }
             .navigationDestination(isPresented: $navigateToStart) {
                 StartView()
+                    .navigationBarBackButtonHidden(true)
+            }
+            .navigationDestination(isPresented: $navigateToInfoView) {
+                InfoView()
                     .navigationBarBackButtonHidden(true)
             }
             

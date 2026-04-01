@@ -35,6 +35,7 @@ struct InfoView: View {
                     .padding(.vertical, 30)
                 
                 infoRow(title: "이름", info: viewModel.name)
+                infoRow(title: "이메일", info: viewModel.email)
                 infoRow(title: "생년월일", info: "\(viewModel.birthDate)")
                 infoRow(title: "총 생성한 도서", info: viewModel.totalBooks)
                 infoRow(title: "보유 도토리", info: viewModel.acorns)

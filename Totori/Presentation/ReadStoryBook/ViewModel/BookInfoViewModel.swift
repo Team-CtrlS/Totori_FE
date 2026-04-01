@@ -16,6 +16,8 @@ class BookInfoViewModel: ObservableObject {
     @Published var readPages: Int = 3
     @Published var acornCount: Int = 2
     
+    @Published var navigateToReadStoryBook: Bool = false
+    
     var progressPercentage: Double {
         return Double(readPages) / Double(totalPages)
     }
@@ -36,5 +38,6 @@ class BookInfoViewModel: ObservableObject {
     
     func tapReadStory() {
         print("이야기 읽기 버튼 탭")
+        navigateToReadStoryBook = true
     }
 }

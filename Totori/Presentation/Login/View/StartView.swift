@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct StartView: View {
-    
     @State private var navigateToRolePick: Bool = false
     
     var body: some View {
