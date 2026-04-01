@@ -72,7 +72,7 @@ struct MainView: View {
                         
                         LazyVGrid(columns: columns, spacing: 20) {
                             NavigationLink(
-                                destination: makeStoryBookView()
+                                destination: MakeStoryBookView()
                                     .navigationBarBackButtonHidden(true)
                             ) {
                                 StoryBookView(type: .create(title: "이야기 시작하기"))
