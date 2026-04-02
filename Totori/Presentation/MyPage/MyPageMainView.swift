@@ -27,51 +27,25 @@ struct MyPageMainView: View {
                 CustomNavigationBar(
                     centerType: .textLogo,
                     showsBackButton: true
-                ) {
-                    Button {
-                        print("설정 화면 이동")
-                    } label: {
-                        Image(.setting)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                    }
-                }
+                )
                 
                 ScrollView(showsIndicators: false) {
-                    VStack() {
-                        VStack(spacing: 20) {
-                            profileCard
-                                .zIndex(showPopOver ? 10 : 1)
-                            
-                            HStack(spacing: 14) {
-                                statCardAcorn(value: "\(viewModel.totalAcorn)개")
-                                statCardBook(value: "\(viewModel.readBookCount)권")
-                            }
-                            
-                            BadgeCard(
-                                title: viewModel.badgeTitle,
-                                subtitle: viewModel.badgeSubTitle,
-                                progress: viewModel.progress,
-                                onTap: {
-                                    goBadgeList = true
-                                }
-                            )
-                            .navigationDestination(isPresented: $goBadgeList) {
-                                MyPageBadgeView()
-                                    .navigationBarBackButtonHidden(true)
-                            }
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 20)
-                        .background(Color.background)
+                    VStack(spacing: 20) {
+                        profileCard
+                            .zIndex(showPopOver ? 10 : 1)
                         
-                        // 뱃지 리스트
-                        Text("뱃지 전시장")
-                            .font(.NotoSans_16_SB)
-                            .foregroundColor(Color.tBlack)
-                            .padding(.top, 12)
-                            .padding(.bottom, 32)
+                        BadgeCard(
+                            title: viewModel.badgeTitle,
+                            subtitle: viewModel.badgeSubTitle,
+                            progress: viewModel.progress,
+                            onTap: {
+                                goBadgeList = true
+                            }
+                        )
+                        .navigationDestination(isPresented: $goBadgeList) {
+                            MyPageBadgeView()
+                                .navigationBarBackButtonHidden(true)
+                        }
                         
                         LazyVGrid(columns: columns, spacing: 8) {
                             ForEach(viewModel.badges) { badge in
@@ -81,12 +55,12 @@ struct MyPageMainView: View {
                                     }
                             }
                         }
-                        .padding(.horizontal, 20)
                         .padding(.bottom, 80)
                     }
+                    .padding(20)
                 }
             }
-            .background(Color.white.ignoresSafeArea())
+            .background(.main20)
             .navigationDestination(isPresented: $goConnect) {
                 ConnectView(viewModel: ConnectViewModel(role: .child))
             }
@@ -107,15 +81,15 @@ struct MyPageMainView: View {
     
     private var profileCard: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 18)
+            RoundedRectangle(cornerRadius: 26)
                 .fill(Color.white)
             
-            VStack() {
+            VStack(spacing: 0) {
                 ZStack(alignment: .bottomTrailing) {
                     // TODO: 프로필 이미지로 변경
                     Circle()
                         .fill(Color.tGray)
-                        .frame(width: 150, height: 150)
+                        .frame(width: 113, height: 113)
                     
                     // 수정버튼
                     Button {
@@ -125,12 +99,12 @@ struct MyPageMainView: View {
                     } label: {
                         Circle()
                             .fill(Color.textGray)
-                            .frame(width: 44, height: 44)
+                            .frame(width: 33, height: 33)
                             .overlay(
                                 Image(.editPencil)
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 24, height: 24)
+                                    .frame(width: 18, height: 18)
                             )
                     }
                     .buttonStyle(.plain)
@@ -150,15 +124,27 @@ struct MyPageMainView: View {
                     .font(.NotoSans_24_SB)
                     .foregroundStyle(Color.tBlack)
                     .zIndex(0)
+                    .padding(.top, 8)
+                    .padding(.bottom, 15)
+                
+                HStack(spacing: 4) {
+                    statCardAcorn(value: "\(viewModel.totalAcorn)개")
+                    statCardBook(value: "\(viewModel.readBookCount)권")
+                }
+                .padding(.horizontal, 20)
             }
-            .padding(.vertical, 40)
+            .padding(.top, 30)
+            .padding(.bottom, 20)
             
             if showPopOver {
                 Color.clear
-                    .onTapGesture {
-                        showPopOver = false
-                    }
+                    .contentShape(Rectangle())
                     .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showPopOver = false
+                        }
+                    }
             }
         }
     }
@@ -236,21 +222,26 @@ struct MyPageMainView: View {
             
             ZStack {
                 RoundedRectangle(cornerRadius: 26)
-                    .fill(Color.main60)
+                    .fill(Color.main20)
                 
                 VStack(spacing: 0) {
                     Text("모은 도토리")
-                        .font(.NotoSans_12_R)
-                        .foregroundStyle(Color.gray)
+                        .font(.NotoSans_14_R)
+                        .foregroundStyle(.mainVariation)
                     
-                    HStack(alignment: .center, spacing: 0) {
-                        Image(.icLogoPurple)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50, height: 50)
+                    HStack(alignment: .center, spacing: 6) {
+                        Circle()
+                            .fill(.white)
+                            .frame(width: 30, height: 30)
+                            .overlay(
+                                Image(.icLogoPurple)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 30, height: 30)
+                            )
                         
                         Text(value)
-                            .font(.NotoSans_30_B)
+                            .font(.NotoSans_30_SB)
                             .foregroundStyle(Color.tBlack)
                             .frame(height: 50)
                     }
@@ -269,21 +260,26 @@ struct MyPageMainView: View {
             
             ZStack {
                 RoundedRectangle(cornerRadius: 26)
-                    .fill(Color.point50)
+                    .fill(.point20)
                 
                 VStack(spacing: 0) {
                     Text("읽은 이야기")
-                        .font(.NotoSans_12_R)
-                        .foregroundStyle(Color.gray)
+                        .font(.NotoSans_14_R)
+                        .foregroundStyle(.mainVariation)
                     
-                    HStack(alignment: .center, spacing: 0) {
-                        Image(.badgeIcon)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50, height: 50)
+                    HStack(alignment: .center, spacing: 6) {
+                        Circle()
+                            .fill(.white)
+                            .frame(width: 30, height: 30)
+                            .overlay(
+                                Image(.badgeIcon)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 30, height: 30)
+                            )
                         
                         Text(value)
-                            .font(.NotoSans_30_B)
+                            .font(.NotoSans_30_SB)
                             .foregroundStyle(Color.tBlack)
                             .frame(height: 50)
                     }
