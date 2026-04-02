@@ -18,7 +18,7 @@ struct BadgeEarnedView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [Color.point, Color.main],
+                colors: [Color.mainGradient, Color.pointGradient],
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -52,7 +52,7 @@ struct BadgeEarnedView: View {
             }
         }
         .navigationDestination(isPresented: $navigateToEnd) {
-            QuizEndView()
+            BookEndView()
                 .navigationBarHidden(true)
         }
     }

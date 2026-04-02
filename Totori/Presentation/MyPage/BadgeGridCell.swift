@@ -32,36 +32,23 @@ struct BadgeGridCell: View {
 
         ZStack{
             RoundedRectangle(cornerRadius: 26)
-                .stroke(outerStroke, lineWidth: 4)
-                .background(Color.white)
-                .frame(width: 112, height: 123)
+                .fill(.white)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 26)
+                        .stroke(outerStroke, lineWidth: 4)
+                )
             
             RoundedRectangle(cornerRadius: 16)
                 .fill(innerBackground)
-                .frame(width: 78, height: 89)
-                .padding(13)
+                .frame(height: 89)
+                .padding(15)
 
-            VStack(spacing: 0) {
-                // TODO: 뱃지 이미지 url로 변경
-                Image(badge.isUnlocked ? .badgePurple : .badgeGray)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 66, height: 66)
-                    .padding(.horizontal, 6)
-                
-                if !badge.isUnlocked {
-                    ProgressBar(
-                        progress: badge.progress,
-                        height: .h6,
-                        style: .purple,
-                        backColor: .lightgray
-                    )
-                    .frame(width: 50)
-                    .padding(.bottom, 6)
-                } else {
-                    Color.clear.frame(height: 6)
-                }
-            }
+            Image(badge.isUnlocked ? .badgePurple : .badgeGray)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 66, height: 66)
+                .padding(.horizontal, 6)
+                .padding(.bottom, 6)
         }
         .shadow(color: Color.black.opacity(0.01), radius: 20, x: 0, y: 4)
     }

@@ -70,7 +70,7 @@ struct ReadStoryBookView: View {
                 .navigationBarBackButtonHidden(true)
         }
         .navigationDestination(isPresented: $viewModel.navigateToFinish) {
-            QuizEndView()
+            BookEndView()
                 .navigationBarBackButtonHidden(true)
         }
 }
