@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MakeStoryBookView: View {
-    @StateObject private var viewModel = makeStoryBookViewModel()
+    @StateObject private var viewModel = MakeStoryBookViewModel()
     
     var body: some View {
         VStack {
@@ -161,5 +161,5 @@ struct AutoScrollView: View {
 }
 
 #Preview {
-    makeStoryBookView()
+    MakeStoryBookView()
 }
