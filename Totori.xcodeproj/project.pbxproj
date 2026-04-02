@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AECAA1FE2F7E1128003C1174 /* SwiftKeychainWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = AECAA1FD2F7E1128003C1174 /* SwiftKeychainWrapper */; };
+		AECAA2012F7E1176003C1174 /* CombineMoya in Frameworks */ = {isa = PBXBuildFile; productRef = AECAA2002F7E1176003C1174 /* CombineMoya */; };
+		AECAA2032F7E1176003C1174 /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = AECAA2022F7E1176003C1174 /* Moya */; };
+		AECAA20A2F7E147A003C1174 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = AECAA2092F7E147A003C1174 /* Kingfisher */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		AE180BB62F37927D009FBCD6 /* Totori.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Totori.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +43,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AECAA20A2F7E147A003C1174 /* Kingfisher in Frameworks */,
+				AECAA2012F7E1176003C1174 /* CombineMoya in Frameworks */,
+				AECAA1FE2F7E1128003C1174 /* SwiftKeychainWrapper in Frameworks */,
+				AECAA2032F7E1176003C1174 /* Moya in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +89,10 @@
 			);
 			name = Totori;
 			packageProductDependencies = (
+				AECAA1FD2F7E1128003C1174 /* SwiftKeychainWrapper */,
+				AECAA2002F7E1176003C1174 /* CombineMoya */,
+				AECAA2022F7E1176003C1174 /* Moya */,
+				AECAA2092F7E147A003C1174 /* Kingfisher */,
 			);
 			productName = Totori;
 			productReference = AE180BB62F37927D009FBCD6 /* Totori.app */;
@@ -107,6 +122,11 @@
 			);
 			mainGroup = AE180BAD2F37927D009FBCD6;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AECAA1FC2F7E1128003C1174 /* XCRemoteSwiftPackageReference "SwiftKeychainWrapper" */,
+				AECAA1FF2F7E1176003C1174 /* XCRemoteSwiftPackageReference "Moya" */,
+				AECAA2082F7E147A003C1174 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AE180BB72F37927D009FBCD6 /* Products */;
 			projectDirPath = "";
@@ -343,6 +363,56 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AECAA1FC2F7E1128003C1174 /* XCRemoteSwiftPackageReference "SwiftKeychainWrapper" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jrendel/SwiftKeychainWrapper";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.1;
+			};
+		};
+		AECAA1FF2F7E1176003C1174 /* XCRemoteSwiftPackageReference "Moya" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Moya/Moya.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 15.0.3;
+			};
+		};
+		AECAA2082F7E147A003C1174 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.8.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AECAA1FD2F7E1128003C1174 /* SwiftKeychainWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AECAA1FC2F7E1128003C1174 /* XCRemoteSwiftPackageReference "SwiftKeychainWrapper" */;
+			productName = SwiftKeychainWrapper;
+		};
+		AECAA2002F7E1176003C1174 /* CombineMoya */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AECAA1FF2F7E1176003C1174 /* XCRemoteSwiftPackageReference "Moya" */;
+			productName = CombineMoya;
+		};
+		AECAA2022F7E1176003C1174 /* Moya */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AECAA1FF2F7E1176003C1174 /* XCRemoteSwiftPackageReference "Moya" */;
+			productName = Moya;
+		};
+		AECAA2092F7E147A003C1174 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AECAA2082F7E147A003C1174 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AE180BAE2F37927D009FBCD6 /* Project object */;
 }
