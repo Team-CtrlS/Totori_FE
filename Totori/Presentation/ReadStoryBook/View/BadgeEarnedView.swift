@@ -52,7 +52,7 @@ struct BadgeEarnedView: View {
             }
         }
         .navigationDestination(isPresented: $navigateToEnd) {
-            QuizEndView()
+            BookEndView()
                 .navigationBarHidden(true)
         }
     }

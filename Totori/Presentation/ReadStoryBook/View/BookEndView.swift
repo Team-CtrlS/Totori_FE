@@ -1,5 +1,5 @@
 //
-//  QuizEndView.swift
+//  BookEndView.swift
 //  Totori
 //
 //  Created by 복지희 on 2/26/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct QuizEndView: View {
+struct BookEndView: View {
     
     @State private var navigateToMain: Bool = false
 
@@ -22,17 +22,16 @@ struct QuizEndView: View {
                 .frame(width: 170, height: 170)
 
             cardSection
-                .padding(.horizontal, 20)
 
             CTAButton(title: "홈으로", type: .purple) {
                 print("홈으로 이동")
                 navigateToMain = true
             }
-            .padding(.horizontal, 20)
             
             Spacer().frame(height: 80)
         }
-        .background(Color.background.ignoresSafeArea())
+        .padding(.horizontal, 20)
+        .background(Color.main20.ignoresSafeArea())
         .navigationDestination(isPresented: $navigateToMain) {
             MainView()
                 .navigationBarHidden(true)
@@ -73,7 +72,7 @@ struct QuizEndView: View {
             
             Spacer().frame(height: 20)
         }
-        .frame(width: 353)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 26, style: .continuous)
                 .fill(Color.white)
@@ -82,5 +81,5 @@ struct QuizEndView: View {
 }
 
 #Preview {
-    QuizEndView()
+    BookEndView()
 }
