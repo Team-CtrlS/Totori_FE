@@ -20,36 +20,29 @@ struct MyPageBadgeView: View {
                 VStack(spacing: 20) {
 
                     topSummaryCard
-                        .padding(.horizontal, 20)
                         .padding(.top, 16)
-
-//                    BadgeCard(
-//                        title: viewModel.closestBadgeTitle,
-//                        subtitle: viewModel.closestBadgeSubtitle,
-//                        progress: viewModel.closestBadgeProgress,
-//                        onTap: { print("현재 뱃지 상세 이동") }
-//                    )
-//                    .padding(.horizontal, 20)
 
                     // 뱃지 리스트
                     VStack(spacing: 0) {
                         Spacer().frame(height: 20)
+                        
                         ForEach(viewModel.items) { item in
                             BadgeListCell(badge: item)
 
                             Divider()
                                 .padding(.horizontal, 20)
                         }
+                        
                         Spacer().frame(height: 20)
                     }
                     .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: 26))
-                    .padding(.horizontal, 20)
                     .padding(.bottom, 40)
                 }
+                .padding(.horizontal, 20)
             }
         }
-        .background(Color.background.ignoresSafeArea())
+        .background(Color.main20.ignoresSafeArea())
     }
 
     // MARK: - Top Card
