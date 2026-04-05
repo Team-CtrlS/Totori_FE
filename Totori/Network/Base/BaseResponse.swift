@@ -10,6 +10,7 @@ import Foundation
 // 성공 응답
 struct BaseResponse<T: Decodable>: Decodable {
     let status: Int
+    let code: String
     let message: String
     let data: T?
 }
