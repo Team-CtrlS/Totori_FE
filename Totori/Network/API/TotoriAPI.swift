@@ -12,34 +12,34 @@ import Moya
 
 enum TotoriAPI {
     //auth
-    case totoriLogin
+    case login(param: LoginRequestDTO)
 }
 
 extension TotoriAPI: BaseTargetType {
     var path: String {
         switch self {
-        case .totoriLogin:
+        case .login:
             return "/api/auth/login"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .totoriLogin:
+        case .login:
             return .post
         }
     }
     
     var task: Task {
         switch self {
-        case .totoriLogin:
-            return .requestPlain
+        case .login(let param):
+            return .requestJSONEncodable(param)
         }
     }
     
     var authorizationType: AuthorizationType? {
         switch self {
-        case .totoriLogin:
+        case .login:
             return .none
         default:
             return .bearer
