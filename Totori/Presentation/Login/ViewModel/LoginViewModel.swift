@@ -52,7 +52,9 @@ class LoginViewModel: ObservableObject {
                 if isValidRole {
                     print("✅ 로그인 성공! 받아온 권한: \(responseData.role)")
                     
-                    KeychainManager.shared.save(token: responseData.token, for: .accessToken)
+                    KeychainManager.shared.save(token: responseData.accessToken, for: .accessToken)
+                    KeychainManager.shared.save(token: responseData.refreshToken, for: .refreshToken)
+                    
                     UserDefaults.standard.set(responseData.role, forKey: "userRole")
                     UserDefaults.standard.set(true, forKey: "isLoggedIn")
                 } else {

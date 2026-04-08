@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct LoginResponseDTO: Decodable {
-    let token: String
+struct LoginResponseDTO: Decodable, Sendable {
+    let accessToken: String
+    let refreshToken: String
     let role: String
 }

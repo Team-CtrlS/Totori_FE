@@ -15,11 +15,13 @@ struct BaseResponse<T: Decodable>: Decodable {
     let data: T?
 }
 
+extension BaseResponse: Sendable where T: Sendable {}
+
 // 반환 값이 없을 때
-struct EmptyData: Decodable {}
+struct EmptyData: Decodable, Sendable {}
 
 // 에러 응답
-struct ErrorResponse: Decodable {
+struct ErrorResponse: Decodable, Sendable {
     let timestamp: String
     let status: Int
     let errorCode: String

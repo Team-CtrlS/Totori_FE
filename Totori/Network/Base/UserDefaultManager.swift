@@ -11,7 +11,7 @@ struct UserDefaultManager {
     static let shared = UserDefaultManager()
     private init() {}
     
-    private let roleKey = "user_role"
+    private let roleKey = "userRole"
     
     func saveRole(_ role: String) {
         UserDefaults.standard.set(role, forKey: roleKey)
