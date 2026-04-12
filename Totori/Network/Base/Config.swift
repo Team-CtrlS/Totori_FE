@@ -12,7 +12,7 @@ struct Config {
         guard let urlString = Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String else {
             fatalError("🚨 Info.plist에 BASE_URL 설정이 누락되었습니다!")
         }
-        print("🔍 현재 Info.plist에서 읽어온 BASE_URL 값: [\(urlString)]")
+        Logger.info(.network, "BASE_URL: \(urlString)")
         return urlString
     }()
 }

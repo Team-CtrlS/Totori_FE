@@ -132,10 +132,8 @@ class MakeStoryBookViewModel: ObservableObject {
                 switch completion {
                 case .finished: break
                 case .failure(let error):
-                    print("❌ 동화 생성 실패: \(error)") }
+                    Logger.error(.network, "동화 생성 실패: \(error)") }
             } receiveValue: { [weak self] response in
-                print("✅ 동화 생성 성공! 책 제목: \(response.title)")
-                
                 self?.generatedBookData = response
                 self?.navigateToBookInfo = true
             }

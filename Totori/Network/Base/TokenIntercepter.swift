@@ -35,17 +35,17 @@ final class TokenInterceptor: RequestInterceptor {
         }
         
         if let url = request.request?.url?.absoluteString, url.contains("/api/auth/reissue") {
-            print("❌ reissue 자체가 401 - 강제 로그아웃")
+            Logger.error(.token, "reissue 자체가 401 - 강제 로그아웃")
             forceLogout()
             completion(.doNotRetryWithError(NetworkError.tokenExpired))
             return
         }
         
-        print("🔄 토큰 만료! 리프레시 시도...")
+        Logger.info(.token, "토큰 만료 - 리프레시 시도")
         
         guard let refreshToken = KeychainManager.shared.load(key: .refreshToken),
               !refreshToken.isEmpty else {
-            print("❌ 리프레시 토큰 없음")
+            Logger.error(.token, "리프레시 토큰 없음")
             forceLogout()
             completion(.doNotRetryWithError(error))
             return
@@ -62,14 +62,14 @@ final class TokenInterceptor: RequestInterceptor {
                 guard let self = self else { return }
                 
                 guard let statusCode = response.response?.statusCode else {
-                    print("❌ 서버 응답 없음")
+                    Logger.error(.token, "서버 응답 없음")
                     self.forceLogout()
                     completion(.doNotRetryWithError(NetworkError.unknown))
                     return
                 }
                 
                 guard (200...299).contains(statusCode) else {
-                    print("❌ 리프레시 토큰 만료 또는 무효 (상태 코드: \(statusCode))")
+                    Logger.error(.token, "리프레시 토큰 만료 또는 무효 (상태 코드: \(statusCode))")
                     self.forceLogout()
                     completion(.doNotRetryWithError(NetworkError.tokenExpired))
                     return
@@ -79,17 +79,17 @@ final class TokenInterceptor: RequestInterceptor {
                 case .success(let data):
                     do {
                         let newData = try self.decodeTokenResponse(data)
-                        print("✅ 토큰 재발급 성공")
+                        Logger.success(.token, "토큰 재발급 성공")
                         KeychainManager.shared.save(token: newData.accessToken, for: .accessToken)
                         KeychainManager.shared.save(token: newData.refreshToken, for: .refreshToken)
                         completion(.retry)  // adapt가 다시 호출되면서 새 토큰이 헤더에 박힘
                     } catch {
-                        print("❌ 디코딩 실패: \(error)")
+                        Logger.error(.decode, "토큰 응답 디코딩 실패: \(error)")
                         self.forceLogout()
                         completion(.doNotRetryWithError(error))
                     }
                 case .failure(let refreshError):
-                    print("❌ 리프레시 통신 실패: \(refreshError)")
+                    Logger.error(.token, "리프레시 통신 실패: \(refreshError)")
                     self.forceLogout()
                     completion(.doNotRetryWithError(refreshError))
                 }
