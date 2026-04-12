@@ -51,6 +51,12 @@ class MakeStoryBookViewModel: ObservableObject {
     @Published var acornCount: Int = 1
     
     @Published var isRecording: Bool = false
+    @Published var isLoading: Bool = false
+    @Published var navigateToBookInfo: Bool = false
+    @Published var generatedBookData: BookGenerateResponseDTO? = nil
+    
+    private let bookService = BookService()
+    private var cancellables = Set<AnyCancellable>()
     
     var currentCenterType: CenterType {
         switch currentStep {
@@ -102,10 +108,37 @@ class MakeStoryBookViewModel: ObservableObject {
                 print("🎙️ 두 번째 탭: 녹음 중지 및 STT(음성->텍스트) API 전송 준비")
                 withAnimation { isRecording = false }
                 withAnimation { currentStep = .processing }
+                
+                requestBookGeneration()
             }
             
         case .processing:
             break
         }
+    }
+    
+    private func requestBookGeneration() {
+        guard !isLoading else { return }
+        isLoading = true
+        
+        let mockSTT = "옛날 옛적에 하얀 털을 가진 귀여운 토끼가 살았어요. 토끼는 배가 고파서 엄청 큰 주황색 당근을 찾으러 숲으로 폴짝폴짝 뛰어갔답니다."
+        let param = BookGenerateRequestDTO(sttText: mockSTT)
+        
+        bookService.generateBook(param: param)
+            .receive(on: DispatchQueue.main)
+            .sink{ [weak self] completion in
+                self?.isLoading = false
+                
+                switch completion {
+                case .finished: break
+                case .failure(let error):
+                    print("❌ 동화 생성 실패: \(error)") }
+            } receiveValue: { [weak self] response in
+                print("✅ 동화 생성 성공! 책 제목: \(response.title)")
+                
+                self?.generatedBookData = response
+                self?.navigateToBookInfo = true
+            }
+            .store(in: &cancellables)
     }
 }

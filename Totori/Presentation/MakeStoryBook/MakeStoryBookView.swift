@@ -63,6 +63,14 @@ struct MakeStoryBookView: View {
             Spacer()
         }
         .background(.main20)
+        .navigationDestination(isPresented: $viewModel.navigateToBookInfo) {
+            if let bookData = viewModel.generatedBookData {
+                BookInfoView(bookData: bookData)
+                    .navigationBarBackButtonHidden(true)
+            } else {
+                EmptyView()
+            }
+        }
     }
     
     private var chatView: some View {
