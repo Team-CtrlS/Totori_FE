@@ -18,6 +18,8 @@ enum TotoriAPI {
     
     //book
     case generateBook(param: BookGenerateRequestDTO)
+    case mainStatus
+    case bookList(page: Int, size: Int)
 }
 
 extension TotoriAPI: BaseTargetType {
@@ -34,7 +36,10 @@ extension TotoriAPI: BaseTargetType {
         //book
         case .generateBook:
             return "/api/books/generate"
-            
+        case .mainStatus:
+            return "/api/books/main-status"
+        case .bookList:
+            return "/api/books"
         }
     }
     
@@ -42,6 +47,8 @@ extension TotoriAPI: BaseTargetType {
         switch self {
         case .login, .signUp, .generateBook, .reissue:
             return .post
+        case .mainStatus, .bookList:
+            return .get
         }
     }
     
@@ -55,6 +62,13 @@ extension TotoriAPI: BaseTargetType {
             return .requestPlain
         case .generateBook(let param):
             return .requestJSONEncodable(param)
+        case .mainStatus:
+            return .requestPlain
+        case .bookList(let page, let size):
+            return .requestParameters(
+                parameters: ["page": page, "size": size],
+                encoding: URLEncoding.queryString
+            )
         }
     }
     

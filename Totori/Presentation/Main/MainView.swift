@@ -59,11 +59,11 @@ struct MainView: View {
                         
                         FeaturedBookCard(book: viewModel.featuredBook)
                         
-                        // TODO: - 페이지 연결
                         BadgeCard(
                             title: viewModel.goalTitle,
                             subtitle: viewModel.goalSubtitle,
                             progress: viewModel.goalProgress,
+                            imageUrl: viewModel.goalImageURL,
                             onTap: {
                                 navigateToBadgeInfo = true
                             }
@@ -79,23 +79,28 @@ struct MainView: View {
                             }
                             .buttonStyle(.plain)
                             
-                            ForEach(0..<viewModel.storyBooks.count, id: \.self) { index in
-                                let bookType = viewModel.storyBooks[index]
+                            ForEach(viewModel.bookItems) { item in
                                 let mockBookData = BookGenerateResponseDTO(
-                                        bookId: 1,
-                                        title: "임시 동화 제목",
-                                        totalPages: 10,
-                                        coverImagePrompt: nil,
-                                        coverImageUrl: "https://picsum.photos/id/10/800/1200", // 테스트용 S3 혹은 더미 URL
-                                        pages: []
-                                    )
+                                    bookId: item.id,
+                                    title: item.title,
+                                    totalPages: 10,
+                                    coverImagePrompt: nil,
+                                    coverImageUrl: item.coverURL ?? "https://picsum.photos/id/10/800/1200",
+                                    pages: []
+                                )
                                 
                                 NavigationLink(
-                                    destination: BookInfoView(bookData: mockBookData)                                        .navigationBarBackButtonHidden(true)
+                                    destination: BookInfoView(bookData: mockBookData)
+                                        .navigationBarBackButtonHidden(true)
                                 ) {
-                                    StoryBookView(type: bookType)
+                                    StoryBookView(type: item.type)
                                 }
                                 .buttonStyle(.plain)
+                                .onAppear {
+                                    if item.id == viewModel.bookItems.last?.id {
+                                        viewModel.fetchNextPage()
+                                    }
+                                }
                             }
                         }
                         .padding(.horizontal, 33)
@@ -104,6 +109,9 @@ struct MainView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            viewModel.fetchAll()
         }
         .navigationDestination(isPresented: $navigateToSetting) {
             SettingView()
@@ -177,7 +185,7 @@ struct FeaturedBookCard: View {
                             .frame(width: 14, height: 14)
                             .offset(y: 2)
                         
-                        Text("\(book.currentBookmark)/\(book.totalBookmark)")
+                        Text("\(book.currentPage)/\(book.totalPage)")
                             .font(.NotoSans_14_R)
                             .foregroundColor(.textGray)
                     }

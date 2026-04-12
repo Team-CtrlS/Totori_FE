@@ -38,6 +38,7 @@ struct MyPageMainView: View {
                             title: viewModel.badgeTitle,
                             subtitle: viewModel.badgeSubTitle,
                             progress: viewModel.progress,
+                            imageUrl: viewModel.imageUrl,
                             onTap: {
                                 goBadgeList = true
                             }
