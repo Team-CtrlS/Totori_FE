@@ -14,6 +14,7 @@ enum TotoriAPI {
     //auth
     case login(param: LoginRequestDTO)
     case signUp(param: SignUpRequestDTO)
+    case reissue
 }
 
 extension TotoriAPI: BaseTargetType {
@@ -23,12 +24,14 @@ extension TotoriAPI: BaseTargetType {
             return "/api/auth/login"
         case .signUp:
             return "/api/auth/signup"
+        case .reissue:
+            return "/api/auth/reissue"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .login, .signUp:
+        case .login, .signUp, .reissue:
             return .post
         }
     }
@@ -39,12 +42,35 @@ extension TotoriAPI: BaseTargetType {
             return .requestJSONEncodable(param)
         case .signUp(let param):
             return .requestJSONEncodable(param)
+        case .reissue:
+            return .requestPlain
+        }
+    }
+    
+    var headers: [String: String]? {
+        switch self {
+        case .reissue:
+            let refreshToken = KeychainManager.shared.load(key: .refreshToken) ?? ""
+            return [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(refreshToken)"
+            ]
+        default:
+            var defaultHeaders = ["Content-Type": "application/json"]
+            if self.authorizationType != .none {
+                if let token = KeychainManager.shared.load(key: .accessToken), !token.isEmpty {
+                    defaultHeaders["Authorization"] = "Bearer \(token)"
+                } else {
+                    print("🚨 토큰이 필요한 API인데 키체인에 토큰이 비어있습니다!")
+                }
+            }
+            return defaultHeaders
         }
     }
     
     var authorizationType: AuthorizationType? {
         switch self {
-        case .login, .signUp:
+        case .login, .signUp, .reissue:
             return .none
         default:
             return .bearer
