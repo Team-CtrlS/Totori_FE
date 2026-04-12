@@ -9,16 +9,18 @@ import Combine
 import SwiftUI
 
 class BookInfoViewModel: ObservableObject {
+    @Published var bookData: BookGenerateResponseDTO? = nil
     
-    @Published var bookTitle: String = "도토리 숲의 비밀 모험"
-    @Published var coverImageName: String? = nil
-    @Published var totalPages: Int = 12
-    @Published var readPages: Int = 3
-    @Published var acornCount: Int = 2
+    @Published var bookTitle: String = ""
+    @Published var coverImageUrl: String = ""
+    @Published var totalPages: Int = 0
+    @Published var readPages: Int = 0
+    @Published var acornCount: Int = 0
     
     @Published var navigateToReadStoryBook: Bool = false
     
     var progressPercentage: Double {
+        guard totalPages > 0 else { return 0.0 }
         return Double(readPages) / Double(totalPages)
     }
     
@@ -27,6 +29,15 @@ class BookInfoViewModel: ObservableObject {
     }
     
     // MARK: - Actions
+    
+    func setupData(with data: BookGenerateResponseDTO) {
+        self.bookData = data
+        self.bookTitle = data.title
+        
+        self.coverImageUrl = data.coverImageUrl
+        self.totalPages = data.pages.count
+        self.readPages = 0
+    }
     
     func tapBackButton() {
         print("뒤로 가기 버튼 탭")
