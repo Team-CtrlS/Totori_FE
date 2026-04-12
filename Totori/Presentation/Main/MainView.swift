@@ -81,9 +81,17 @@ struct MainView: View {
                             
                             ForEach(0..<viewModel.storyBooks.count, id: \.self) { index in
                                 let bookType = viewModel.storyBooks[index]
+                                let mockBookData = BookGenerateResponseDTO(
+                                        bookId: 1,
+                                        title: "임시 동화 제목",
+                                        totalPages: 10,
+                                        coverImagePrompt: nil,
+                                        coverImageUrl: "https://picsum.photos/id/10/800/1200", // 테스트용 S3 혹은 더미 URL
+                                        pages: []
+                                    )
                                 
                                 NavigationLink(
-                                    destination: BookInfoView()                                        .navigationBarBackButtonHidden(true)
+                                    destination: BookInfoView(bookData: mockBookData)                                        .navigationBarBackButtonHidden(true)
                                 ) {
                                     StoryBookView(type: bookType)
                                 }
