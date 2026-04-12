@@ -10,15 +10,50 @@ import SwiftUI
 struct LoginView: View {
     let role: SignUpType
     
+    @StateObject private var viewModel: LoginViewModel
+    
     @State private var navigateToSignUp: Bool = false
     @State private var navigateToMain = false
     
-    @State private var idInput: String = ""
-    @State private var passwordInput: String = ""
+    @Environment(\.dismiss) private var dismiss
+    
+    init(role: SignUpType) {
+        self.role = role
+        self._viewModel = StateObject(wrappedValue: LoginViewModel(expectedRole: role))
+    }
+    
+    var loginButtonTitle: String {
+        switch role {
+        case .child: return "아동 로그인"
+        case .parent: return "보호자 로그인"
+        }
+    }
+    
+    var loginButtonType: CTAStyle {
+        switch role {
+        case .child: return .purple
+        case .parent: return .pink
+        }
+    }
     
     var body: some View {
         VStack {
-            Spacer()
+            Button(action: {
+                dismiss()
+            },
+                   label: {
+                HStack(spacing: 0) {
+                    Image(.leftPurple)
+                    
+                    Text("뒤로가기")
+                        .foregroundStyle(.main)
+                        .font(.NotoSans_14_R)
+                    
+                    Spacer()
+                }
+            }
+            )
+            .padding(.vertical, 41)
             
             VStack(alignment: .leading) {
                 Image(.logoFlatPurple)
@@ -34,7 +69,7 @@ struct LoginView: View {
             .padding(.bottom, 90)
             
             VStack(alignment: .leading, spacing: 4) {
-                TextField("아이디를 입력하세요.", text: $idInput)
+                TextField("아이디를 입력하세요.", text: $viewModel.loginId)
                     .font(.NotoSans_16_R)
                     .foregroundColor(.tBlack)
                     .padding(.horizontal, 14)
@@ -47,7 +82,7 @@ struct LoginView: View {
                         )
                     )
                 
-                TextField("비밀번호를 입력하세요.", text: $passwordInput)
+                TextField("비밀번호를 입력하세요.", text: $viewModel.password)
                     .font(.NotoSans_16_R)
                     .foregroundColor(.tBlack)
                     .padding(.horizontal, 14)
@@ -62,12 +97,11 @@ struct LoginView: View {
                     .padding(.bottom, 16)
                 
                 CTAButton(
-                    title: "로그인",
-                    type: .purple,
-                    width: 353,
+                    title: loginButtonTitle,
+                    type: loginButtonType,
+                    width: 361,
                     action: {
-                        //TODO: - 로그인 확인 로직 추가
-                        navigateToMain = true
+                        viewModel.login()
                         print("메인화면으로 이동")
                     })
             }
@@ -140,7 +174,8 @@ struct LoginView: View {
                             .frame(width: 39, height: 38)
                     }
                 }
-                .padding(.bottom, 204)
+                
+                Spacer()
             }
         }
         .padding(.horizontal, 20)
@@ -148,13 +183,9 @@ struct LoginView: View {
             SignUpView(viewModel: SignUpViewModel(role: role))
         }
         .navigationBarBackButtonHidden(true)
-        .navigationDestination(isPresented: $navigateToMain) {
-            MainView()
-                .navigationBarBackButtonHidden(true)
-        }
     }
 }
 
 #Preview {
-    LoginView(role: .child)
+    LoginView(role: .parent)
 }

@@ -8,7 +8,10 @@
 import Foundation
 
 struct Config {
-    
-    //TODO: Config 파일 분리하기
-    static let baseURL = "백엔드 url로 수정해주세요"
+    static let baseURL: String = {
+        guard let urlString = Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String else {
+            fatalError("🚨 Info.plist에 BASE_URL 설정이 누락되었습니다!")
+        }
+        return urlString
+    }()
 }
