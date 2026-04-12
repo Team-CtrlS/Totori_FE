@@ -22,16 +22,11 @@ final class BaseService<Target: BaseTargetType> {
     
     init() {
         let session = Session(interceptor: TokenInterceptor())
-        
-        let authPlugin = AccessTokenPlugin { _ in
-            KeychainManager.shared.load(key: .accessToken) ?? ""
-        }
-        
         let loggerPlugin = NetworkLogger()
         
         self.provider = MoyaProvider<Target>(
             session: session,
-            plugins: [authPlugin, loggerPlugin]
+            plugins: [loggerPlugin]
         )
     }
     
