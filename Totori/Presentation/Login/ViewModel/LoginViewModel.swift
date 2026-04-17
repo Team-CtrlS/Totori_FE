@@ -49,9 +49,7 @@ class LoginViewModel: ObservableObject {
                 let isValidRole = (self.expectedRole == .child && responseData.role == "CHILD") ||
                 (self.expectedRole == .parent && responseData.role == "PARENT")
                 
-                if isValidRole {
-                    print("✅ 로그인 성공! 받아온 권한: \(responseData.role)")
-                    
+                if isValidRole {  
                     KeychainManager.shared.save(token: responseData.accessToken, for: .accessToken)
                     KeychainManager.shared.save(token: responseData.refreshToken, for: .refreshToken)
                     

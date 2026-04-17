@@ -22,6 +22,7 @@ final class MyPageMainViewModel: ObservableObject {
     
     @Published var badgeTitle: String = "도토리 수집가"
     @Published var badgeSubTitle: String = "도토리 총 10개 모으기 (4/10)"
+    @Published var imageUrl: String? = nil
     @Published var progress: CGFloat = 0.7
 
     @Published var badges: [BadgeItem] = [

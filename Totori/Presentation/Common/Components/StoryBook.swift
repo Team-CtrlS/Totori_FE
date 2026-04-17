@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import Kingfisher
+
 enum BookType {
     case create(title: String = "이야기 시작하기")
     case unread(title: String, cover: URL?, purpleBackground: Bool)
@@ -153,6 +155,7 @@ struct StoryBookView: View {
             }
             .clipShape(.rect(bottomTrailingRadius: 9, topTrailingRadius: 9))
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     @ViewBuilder
@@ -162,14 +165,22 @@ struct StoryBookView: View {
             Rectangle().fill(.tGray)
             
         case .unread, .reading, .finished:
-            // TODO: - Kingfisher 설치 후 아래 코드 수정 필요
-            Rectangle()
-                .fill(.tGray)
-                .overlay(
-                    Text("표지이미지")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                )
+            if let url = type.cover {
+                Color.tGray
+                    .overlay(
+                        KFImage(url)
+                            .placeholder {
+                                Color.tGray
+                            }
+                            .fade(duration: 0.25)
+                            .cacheOriginalImage()
+                            .resizable()
+                            .scaledToFill()
+                    )
+                    .clipped()
+            } else {
+                Rectangle().fill(.tGray)
+            }
         }
     }
     

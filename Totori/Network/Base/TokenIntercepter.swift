@@ -11,15 +11,22 @@ import Alamofire
 
 final class TokenInterceptor: RequestInterceptor {
     
-    private func decodeTokenResponse(_ data: Data) throws -> LoginResponseDTO {
-          let decoded = try JSONDecoder().decode(BaseResponse<LoginResponseDTO>.self, from: data)
-          
-          guard let result = decoded.data else {
-              throw NetworkError.decodingError
-          }
-          
-          return result
-      }
+    // MARK: - Adapt
+    
+    func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
+        var request = urlRequest
+        
+        if let url = request.url?.absoluteString, url.contains("/api/auth/reissue") {
+            completion(.success(request))
+            return
+        }
+        
+        if let accessToken = KeychainManager.shared.load(key: .accessToken), !accessToken.isEmpty {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        }
+        
+        completion(.success(request))
+    }
     
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
         guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
@@ -27,56 +34,82 @@ final class TokenInterceptor: RequestInterceptor {
             return
         }
         
-        print("🔄 토큰 만료! 리프레시 로직 대기 중...")
+        if let url = request.request?.url?.absoluteString, url.contains("/api/auth/reissue") {
+            Logger.error(.token, "reissue 자체가 401 - 강제 로그아웃")
+            forceLogout()
+            completion(.doNotRetryWithError(NetworkError.tokenExpired))
+            return
+        }
         
-        guard let refreshToken = KeychainManager.shared.load(key: .refreshToken) else {
-            print("❌ 리프레시 토큰이 없습니다. 다시 로그인해야 합니다.")
+        Logger.info(.token, "토큰 만료 - 리프레시 시도")
+        
+        guard let refreshToken = KeychainManager.shared.load(key: .refreshToken),
+              !refreshToken.isEmpty else {
+            Logger.error(.token, "리프레시 토큰 없음")
             forceLogout()
             completion(.doNotRetryWithError(error))
             return
         }
         
         let reissueURL = "\(Config.baseURL)/api/auth/reissue"
-        
         let headers: HTTPHeaders = [
-            "Authorization": "Bearer \(refreshToken)"
+            "RefreshToken": "Bearer \(refreshToken)",
+            "Content-Type": "application/json"
         ]
         
         AF.request(reissueURL, method: .post, headers: headers)
             .responseData { [weak self] response in
-                
                 guard let self = self else { return }
                 
+                guard let statusCode = response.response?.statusCode else {
+                    Logger.error(.token, "서버 응답 없음")
+                    self.forceLogout()
+                    completion(.doNotRetryWithError(NetworkError.unknown))
+                    return
+                }
+                
+                guard (200...299).contains(statusCode) else {
+                    Logger.error(.token, "리프레시 토큰 만료 또는 무효 (상태 코드: \(statusCode))")
+                    self.forceLogout()
+                    completion(.doNotRetryWithError(NetworkError.tokenExpired))
+                    return
+                }
+                
                 switch response.result {
-                    
                 case .success(let data):
                     do {
                         let newData = try self.decodeTokenResponse(data)
-                        
-                        print("✅ 토큰 재발급 성공")
-                        
+                        Logger.success(.token, "토큰 재발급 성공")
                         KeychainManager.shared.save(token: newData.accessToken, for: .accessToken)
                         KeychainManager.shared.save(token: newData.refreshToken, for: .refreshToken)
-                        
-                        completion(.retry)
-                        
+                        completion(.retry)  // adapt가 다시 호출되면서 새 토큰이 헤더에 박힘
                     } catch {
-                        print("❌ 디코딩 실패: \(error)")
+                        Logger.error(.decode, "토큰 응답 디코딩 실패: \(error)")
                         self.forceLogout()
                         completion(.doNotRetryWithError(error))
                     }
-                    
                 case .failure(let refreshError):
-                    print("❌ 리프레시 실패: \(refreshError)")
+                    Logger.error(.token, "리프레시 통신 실패: \(refreshError)")
                     self.forceLogout()
                     completion(.doNotRetryWithError(refreshError))
                 }
             }
     }
     
+    private func decodeTokenResponse(_ data: Data) throws -> LoginResponseDTO {
+        let decoded = try JSONDecoder().decode(BaseResponse<LoginResponseDTO>.self, from: data)
+        guard let result = decoded.data else {
+            throw NetworkError.decodingError
+        }
+        return result
+    }
+    
     private func forceLogout() {
-        KeychainManager.shared.clearAll()
-        UserDefaultManager.shared.clearAll()
-        UserDefaults.standard.set(false, forKey: "isLoggedIn")
+        DispatchQueue.main.async {
+            KeychainManager.shared.clearAll()
+            UserDefaultManager.shared.clearAll()
+            UserDefaults.standard.set(false, forKey: "isLoggedIn")
+            UserDefaults.standard.set("", forKey: "userRole")
+        }
     }
 }

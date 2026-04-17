@@ -7,22 +7,32 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct BadgeCard: View {
     let title: String
     let subtitle: String
     let progress: Double
+    let imageUrl: String?
     let onTap: () -> Void
     
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 10) {
-                
-                // TODO: - 뱃지 유형에 따라 뱃지 이미지 분기처리
-                
-                Image(.badgeWhite)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 66, height: 66)
+                if let urlString = imageUrl, let url = URL(string: urlString) {
+                    KFImage(url)
+                        .placeholder {
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.white)
+                        }
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 66, height: 66)
+                } else {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white)
+                        .frame(width: 66, height: 66)
+                }
                 
                 VStack(alignment: .leading, spacing: 0) {
                     Text(title)

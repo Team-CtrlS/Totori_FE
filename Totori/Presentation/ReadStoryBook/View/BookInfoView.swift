@@ -7,9 +7,12 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct BookInfoView: View {
-    
     @StateObject private var viewModel = BookInfoViewModel()
+    
+    let bookData: BookGenerateResponseDTO
     
     var body: some View {
         ZStack {
@@ -21,11 +24,14 @@ struct BookInfoView: View {
                     showsBackButton: true
                 )
                 
-                //TODO: - 이미지 파일로 교체하기
-                Rectangle()
-                    .foregroundColor(.tGray)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 450)
+                KFImage(URL(string: viewModel.coverImageUrl))
+                    .placeholder {
+                        ProgressView()
+                    }
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
                 
                 VStack (alignment: .leading, spacing: 10){
                     HStack {
@@ -71,13 +77,14 @@ struct BookInfoView: View {
                 .padding(.horizontal, 20)
             }
         }
-        .navigationDestination(isPresented: $viewModel.navigateToReadStoryBook){
-            ReadStoryBookView()
-                .navigationBarBackButtonHidden(true)
+        .onAppear {
+            viewModel.setupData(with: bookData)
+        }
+        .navigationDestination(isPresented: $viewModel.navigateToReadStoryBook) {
+            if let data = viewModel.bookData {
+                ReadStoryBookView(bookData: data)
+                    .navigationBarBackButtonHidden(true)
+            }
         }
     }
-}
-
-#Preview {
-    BookInfoView()
 }

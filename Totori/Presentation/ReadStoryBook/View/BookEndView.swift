@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct BookEndView: View {
+    @EnvironmentObject var navState: NavigationState
     
-    @State private var navigateToMain: Bool = false
-
     var body: some View {
         VStack(spacing: 20) {
             
@@ -20,26 +19,22 @@ struct BookEndView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 170, height: 170)
-
+            
             cardSection
-
+            
             CTAButton(title: "홈으로", type: .purple) {
-                print("홈으로 이동")
-                navigateToMain = true
+                print("🔄 홈으로 이동 (스택 초기화)")
+                navState.popToRoot()
             }
             
             Spacer().frame(height: 80)
         }
         .padding(.horizontal, 20)
         .background(Color.main20.ignoresSafeArea())
-        .navigationDestination(isPresented: $navigateToMain) {
-            MainView()
-                .navigationBarHidden(true)
-        }
     }
-
+    
     // MARK: - card section
-
+    
     private var cardSection: some View {
         VStack(spacing: 10) {
             

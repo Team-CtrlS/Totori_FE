@@ -16,6 +16,8 @@ struct TotoriApp: App {
     @State private var isCheckingAuth: Bool = true
     @State private var cancellables = Set<AnyCancellable>()
     
+    @StateObject private var navState = NavigationState()
+    
     var body: some Scene {
         WindowGroup {
             Group {
@@ -23,9 +25,17 @@ struct TotoriApp: App {
                     EmptyView()
                 } else if isLoggedIn && hasAccessToken() {
                     if userRole == "CHILD" {
-                        NavigationStack { MainView() }
+                        NavigationStack {
+                            MainView()
+                        }
+                        .id(navState.rootId)
+                        .environmentObject(navState)
                     } else if userRole == "PARENT" {
-                        NavigationStack { WeeklyReportView() }
+                        NavigationStack {
+                            WeeklyReportView()
+                        }
+                        .id(navState.rootId)
+                        .environmentObject(navState)
                     } else {
                         Text("권한 오류: \(userRole)")
                     }
