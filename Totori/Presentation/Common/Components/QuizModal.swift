@@ -36,13 +36,12 @@ enum ResultCardType {
         }
     }
 
-    // TODO: 실패 시 캐릭터 이미지 수정
     var characterImage: Image {
         switch self {
         case .retry:
-            return Image(.profileSmile)
+            return Image(.quizFailed)
         case .perfect:
-            return Image(.profileSmile)
+            return Image(.quizSuccess)
         }
     }
 }
