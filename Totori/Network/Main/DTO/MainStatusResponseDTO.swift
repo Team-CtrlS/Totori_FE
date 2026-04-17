@@ -8,6 +8,7 @@
 import Foundation
 
 struct MainStatusResponseDTO: Decodable {
+    let acorn: AcornDTO?
     let currentBook: CurrentBookDTO?
     let badge: MemberBadgeResponseDTO?
 }
@@ -20,6 +21,11 @@ struct CurrentBookDTO: Decodable {
     let currentPage: Int
     let totalPage: Int
     let progressPercentage: Double
+}
+
+struct AcornDTO: Decodable {
+    let name: String
+    let acorn: Int
 }
 
 struct MemberBadgeResponseDTO: Decodable {

@@ -33,9 +33,9 @@ struct BookList: Identifiable {
 
 class MainViewModel: ObservableObject {
     // chip
-    @Published var userName: String = "김밤톨"
+    @Published var userName: String = ""
     @Published var userImage: String? = nil
-    @Published var acornCount: Int = 4
+    @Published var acornCount: Int = 0
     
     // badgeCard
     @Published var goalTitle: String = "도토리 수집가"
@@ -139,10 +139,17 @@ class MainViewModel: ObservableObject {
                     self?.errorMessage = error.localizedDescription
                 }
             } receiveValue: { [weak self] response in
+                self?.applyUserInfo(response.acorn)
                 self?.applyCurrentBook(response.currentBook)
                 self?.applyBadge(response.badge)
             }
             .store(in: &cancellables)
+    }
+    
+    private func applyUserInfo(_ acornData: AcornDTO?) {
+        guard let data = acornData else { return }
+        self.userName = data.name
+        self.acornCount = data.acorn
     }
     
     private func applyCurrentBook(_ book: CurrentBookDTO?) {
