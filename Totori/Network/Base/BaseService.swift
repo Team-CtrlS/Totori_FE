@@ -12,14 +12,19 @@ import Alamofire
 import CombineMoya
 import Moya
 
-class BaseService<Target: BaseTargetType> {
+final class BaseService<Target: BaseTargetType> {
+    
+    // MARK: - Properties
+    
     private let provider: MoyaProvider<Target>
+    
+    // MARK: - Init
     
     init() {
         let session = Session(interceptor: TokenInterceptor())
         
         let authPlugin = AccessTokenPlugin { _ in
-            return KeychainManager.shared.load(key: .accessToken) ?? ""
+            KeychainManager.shared.load(key: .accessToken) ?? ""
         }
         
         let loggerPlugin = NetworkLogger()
@@ -30,43 +35,103 @@ class BaseService<Target: BaseTargetType> {
         )
     }
     
-    func request<T: Decodable>(_ target: Target, responseType: T.Type) -> AnyPublisher<T, NetworkError> {
-        return provider.requestPublisher(target)
-            .tryMap { response -> T in
+    // MARK: - Request
+    
+    func request<T: Decodable>(
+        _ target: Target,
+        responseType: T.Type
+    ) -> AnyPublisher<T, NetworkError> {
+        
+        provider.requestPublisher(target)
+            .tryMap { [weak self] response -> T in
+                guard let self = self else { throw NetworkError.unknown }
                 
                 let data = response.data
                 
-                if data.isEmpty || responseType == EmptyData.self {
-                    if let empty = EmptyData() as? T { return empty }
-                    throw NetworkError.decodingError
+                self.logResponse(data)
+                
+                guard !data.isEmpty else {
+                    return try self.handleEmptyData()
                 }
                 
-                let decoded = try JSONDecoder().decode(BaseResponse<T>.self, from: data)
-                guard let result = decoded.data else {
-                    throw NetworkError.decodingError
-                }
-                return result
+                return try self.decodeResponse(data: data)
             }
-            .mapError { error -> NetworkError in
-                if let networkError = error as? NetworkError { return networkError }
-                
-                if let moyaError = error as? MoyaError, case let .statusCode(response) = moyaError {
-                    let statusCode = response.statusCode
-                    
-                    if statusCode == 401 { return .tokenExpired }
-                    if (500...599).contains(statusCode) { return .internalServerError }
-                    
-                    if let errorBody = try? JSONDecoder().decode(ErrorResponse.self, from: response.data) {
-                        return .serverError(status: statusCode, message: errorBody.message)
-                    } else {
-                        return .clientError(statusCode: statusCode)
-                    }
-                }
-                
-                if error is DecodingError { return .decodingError }
-                
-                return .unknown
+            .mapError { [weak self] error in
+                return self?.mapToNetworkError(error) ?? .unknown
             }
             .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Private Methods
+
+private extension BaseService {
+    
+    func logResponse(_ data: Data) {
+        if let jsonString = String(data: data, encoding: .utf8) {
+            print("📢 서버 원본 응답: \(jsonString)")
+        }
+    }
+    
+    func decodeResponse<T: Decodable>(data: Data) throws -> T {
+        let decoder = JSONDecoder()
+        
+        do {
+            let decoded = try decoder.decode(BaseResponse<T>.self, from: data)
+            
+            if let result = decoded.data {
+                return result
+            }
+            
+            if T.self == EmptyData.self {
+                return EmptyData() as! T
+            }
+            
+            throw NetworkError.decodingError
+            
+        } catch {
+            print("❌ 디코딩 실패: \(error)")
+            throw NetworkError.decodingError
+        }
+    }
+    
+    func handleEmptyData<T>() throws -> T {
+        if T.self == EmptyData.self {
+            return EmptyData() as! T
+        }
+        throw NetworkError.decodingError
+    }
+    
+    func mapToNetworkError(_ error: Error) -> NetworkError {
+        
+        if let networkError = error as? NetworkError {
+            return networkError
+        }
+        
+        if let moyaError = error as? MoyaError,
+           case let .statusCode(response) = moyaError {
+            
+            let statusCode = response.statusCode
+            
+            if statusCode == 401 {
+                return .tokenExpired
+            }
+            
+            if (500...599).contains(statusCode) {
+                return .internalServerError
+            }
+            
+            if let errorBody = try? JSONDecoder().decode(ErrorResponse.self, from: response.data) {
+                return .serverError(status: statusCode, message: errorBody.message)
+            }
+            
+            return .clientError(statusCode: statusCode)
+        }
+        
+        if error is DecodingError {
+            return .decodingError
+        }
+        
+        return .unknown
     }
 }

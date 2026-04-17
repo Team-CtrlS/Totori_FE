@@ -20,9 +20,12 @@ class SignUpViewModel: ObservableObject {
     @Published var navigateToFinalView: Bool = false
     @Published var navigateToConnectView: Bool = false
     
+    private var cancellables = Set<AnyCancellable>()
+    private let signUpService = SignUpService()
+    
     init(role: SignUpType) {
-            self.role = role
-        }
+        self.role = role
+    }
     
     var hasCurrentInput: Bool {
         switch currentStep {
@@ -35,9 +38,9 @@ class SignUpViewModel: ObservableObject {
     }
     
     var isPasswordConditionMet: Bool {
-            let passwordRegex = "^(?=.*[a-z])(?=.*[0-9]).{8,}$"
-            return password.range(of: passwordRegex, options: .regularExpression) != nil
-        }
+        let passwordRegex = "^(?=.*[a-z])(?=.*[0-9]).{8,}$"
+        return password.range(of: passwordRegex, options: .regularExpression) != nil
+    }
     
     var isCurrentStepValid: Bool {
         switch currentStep {
@@ -58,14 +61,8 @@ class SignUpViewModel: ObservableObject {
         if currentStep < 4 {
             withAnimation{ currentStep += 1 }
         } else {
-            //TODO: - main
             print("최종 회원가입 로직 실행: \(email), \(password), \(name)")
-            
-            if role == .child {
-                navigateToFinalView = true
-            } else if role == .parent {
-                navigateToConnectView = true
-            }
+            requestSignUp()
         }
     }
     
@@ -73,5 +70,38 @@ class SignUpViewModel: ObservableObject {
         if currentStep > 1 {
             withAnimation { currentStep -= 1 }
         }
+    }
+    
+    private func requestSignUp() {
+        let roleString = (role == .child) ? "CHILD" : "PARENT"
+        
+        let param = SignUpRequestDTO(
+            loginId: self.email,
+            password: self.password,
+            name: self.name,
+            role: roleString
+        )
+        
+        signUpService.signUp(param: param)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    print("🚨 회원가입 실패 에러: \(error)")
+                }
+            } receiveValue: { [weak self] response in
+                guard let self = self else { return }
+                
+                print("✅ 회원가입 성공")
+                
+                if self.role == .child {
+                    self.navigateToFinalView = true
+                } else if self.role == .parent {
+                    self.navigateToConnectView = true
+                }
+            }
+            .store(in: &cancellables)
     }
 }

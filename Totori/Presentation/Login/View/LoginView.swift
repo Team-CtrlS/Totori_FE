@@ -10,13 +10,17 @@ import SwiftUI
 struct LoginView: View {
     let role: SignUpType
     
+    @StateObject private var viewModel: LoginViewModel
+    
     @State private var navigateToSignUp: Bool = false
     @State private var navigateToMain = false
     
-    @State private var idInput: String = ""
-    @State private var passwordInput: String = ""
-    
     @Environment(\.dismiss) private var dismiss
+    
+    init(role: SignUpType) {
+        self.role = role
+        self._viewModel = StateObject(wrappedValue: LoginViewModel(expectedRole: role))
+    }
     
     var loginButtonTitle: String {
         switch role {
@@ -65,7 +69,7 @@ struct LoginView: View {
             .padding(.bottom, 90)
             
             VStack(alignment: .leading, spacing: 4) {
-                TextField("아이디를 입력하세요.", text: $idInput)
+                TextField("아이디를 입력하세요.", text: $viewModel.loginId)
                     .font(.NotoSans_16_R)
                     .foregroundColor(.tBlack)
                     .padding(.horizontal, 14)
@@ -78,7 +82,7 @@ struct LoginView: View {
                         )
                     )
                 
-                TextField("비밀번호를 입력하세요.", text: $passwordInput)
+                TextField("비밀번호를 입력하세요.", text: $viewModel.password)
                     .font(.NotoSans_16_R)
                     .foregroundColor(.tBlack)
                     .padding(.horizontal, 14)
@@ -97,8 +101,7 @@ struct LoginView: View {
                     type: loginButtonType,
                     width: 361,
                     action: {
-                        //TODO: - 로그인 확인 로직 추가
-                        navigateToMain = true
+                        viewModel.login()
                         print("메인화면으로 이동")
                     })
             }
@@ -180,10 +183,6 @@ struct LoginView: View {
             SignUpView(viewModel: SignUpViewModel(role: role))
         }
         .navigationBarBackButtonHidden(true)
-        .navigationDestination(isPresented: $navigateToMain) {
-            MainView()
-                .navigationBarBackButtonHidden(true)
-        }
     }
 }
 
