@@ -121,7 +121,7 @@ class MakeStoryBookViewModel: ObservableObject {
         guard !isLoading else { return }
         isLoading = true
         
-        let mockSTT = "옛날 옛적에 하얀 털을 가진 귀여운 토끼가 살았어요. 토끼는 배가 고파서 엄청 큰 주황색 당근을 찾으러 숲으로 폴짝폴짝 뛰어갔답니다."
+        let mockSTT = "우주선, 달, 지구"
         let param = BookGenerateRequestDTO(sttText: mockSTT)
         
         bookService.generateBook(param: param)
