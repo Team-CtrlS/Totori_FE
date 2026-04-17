@@ -19,9 +19,26 @@ final class NetworkLogger: PluginType {
         switch result {
         case .success(let response):
             Logger.response(statusCode: response.statusCode, url: response.response?.url?.absoluteString ?? "")
-            Logger.responseBody(response.data)
+            
+            if let prettyJsonString = response.data.prettyPrintedJSONString {
+                print("\(prettyJsonString)")
+            } else {
+                Logger.responseBody(response.data)
+            }
+            
         case .failure(let error):
             Logger.error(.network, error.localizedDescription)
         }
+    }
+}
+
+extension Data {
+    var prettyPrintedJSONString: String? {
+        guard let jsonObject = try? JSONSerialization.jsonObject(with: self, options: []),
+              let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted, .withoutEscapingSlashes]),
+              let prettyString = String(data: prettyData, encoding: .utf8) else {
+            return nil
+        }
+        return prettyString
     }
 }
