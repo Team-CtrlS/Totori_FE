@@ -15,6 +15,7 @@ enum TotoriAPI {
     case login(param: LoginRequestDTO)
     case signUp(param: SignUpRequestDTO)
     case reissue
+    case attendance
     
     //book
     case generateBook(param: BookGenerateRequestDTO)
@@ -25,15 +26,17 @@ enum TotoriAPI {
 extension TotoriAPI: BaseTargetType {
     var path: String {
         switch self {
-        //auth
+            //auth
         case .login:
             return "/api/auth/login"
         case .signUp:
             return "/api/auth/signup"
         case .reissue:
             return "/api/auth/reissue"
+        case .attendance:
+            return "/api/child/attendance"
             
-        //book
+            //book
         case .generateBook:
             return "/api/books/generate"
         case .mainStatus:
@@ -45,7 +48,7 @@ extension TotoriAPI: BaseTargetType {
     
     var method: Moya.Method {
         switch self {
-        case .login, .signUp, .generateBook, .reissue:
+        case .login, .signUp, .generateBook, .reissue, .attendance:
             return .post
         case .mainStatus, .bookList:
             return .get
@@ -69,6 +72,8 @@ extension TotoriAPI: BaseTargetType {
                 parameters: ["page": page, "size": size],
                 encoding: URLEncoding.queryString
             )
+        case .attendance:
+            return .requestPlain
         }
     }
     

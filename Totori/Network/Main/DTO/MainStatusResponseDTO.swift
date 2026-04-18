@@ -10,7 +10,7 @@ import Foundation
 struct MainStatusResponseDTO: Decodable {
     let acorn: AcornDTO?
     let currentBook: CurrentBookDTO?
-    let badge: MemberBadgeResponseDTO?
+    let badge: BadgeDTO?
 }
 
 struct CurrentBookDTO: Decodable {
@@ -28,14 +28,8 @@ struct AcornDTO: Decodable {
     let acorn: Int
 }
 
-struct MemberBadgeResponseDTO: Decodable {
-    let memberBadgeId: Int
-    let badgeResponseDto: BadgeResponseDTO
-    let acquiredAt: String
-}
-
-struct BadgeResponseDTO: Decodable {
-    let badgeId: Int
+struct BadgeDTO: Decodable {
+    let id: Int
     let category: String
     let categoryName: String
     let name: String

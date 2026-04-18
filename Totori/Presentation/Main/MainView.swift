@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     @StateObject private var viewModel = MainViewModel()
+    @StateObject private var attendance = AttendanceViewModel()
     
     @State private var navigateToMyPage: Bool = false
     @State private var navigateToBadgeInfo: Bool = false
@@ -111,6 +112,7 @@ struct MainView: View {
             }
         }
         .onAppear {
+            attendance.checkAttendance()
             viewModel.fetchAll()
         }
         .navigationDestination(isPresented: $navigateToSetting) {

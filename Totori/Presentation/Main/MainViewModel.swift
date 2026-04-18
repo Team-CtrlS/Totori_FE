@@ -170,7 +170,7 @@ class MainViewModel: ObservableObject {
         )
     }
     
-    private func applyBadge(_ badge: MemberBadgeResponseDTO?) {
+    private func applyBadge(_ badge: BadgeDTO?) {
         guard let badge = badge else {
             hasBadge = false
             goalTitle = "아직 획득한 뱃지가 없어요"
@@ -179,16 +179,14 @@ class MainViewModel: ObservableObject {
             return
         }
         
-        let badgeInfo = badge.badgeResponseDto
-        
         hasBadge = true
-        goalTitle = badgeInfo.categoryName
+        goalTitle = badge.categoryName
         
-        let current = badgeInfo.targetValue
-        let total = badgeInfo.targetValue
+        let current = badge.targetValue
+        let total = badge.targetValue
         
-        goalSubtitle = "\(badgeInfo.name) (\(current)/\(total))"
+        goalSubtitle = "\(badge.name) (\(current)/\(total))"
         goalProgress = total > 0 ? Double(current) / Double(total) : 0.0
-        goalImageURL = badgeInfo.imageUrl
+        goalImageURL = badge.imageUrl
     }
 }
