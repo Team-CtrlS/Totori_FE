@@ -108,8 +108,12 @@ final class TokenInterceptor: RequestInterceptor {
         DispatchQueue.main.async {
             KeychainManager.shared.clearAll()
             UserDefaultManager.shared.clearAll()
-            UserDefaults.standard.set(false, forKey: "isLoggedIn")
-            UserDefaults.standard.set("", forKey: "userRole")
+            
+            NotificationCenter.default.post(name: .forceLogout, object: nil)
         }
     }
+}
+
+extension Notification.Name {
+    static let forceLogout = Notification.Name("forceLogout")
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FinalView: View {
     @State private var navigateToMain = false
+    let role: SignUpType
     
     var body: some View {
         ZStack(){
@@ -54,12 +55,8 @@ struct FinalView: View {
             Spacer()
         }
         .navigationDestination(isPresented: $navigateToMain) {
-            MainView()
+            LoginView(role: role)
                 .navigationBarBackButtonHidden(true)
         }
     }
-}
-
-#Preview {
-    FinalView()
 }

@@ -61,7 +61,7 @@ struct SignUpView: View {
             }
             .padding(.horizontal, 20)
             .navigationDestination(isPresented: $viewModel.navigateToFinalView) {
-                FinalView()
+                FinalView(role: viewModel.role)
             }
             .navigationDestination(isPresented: $viewModel.navigateToConnectView) {
                 ConnectView(viewModel: ConnectViewModel(role: viewModel.role))
@@ -89,8 +89,4 @@ struct SignUpView: View {
         default: return ""
         }
     }
-}
-
-#Preview {
-    SignUpView(viewModel: SignUpViewModel(role: .child))
 }

@@ -43,21 +43,23 @@ class LoginViewModel: ObservableObject {
                 if case .failure(let error) = completion {
                     self?.errorMessage = error.errorDescription
                 }
-            } receiveValue: { [weak self] responseData in
+            } receiveValue: { [weak self] data in
                 guard let self = self else { return }
                 
-                let isValidRole = (self.expectedRole == .child && responseData.role == "CHILD") ||
-                (self.expectedRole == .parent && responseData.role == "PARENT")
+                let roleMatches = (expectedRole == .child && data.role == "CHILD") ||
+                (expectedRole == .parent && data.role == "PARENT")
                 
-                if isValidRole {  
-                    KeychainManager.shared.save(token: responseData.accessToken, for: .accessToken)
-                    KeychainManager.shared.save(token: responseData.refreshToken, for: .refreshToken)
-                    
-                    UserDefaults.standard.set(responseData.role, forKey: "userRole")
-                    UserDefaults.standard.set(true, forKey: "isLoggedIn")
-                } else {
-                    self.errorMessage = "해당 계정은 \(self.expectedRole == .child ? "아이" : "보호자") 권한이 아닙니다."
+                guard roleMatches else {
+                    errorMessage = "해당 계정은 \(expectedRole == .child ? "아이" : "보호자") 권한이 아닙니다."
+                    return
                 }
+                
+                KeychainManager.shared.save(token: data.accessToken, for: .accessToken)
+                KeychainManager.shared.save(token: data.refreshToken, for: .refreshToken)
+                UserDefaultManager.shared.saveRole(data.role)
+                
+                UserDefaults.standard.set(true, forKey: "isLoggedIn")
+                isLoginSuccessful = true
             }
             .store(in: &cancellables)
     }

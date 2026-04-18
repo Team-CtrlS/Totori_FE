@@ -82,7 +82,7 @@ struct LoginView: View {
                         )
                     )
                 
-                TextField("비밀번호를 입력하세요.", text: $viewModel.password)
+                SecureField("비밀번호를 입력하세요.", text: $viewModel.password)
                     .font(.NotoSans_16_R)
                     .foregroundColor(.tBlack)
                     .padding(.horizontal, 14)
@@ -103,7 +103,8 @@ struct LoginView: View {
                     action: {
                         viewModel.login()
                         print("메인화면으로 이동")
-                    })
+                    }
+                )
             }
             .padding(.bottom, 20)
             
@@ -179,8 +180,8 @@ struct LoginView: View {
             }
         }
         .padding(.horizontal, 20)
-        .navigationDestination(isPresented: $navigateToSignUp) {
-            SignUpView(viewModel: SignUpViewModel(role: role))
+        .onChange(of: viewModel.isLoginSuccessful) { success in
+            if success { dismiss() }
         }
         .navigationBarBackButtonHidden(true)
     }
