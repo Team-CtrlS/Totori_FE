@@ -51,6 +51,12 @@ class MakeStoryBookViewModel: ObservableObject {
     @Published var acornCount: Int = 1
     
     @Published var isRecording: Bool = false
+    @Published var isLoading: Bool = false
+    @Published var navigateToBookInfo: Bool = false
+    @Published var generatedBookData: BookGenerateResponseDTO? = nil
+    
+    private let bookService = BookService()
+    private var cancellables = Set<AnyCancellable>()
     
     var currentCenterType: CenterType {
         switch currentStep {
@@ -102,10 +108,35 @@ class MakeStoryBookViewModel: ObservableObject {
                 print("🎙️ 두 번째 탭: 녹음 중지 및 STT(음성->텍스트) API 전송 준비")
                 withAnimation { isRecording = false }
                 withAnimation { currentStep = .processing }
+                
+                requestBookGeneration()
             }
             
         case .processing:
             break
         }
+    }
+    
+    private func requestBookGeneration() {
+        guard !isLoading else { return }
+        isLoading = true
+        
+        let mockSTT = "우주선, 달, 지구"
+        let param = BookGenerateRequestDTO(sttText: mockSTT)
+        
+        bookService.generateBook(param: param)
+            .receive(on: DispatchQueue.main)
+            .sink{ [weak self] completion in
+                self?.isLoading = false
+                
+                switch completion {
+                case .finished: break
+                case .failure(let error):
+                    Logger.error(.network, "동화 생성 실패: \(error)") }
+            } receiveValue: { [weak self] response in
+                self?.generatedBookData = response
+                self?.navigateToBookInfo = true
+            }
+            .store(in: &cancellables)
     }
 }

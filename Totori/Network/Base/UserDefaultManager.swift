@@ -22,6 +22,7 @@ struct UserDefaultManager {
     }
     
     func clearAll() {
-        UserDefaults.standard.removeObject(forKey: roleKey)
+        UserDefaults.standard.set("", forKey: roleKey)
+        UserDefaults.standard.set(false, forKey: "isLoggedIn")
     }
 }

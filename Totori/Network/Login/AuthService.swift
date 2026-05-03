@@ -20,7 +20,7 @@ final class AuthService {
                 KeychainManager.shared.save(token: response.refreshToken, for: .refreshToken)
                 
                 UserDefaultManager.shared.saveRole(response.role)
-                print("✅ 토큰 재발급 및 저장 완료 - role: \(response.role)")
+                Logger.success(.token, "토큰 재발급 및 저장 완료 - role: \(response.role)")
             })
             .eraseToAnyPublisher()
     }

@@ -22,16 +22,11 @@ final class BaseService<Target: BaseTargetType> {
     
     init() {
         let session = Session(interceptor: TokenInterceptor())
-        
-        let authPlugin = AccessTokenPlugin { _ in
-            KeychainManager.shared.load(key: .accessToken) ?? ""
-        }
-        
         let loggerPlugin = NetworkLogger()
         
         self.provider = MoyaProvider<Target>(
             session: session,
-            plugins: [authPlugin, loggerPlugin]
+            plugins: [loggerPlugin]
         )
     }
     
@@ -45,10 +40,7 @@ final class BaseService<Target: BaseTargetType> {
         provider.requestPublisher(target)
             .tryMap { [weak self] response -> T in
                 guard let self = self else { throw NetworkError.unknown }
-                
                 let data = response.data
-                
-                self.logResponse(data)
                 
                 guard !data.isEmpty else {
                     return try self.handleEmptyData()
@@ -66,13 +58,6 @@ final class BaseService<Target: BaseTargetType> {
 // MARK: - Private Methods
 
 private extension BaseService {
-    
-    func logResponse(_ data: Data) {
-        if let jsonString = String(data: data, encoding: .utf8) {
-            print("📢 서버 원본 응답: \(jsonString)")
-        }
-    }
-    
     func decodeResponse<T: Decodable>(data: Data) throws -> T {
         let decoder = JSONDecoder()
         
@@ -90,7 +75,7 @@ private extension BaseService {
             throw NetworkError.decodingError
             
         } catch {
-            print("❌ 디코딩 실패: \(error)")
+            Logger.error(.decode, "디코딩 실패: \(error)")
             throw NetworkError.decodingError
         }
     }

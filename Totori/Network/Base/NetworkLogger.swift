@@ -12,15 +12,33 @@ import Moya
 final class NetworkLogger: PluginType {
     func willSend(_ request: RequestType, target: TargetType) {
         guard let request = request.request, let url = request.url else { return }
-        print("🚀 [요청] \(request.httpMethod ?? "") \(url)")
+        Logger.request(method: request.httpMethod ?? "", url: url.absoluteString)
     }
     
     func didReceive(_ result: Result<Response, MoyaError>, target: TargetType) {
         switch result {
         case .success(let response):
-            print("✅ [성공: \(response.statusCode)] \(response.response?.url?.absoluteString ?? "")")
+            Logger.response(statusCode: response.statusCode, url: response.response?.url?.absoluteString ?? "")
+            
+            if let prettyJsonString = response.data.prettyPrintedJSONString {
+                print("\(prettyJsonString)")
+            } else {
+                Logger.responseBody(response.data)
+            }
+            
         case .failure(let error):
-            print("❌ [실패] \(error.localizedDescription)")
+            Logger.error(.network, error.localizedDescription)
         }
+    }
+}
+
+extension Data {
+    var prettyPrintedJSONString: String? {
+        guard let jsonObject = try? JSONSerialization.jsonObject(with: self, options: []),
+              let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted, .withoutEscapingSlashes]),
+              let prettyString = String(data: prettyData, encoding: .utf8) else {
+            return nil
+        }
+        return prettyString
     }
 }
