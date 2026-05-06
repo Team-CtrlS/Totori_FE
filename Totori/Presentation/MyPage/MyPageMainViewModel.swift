@@ -8,12 +8,16 @@
 import Combine
 import SwiftUI
 
+// MARK: - Model
+
 struct BadgeItem: Identifiable, Equatable {
     let id: Int
     let isUnlocked: Bool
     let imageUrl: String
     let progress: CGFloat
 }
+
+// MARK: - ViewModel
 
 final class MyPageMainViewModel: ObservableObject {
     @Published var userName: String = "김밤톨"
@@ -33,4 +37,36 @@ final class MyPageMainViewModel: ObservableObject {
         .init(id: 5, isUnlocked: true,  imageUrl: "badge_5", progress: 0.8),
         .init(id: 6, isUnlocked: false, imageUrl: "badge_6", progress: 1)
     ]
+    
+    // status
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
+    
+    private let memberService = MemberService()
+    private var cancellables = Set<AnyCancellable>()
+    
+    func fetchAll() {
+        fetchAcornInfo()
+    }
+    
+    // 도토리 및 유저 정보 가져오기
+    func fetchAcornInfo() {
+        isLoading = true
+            
+        memberService.getAcorn()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                self?.isLoading = false
+                if case .failure(let error) = completion {
+                    print("마이페이지 정보 조회 실패: \(error.localizedDescription)")
+                    self?.errorMessage = error.localizedDescription
+                }
+            } receiveValue: { [weak self] response in
+                guard let self = self else { return }
+                
+                self.userName = response.name
+                self.totalAcorn = response.acorn
+            }
+            .store(in: &cancellables)
+    }
 }

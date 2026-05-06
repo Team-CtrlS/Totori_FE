@@ -62,6 +62,9 @@ struct MyPageMainView: View {
                 }
             }
             .background(.main20)
+            .onAppear {
+                viewModel.fetchAll()
+            }
             .navigationDestination(isPresented: $goConnect) {
                 ConnectView(viewModel: ConnectViewModel(role: .child))
             }
