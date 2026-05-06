@@ -74,21 +74,19 @@ final class MyPageMainViewModel: ObservableObject {
                     print("대표 뱃지 조회 실패: \(error.localizedDescription)")
                 }
             } receiveValue: { [weak self] response in
-                self?.applyRepresentativeBadge(response)
+                guard let self = self else { return }
+                
+                let badge = response.badgeResponseDto
+                let category = BadgeCategory(rawValue: badge.category ?? "") ?? .acorn
+                self.badgeSubTitle = category.getSubtitle(
+                        current: badge.level,
+                        target: badge.targetValue
+                    )
+                self.badgeTitle = badge.name
+                self.imageUrl = badge.imageUrl
+                self.progress = 0.8
             }
             .store(in: &cancellables)
-    }
-    
-    private func applyRepresentativeBadge(_ dto: MemberBadgeResponseDTO) {
-        let badge = dto.badgeResponseDto
-        let category = BadgeCategory(rawValue: badge.category ?? "") ?? .acorn
-        self.badgeSubTitle = category.getSubtitle(
-                current: badge.level,
-                target: badge.targetValue
-            )
-        self.badgeTitle = badge.name
-        self.imageUrl = badge.imageUrl
-        self.progress = 0.8
     }
     
     // 전체 획득 뱃지 리스트 가져오기
@@ -100,19 +98,17 @@ final class MyPageMainViewModel: ObservableObject {
                     print("전체 뱃지 조회 실패: \(error.localizedDescription)")
                 }
             } receiveValue: { [weak self] response in
-                self?.applyBadgeList(response)
+                guard let self = self else { return }
+                
+                // TODO: isUnlocked response에 추가되면 수정
+                self.badges = response.map {
+                    BadgeItem(
+                        id: $0.badgeResponseDto.id,
+                        isUnlocked: true,
+                        imageUrl: $0.badgeResponseDto.imageUrl
+                    )
+                }
             }
             .store(in: &cancellables)
-    }
-    
-    // TODO: isUnlocked response에 추가되면 수정
-    private func applyBadgeList(_ list: [MemberBadgeResponseDTO]) {
-        self.badges = list.map {
-            BadgeItem(
-                id: $0.badgeResponseDto.id,
-                isUnlocked: true,
-                imageUrl: $0.badgeResponseDto.imageUrl
-            )
-        }
     }
 }
