@@ -12,45 +12,57 @@ class AudioRecorderManager: NSObject {
     private var audioRecorder: AVAudioRecorder?
     private var currentAudioURL: URL?
     
-    func requestPermission(complietion: @escaping (Bool) -> Void) {
-        AVAudioSession.sharedInstance().requestRecordPermission { granted in
-            DispatchQueue.main.async {
-                complietion(granted)
+    var isRecording: Bool {
+        audioRecorder?.isRecording ?? false
+    }
+    
+    func requestPermission(completion: @escaping (Bool) -> Void) {
+        if #available(iOS 17.0, *){
+            AVAudioApplication.requestRecordPermission { granted in
+                DispatchQueue.main.async {
+                    completion(granted)
+                }
+            }
+        } else {
+            AVAudioSession.sharedInstance().requestRecordPermission { granted in
+                DispatchQueue.main.async{
+                    completion(granted)
+                }
             }
         }
     }
-    
-    func startRecoding() {
-        let session = AVAudioSession.sharedInstance()
-        do {
-            try session.setCategory(.playAndRecord, mode: .default)
-            try session.setActive(true)
-            
-            let documentOath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let filename = "totori_record_\(Int(Date().timeIntervalSince1970)).m4a"
-            let audioFileURL = documentOath.appendingPathComponent(filename)
-            self.currentAudioURL = audioFileURL
-            
-            let settings: [String: Any] = [
-                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: 12000,
-                AVNumberOfChannelsKey: 1,
-                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-            ]
-            
-            audioRecorder = try AVAudioRecorder(url: audioFileURL, settings: settings)
-            audioRecorder?.record()
-            print("🎙️ 오디오 녹음 시작: \(audioFileURL.lastPathComponent)")
-        } catch {
-            print("❌ 녹음 시작 실패: \(error.localizedDescription)")
+        
+        func startRecoding() {
+            let session = AVAudioSession.sharedInstance()
+            do {
+                try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
+                try session.setActive(true)
+                
+                let documentOath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                let filename = "totori_record_\(Int(Date().timeIntervalSince1970)).m4a"
+                let audioFileURL = documentOath.appendingPathComponent(filename)
+                self.currentAudioURL = audioFileURL
+                
+                let settings: [String: Any] = [
+                    AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                    AVSampleRateKey: 12000,
+                    AVNumberOfChannelsKey: 1,
+                    AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+                ]
+                
+                audioRecorder = try AVAudioRecorder(url: audioFileURL, settings: settings)
+                audioRecorder?.record()
+                print("🎙️ 오디오 녹음 시작: \(audioFileURL.lastPathComponent)")
+            } catch {
+                print("❌ 녹음 시작 실패: \(error.localizedDescription)")
+            }
         }
+        
+        func stopRecording() -> URL? {
+            audioRecorder?.stop()
+            audioRecorder = nil
+            print("🛑 오디오 녹음 완료. 저장 경로: \(currentAudioURL?.path ?? "없음")")
+            return currentAudioURL
+        }
+        
     }
-    
-    func stopRecording() -> URL? {
-        audioRecorder?.stop()
-        audioRecorder = nil
-        print("🛑 오디오 녹음 완료. 저장 경로: \(currentAudioURL?.path ?? "없음")")
-        return currentAudioURL
-    }
-    
-}
