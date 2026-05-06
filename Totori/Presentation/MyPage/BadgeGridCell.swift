@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct BadgeGridCell: View {
     let badge: BadgeItem
     
@@ -38,17 +40,16 @@ struct BadgeGridCell: View {
                         .stroke(outerStroke, lineWidth: 4)
                 )
             
-            RoundedRectangle(cornerRadius: 16)
-                .fill(innerBackground)
+            KFImage(URL(string: badge.imageUrl))
+                .placeholder {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white)
+                }
+                .resizable()
+                .grayscale(badge.isUnlocked ? 0 : 1)
+                .scaledToFit()
                 .frame(height: 89)
                 .padding(15)
-
-            Image(badge.isUnlocked ? .badgePurple : .badgeGray)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 66, height: 66)
-                .padding(.horizontal, 6)
-                .padding(.bottom, 6)
         }
         .shadow(color: Color.black.opacity(0.01), radius: 20, x: 0, y: 4)
     }

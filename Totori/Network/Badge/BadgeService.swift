@@ -17,4 +17,8 @@ class BadgeService {
     func getMyRepresentativeBadge() -> AnyPublisher<RepresentativeBadgeResponseDTO, NetworkError> {
         return networkService.request(.myRepresentativeBadge, responseType: RepresentativeBadgeResponseDTO.self)
     }
+    
+    func getMyAllBadges() -> AnyPublisher<AllBadgesResponseDTO, NetworkError> {
+        return networkService.request(.myAllBadges, responseType: AllBadgesResponseDTO.self)
+    }
 }

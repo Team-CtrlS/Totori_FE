@@ -14,7 +14,6 @@ struct BadgeItem: Identifiable, Equatable {
     let id: Int
     let isUnlocked: Bool
     let imageUrl: String
-    let progress: CGFloat
 }
 
 // MARK: - ViewModel
@@ -29,14 +28,7 @@ final class MyPageMainViewModel: ObservableObject {
     @Published var imageUrl: String? = nil
     @Published var progress: CGFloat = 0.7
 
-    @Published var badges: [BadgeItem] = [
-        .init(id: 1, isUnlocked: true,  imageUrl: "badge_1", progress: 1),
-        .init(id: 2, isUnlocked: false, imageUrl: "badge_2", progress: 0.3),
-        .init(id: 3, isUnlocked: true,  imageUrl: "badge_3", progress: 1),
-        .init(id: 4, isUnlocked: true,  imageUrl: "badge_4", progress: 1),
-        .init(id: 5, isUnlocked: true,  imageUrl: "badge_5", progress: 0.8),
-        .init(id: 6, isUnlocked: false, imageUrl: "badge_6", progress: 1)
-    ]
+    @Published var badges: [BadgeItem] = []
     
     // status
     @Published var isLoading: Bool = false
@@ -49,6 +41,7 @@ final class MyPageMainViewModel: ObservableObject {
     func fetchAll() {
         fetchAcornInfo()
         fetchRepresentativeBadge()
+        fetchBadgeList()
     }
     
     // 도토리 및 유저 정보 가져오기
@@ -96,5 +89,30 @@ final class MyPageMainViewModel: ObservableObject {
         self.badgeTitle = badge.name
         self.imageUrl = badge.imageUrl
         self.progress = 0.8
+    }
+    
+    // 전체 획득 뱃지 리스트 가져오기
+    func fetchBadgeList() {
+        badgeService.getMyAllBadges()
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                if case .failure(let error) = completion {
+                    print("전체 뱃지 조회 실패: \(error.localizedDescription)")
+                }
+            } receiveValue: { [weak self] response in
+                self?.applyBadgeList(response)
+            }
+            .store(in: &cancellables)
+    }
+    
+    // TODO: isUnlocked response에 추가되면 수정
+    private func applyBadgeList(_ list: [MemberBadgeResponseDTO]) {
+        self.badges = list.map {
+            BadgeItem(
+                id: $0.badgeResponseDto.id,
+                isUnlocked: true,
+                imageUrl: $0.badgeResponseDto.imageUrl
+            )
+        }
     }
 }
