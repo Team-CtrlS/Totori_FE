@@ -21,6 +21,10 @@ class ReadStoryBookViewModel: ObservableObject {
     @Published var navigateToBadge: Bool = false
     @Published var navigateToFinish: Bool = false
     
+    private let audioRecorder = AudioRecorderManager()
+    
+    private(set) var lastRecordedURL: URL?
+    
     private var audioPlayer: AVPlayer?
     private var playerObserver: Any?
     
@@ -68,6 +72,10 @@ class ReadStoryBookViewModel: ObservableObject {
     var isNextEnabled: Bool { !displayPages.isEmpty }
     
     func goNext() {
+        if isMicRecording {
+            stopRecordingFlow()
+        }
+        
         if currentIndex < displayPages.count - 1{
             withAnimation { currentIndex += 1 }
             resetPageStates()
@@ -77,13 +85,23 @@ class ReadStoryBookViewModel: ObservableObject {
     }
     
     func goPrev() {
-        if isPrevEnabled {
-            withAnimation { currentIndex -= 1 }
-            resetPageStates()
+        guard isPrevEnabled else { return }
+        
+        if isMicRecording {
+            stopRecordingFlow()
         }
+        
+        withAnimation { currentIndex -= 1 }
+        resetPageStates()
     }
     
-    func toggleMic() { withAnimation { isMicRecording.toggle() } }
+    func toggleMic() {
+        if isMicRecording {
+            stopRecordingFlow()
+        } else {
+            startRecordingFlow()
+        }
+    }
     func toggleTTS() {
         // 이미 재생 중이면 멈춤
         if isTTSSpeaking {
@@ -120,6 +138,39 @@ class ReadStoryBookViewModel: ObservableObject {
     }
     
     // 페이지가 넘어갈 때 재생 중인 오디오 강제 종료
+    // MARK: - Recording Flow
+    
+    private func startRecordingFlow() {
+        if isTTSSpeaking {
+            withAnimation{ isTTSSpeaking = false }
+        }
+        
+        audioRecorder.requestPermission { [weak self] granted in
+            guard let self = self else { return }
+            if granted {
+                self.audioRecorder.startRecoding()
+                withAnimation{ self.isMicRecording = true }
+            } else {
+                print("마이크 권한 거부됨")
+            }
+        }
+    }
+    
+    private func stopRecordingFlow() {
+        let savedURL = audioRecorder.stopRecording()
+        self.lastRecordedURL = savedURL
+        withAnimation { self.isMicRecording = false }
+        
+        if let url = savedURL {
+            handleRecordedAudio(url: url)
+        }
+    }
+    
+    private func handleRecordedAudio(url: URL) {
+        // TODO: 서버 업로드 / STT 호출 등 후처리
+        print("📤 녹음 파일 처리: \(url.lastPathComponent)")
+    }
+    
     private func resetPageStates() {
         isMicRecording = false
         stopAudio()
