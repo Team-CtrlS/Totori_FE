@@ -43,10 +43,12 @@ final class MyPageMainViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     
     private let memberService = MemberService()
+    private let badgeService = BadgeService()
     private var cancellables = Set<AnyCancellable>()
     
     func fetchAll() {
         fetchAcornInfo()
+        fetchRepresentativeBadge()
     }
     
     // 도토리 및 유저 정보 가져오기
@@ -68,5 +70,31 @@ final class MyPageMainViewModel: ObservableObject {
                 self.totalAcorn = response.acorn
             }
             .store(in: &cancellables)
+    }
+    
+    // 대표 뱃지 정보 가져오기
+    func fetchRepresentativeBadge() {
+        badgeService.getMyRepresentativeBadge()
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                if case .failure(let error) = completion {
+                    print("대표 뱃지 조회 실패: \(error.localizedDescription)")
+                }
+            } receiveValue: { [weak self] response in
+                self?.applyRepresentativeBadge(response)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func applyRepresentativeBadge(_ dto: MemberBadgeResponseDTO) {
+        let badge = dto.badgeResponseDto
+        let category = BadgeCategory(rawValue: badge.category ?? "") ?? .acorn
+        self.badgeSubTitle = category.getSubtitle(
+                current: badge.level,
+                target: badge.targetValue
+            )
+        self.badgeTitle = badge.name
+        self.imageUrl = badge.imageUrl
+        self.progress = 0.8
     }
 }

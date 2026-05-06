@@ -24,6 +24,9 @@ enum TotoriAPI {
     
     //member
     case acorn
+    
+    //badge
+    case myRepresentativeBadge
 }
 
 extension TotoriAPI: BaseTargetType {
@@ -50,6 +53,10 @@ extension TotoriAPI: BaseTargetType {
             //member
         case .acorn:
             return "/api/members/me/acorns"
+            
+            //badge
+        case .myRepresentativeBadge:
+            return "/api/badges/my/representative"
         }
     }
     
@@ -57,7 +64,7 @@ extension TotoriAPI: BaseTargetType {
         switch self {
         case .login, .signUp, .generateBook, .reissue, .attendance:
             return .post
-        case .mainStatus, .bookList, .acorn:
+        case .mainStatus, .bookList, .acorn, .myRepresentativeBadge:
             return .get
         }
     }
@@ -82,6 +89,8 @@ extension TotoriAPI: BaseTargetType {
         case .attendance:
             return .requestPlain
         case .acorn:
+            return .requestPlain
+        case .myRepresentativeBadge:
             return .requestPlain
         }
     }
