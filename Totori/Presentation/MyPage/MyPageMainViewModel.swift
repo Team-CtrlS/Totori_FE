@@ -14,6 +14,7 @@ struct BadgeItem: Identifiable, Equatable {
     let id: Int
     let isUnlocked: Bool
     let imageUrl: String
+    let category: String
 }
 
 // MARK: - ViewModel
@@ -27,6 +28,7 @@ final class MyPageMainViewModel: ObservableObject {
     @Published var badgeSubTitle: String = "도토리 총 10개 모으기 (4/10)"
     @Published var imageUrl: String? = nil
     @Published var progress: CGFloat = 0.7
+    @Published var representativeCategory: BadgeCategory = .acorn
 
     @Published var badges: [BadgeItem] = []
     
@@ -77,7 +79,9 @@ final class MyPageMainViewModel: ObservableObject {
                 guard let self = self else { return }
                 
                 let badge = response.badgeResponseDto
-                let category = BadgeCategory(rawValue: badge.category ?? "") ?? .acorn
+                let category = BadgeCategory(rawValue: badge.category) ?? .acorn
+                
+                self.representativeCategory = category
                 self.badgeSubTitle = category.getSubtitle(
                         current: badge.level,
                         target: badge.targetValue
@@ -105,7 +109,8 @@ final class MyPageMainViewModel: ObservableObject {
                     BadgeItem(
                         id: $0.badgeResponseDto.id,
                         isUnlocked: true,
-                        imageUrl: $0.badgeResponseDto.imageUrl
+                        imageUrl: $0.badgeResponseDto.imageUrl,
+                        category: $0.badgeResponseDto.category
                     )
                 }
             }

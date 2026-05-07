@@ -26,8 +26,10 @@ struct BadgeCard: View {
                                 .fill(Color.white)
                         }
                         .resizable()
-                        .scaledToFit()
-                        .frame(width: 66, height: 66)
+                        .scaledToFill()
+                        .frame(width: 60, height: 60)
+                        .clipped()
+                        .cornerRadius(16)
                 } else {
                     RoundedRectangle(cornerRadius: 16)
                         .fill(Color.white)

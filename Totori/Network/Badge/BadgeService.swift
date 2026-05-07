@@ -21,4 +21,8 @@ class BadgeService {
     func getMyAllBadges() -> AnyPublisher<AllBadgesResponseDTO, NetworkError> {
         return networkService.request(.myAllBadges, responseType: AllBadgesResponseDTO.self)
     }
+    
+    func getCategoryBadges(category: String) -> AnyPublisher<CategoryBadgeResponseDTO, NetworkError> {
+        return networkService.request(.categoryBadges(category: category), responseType: CategoryBadgeResponseDTO.self)
+    }
 }

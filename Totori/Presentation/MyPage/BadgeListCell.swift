@@ -8,6 +8,8 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct BadgeListCell: View {
     let badge: BadgeListItem
     
@@ -18,11 +20,17 @@ struct BadgeListCell: View {
     var body: some View {
         HStack(spacing: 10) {
             
-            // TODO: - 뱃지 이미지 url로 변경
-            Image(.badgePurple)
+            KFImage(URL(string: badge.imageUrl))
+                .placeholder {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white)
+                        .frame(width: 60, height: 60)
+                }
                 .resizable()
-                .scaledToFit()
+                .scaledToFill()
                 .frame(width: 60, height: 60)
+                .clipped()
+                .cornerRadius(16)
             
             VStack(alignment: .leading, spacing: 0) {
                 Text(badge.title)

@@ -14,6 +14,7 @@ struct MyPageMainView: View {
     @State private var showPopOver = false
     @State private var goBadgeList = false
     @State private var goConnect = false
+    @State private var selectedCategory: BadgeCategory?
     
     private let columns: [GridItem] = Array(
         repeating: GridItem(.flexible(), spacing: 8),
@@ -40,19 +41,16 @@ struct MyPageMainView: View {
                             progress: viewModel.progress,
                             imageUrl: viewModel.imageUrl,
                             onTap: {
-                                goBadgeList = true
+                                selectedCategory = viewModel.representativeCategory
                             }
                         )
-                        .navigationDestination(isPresented: $goBadgeList) {
-                            MyPageBadgeView()
-                                .navigationBarBackButtonHidden(true)
-                        }
                         
                         LazyVGrid(columns: columns, spacing: 8) {
                             ForEach(viewModel.badges) { badge in
                                 BadgeGridCell(badge: badge)
                                     .onTapGesture {
-                                        // TODO: 뱃지 상세/획득 팝업 등
+                                        let category = BadgeCategory(rawValue: badge.category) ?? .acorn
+                                        selectedCategory = category
                                     }
                             }
                         }
@@ -67,6 +65,10 @@ struct MyPageMainView: View {
             }
             .navigationDestination(isPresented: $goConnect) {
                 ConnectView(viewModel: ConnectViewModel(role: .child))
+            }
+            .navigationDestination(item: $selectedCategory) { category in
+                MyPageBadgeView(category: category)
+                    .navigationBarBackButtonHidden(true)
             }
             
             if showPopOver {

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MyPageBadgeView: View {
 
+    let category: BadgeCategory
     @StateObject private var viewModel = MyPageBadgeViewModel()
 
     var body: some View {
@@ -41,6 +42,9 @@ struct MyPageBadgeView: View {
                 }
                 .padding(.horizontal, 20)
             }
+        }
+        .onAppear {
+            viewModel.fetchAll(category: category)
         }
         .background(Color.main20.ignoresSafeArea())
     }
@@ -80,8 +84,4 @@ struct MyPageBadgeView: View {
             .padding(.horizontal, 20)
         }
     }
-}
-
-#Preview {
-    MyPageBadgeView()
 }

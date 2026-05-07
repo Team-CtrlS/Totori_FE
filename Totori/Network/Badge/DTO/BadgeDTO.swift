@@ -9,8 +9,8 @@ import Foundation
 
 struct BadgeInfoDTO: Decodable {
     let id: Int
-    let category: String?
-    let categoryName: String?
+    let category: String
+    let categoryName: String
     let name: String
     let level: Int
     let targetValue: Int
