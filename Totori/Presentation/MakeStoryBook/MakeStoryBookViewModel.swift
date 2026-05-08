@@ -55,12 +55,11 @@ class MakeStoryBookViewModel: ObservableObject {
     @Published var navigateToBookInfo: Bool = false
     @Published var generatedBookData: BookGenerateResponseDTO? = nil
     
+    private let audioRecorder = AudioRecorderManager()
     @Published var recordedAudioURL: URL? = nil
     
     private let bookService = BookService()
     private var cancellables = Set<AnyCancellable>()
-    
-    private let audioRecorder = AudioRecorderManager()
     
     var currentCenterType: CenterType {
         switch currentStep {
@@ -123,8 +122,11 @@ class MakeStoryBookViewModel: ObservableObject {
                 withAnimation { self.isRecording = false }
                 withAnimation { self.currentStep = .processing }
                 
-                //TODO: - 녹음 API 연결하기
-                requestBookGeneration()
+                if let validURL = fileURL {
+                    requestBookGeneration(audioURL: validURL)
+                } else {
+                    withAnimation { self.currentStep = .speak }
+                }
             }
             
         case .processing:
@@ -132,18 +134,14 @@ class MakeStoryBookViewModel: ObservableObject {
         }
     }
     
-    private func requestBookGeneration() {
+    private func requestBookGeneration(audioURL: URL) {
         guard !isLoading else { return }
         isLoading = true
         
-        let mockSTT = "우주선, 달, 지구"
-        let param = BookGenerateRequestDTO(sttText: mockSTT)
-        
-        bookService.generateBook(param: param)
+        bookService.makeBook(audioURL: audioURL)
             .receive(on: DispatchQueue.main)
             .sink{ [weak self] completion in
                 self?.isLoading = false
-                
                 switch completion {
                 case .finished: break
                 case .failure(let error):
