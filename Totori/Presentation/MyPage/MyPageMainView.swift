@@ -14,7 +14,8 @@ struct MyPageMainView: View {
     @State private var showPopOver = false
     @State private var goBadgeList = false
     @State private var goConnect = false
-    @State private var selectedCategory: BadgeCategory?
+    @State private var selectedCategory: BadgeCategory? = nil
+    @State private var selectedBadgeId: Int? = nil
     
     private let columns: [GridItem] = Array(
         repeating: GridItem(.flexible(), spacing: 8),
@@ -50,7 +51,8 @@ struct MyPageMainView: View {
                                 BadgeGridCell(badge: badge)
                                     .onTapGesture {
                                         let category = BadgeCategory(rawValue: badge.category) ?? .acorn
-                                        selectedCategory = category
+                                        self.selectedCategory = category
+                                        self.selectedBadgeId = badge.id
                                     }
                             }
                         }
@@ -67,8 +69,10 @@ struct MyPageMainView: View {
                 ConnectView(viewModel: ConnectViewModel(role: .child))
             }
             .navigationDestination(item: $selectedCategory) { category in
-                MyPageBadgeView(category: category)
-                    .navigationBarBackButtonHidden(true)
+                if let category = selectedCategory, let id = selectedBadgeId {
+                    MyPageBadgeView(category: category, initialBadgeId: id)
+                        .navigationBarBackButtonHidden(true)
+                }
             }
             
             if showPopOver {

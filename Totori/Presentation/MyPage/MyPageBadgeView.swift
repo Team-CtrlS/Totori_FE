@@ -7,9 +7,13 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct MyPageBadgeView: View {
 
     let category: BadgeCategory
+    let initialBadgeId: Int
+    
     @StateObject private var viewModel = MyPageBadgeViewModel()
 
     var body: some View {
@@ -44,7 +48,7 @@ struct MyPageBadgeView: View {
             }
         }
         .onAppear {
-            viewModel.fetchAll(category: category)
+            viewModel.fetchAll(category: category, initialBadgeId: initialBadgeId)
         }
         .background(Color.main20.ignoresSafeArea())
     }
@@ -58,11 +62,17 @@ struct MyPageBadgeView: View {
 
             VStack(spacing: 10) {
 
-                // TODO: 뱃지 url 맞춰서 수정 필요
-                Image(.badgeDefault)
+                KFImage(URL(string: viewModel.summaryBadgeUrl))
+                    .placeholder {
+                        RoundedRectangle(cornerRadius: 21.1)
+                            .fill(Color.white)
+                            .frame(width: 100, height: 100)
+                    }
                     .resizable()
-                    .scaledToFit()
+                    .scaledToFill()
                     .frame(width: 100, height: 100)
+                    .clipped()
+                    .cornerRadius(21.1)
 
                 Text(viewModel.summayTitle)
                     .font(.NotoSans_24_SB)

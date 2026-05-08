@@ -43,7 +43,8 @@ class MainViewModel: ObservableObject {
     @Published var goalProgress: Double = 0.4
     @Published var goalImageURL: String? = nil
     @Published var hasBadge: Bool = false
-    @Published var representativeCategory: BadgeCategory = .acorn
+    @Published var goalCategory: BadgeCategory = .acorn
+    @Published var goalId: Int = 0
     
     // bookList
     @Published var bookItems: [BookList] = []
@@ -188,7 +189,8 @@ class MainViewModel: ObservableObject {
         let current = badge.targetValue
         let total = badge.targetValue
         
-        representativeCategory = category
+        goalCategory = category
+        goalId = badge.id
         goalSubtitle = category.getSubtitle(
             current: badge.level,
             target: badge.targetValue

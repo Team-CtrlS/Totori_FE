@@ -28,7 +28,7 @@ final class MyPageBadgeViewModel: ObservableObject {
     @Published var summaryTotalCount: Int = 10
     @Published var summarysuccessCount: Int = 4
     @Published var summaryProgress: CGFloat = 0.7
-    @Published var summaryBadgeUrl: Image = Image(.badgePurple)
+    @Published var summaryBadgeUrl: String = ""
     
     var progressText: String {
         "\(summarysuccessCount)/\(summaryTotalCount)"
@@ -42,12 +42,12 @@ final class MyPageBadgeViewModel: ObservableObject {
     private let badgeService = BadgeService()
     private var cancellables = Set<AnyCancellable>()
     
-    func fetchAll(category: BadgeCategory) {
-        fetchCategoryBadges(category: category)
+    func fetchAll(category: BadgeCategory, initialBadgeId: Int) {
+        fetchCategoryBadges(category: category, initialBadgeId: initialBadgeId)
     }
 
     // 특정 카테고리의 뱃지 리스트를 가져오기
-    func fetchCategoryBadges(category: BadgeCategory) {
+    func fetchCategoryBadges(category: BadgeCategory,initialBadgeId: Int) {
         isLoading = true
             
         badgeService.getCategoryBadges(category: category.rawValue)
@@ -62,20 +62,29 @@ final class MyPageBadgeViewModel: ObservableObject {
                 guard let self = self else { return }
                 
                 let category = BadgeCategory(rawValue: response.category) ?? .acorn
+                let currentCount = response.currentCount
                 
                 self.items = response.badges.map{
                     BadgeListItem(
                         id: $0.badgeId,
                         title: $0.name,
                         subtitle: category.getSubtitle(
-                            current: $0.level,
+                            current: currentCount,
                             target: $0.targetValue
                         ),
                         imageUrl: $0.imageUrl,
                         // TODO: progress response에 있으면 추가
-                        progress: $0.isAcquired ? 1.0 : 0.7,
+                        progress: $0.isAcquired ? 1.0 : (CGFloat(currentCount) / CGFloat($0.targetValue)),
                         isUnlocked: $0.isAcquired
                     )
+                }
+                
+                // 대표뱃지 설정
+                // TODO: totalCount, successCount 추가
+                if let selectedItem = items.first(where: { $0.id == initialBadgeId }) {
+                    self.summayTitle = selectedItem.title
+                    self.summaryProgress = selectedItem.progress
+                    self.summaryBadgeUrl = selectedItem.imageUrl
                 }
             }
             .store(in: &cancellables)
