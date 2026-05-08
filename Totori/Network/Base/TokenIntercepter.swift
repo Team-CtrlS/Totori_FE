@@ -16,7 +16,10 @@ final class TokenInterceptor: RequestInterceptor {
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var request = urlRequest
         
-        if let url = request.url?.absoluteString, url.contains("/api/auth/reissue") {
+        let whiteList = ["/api/auth/login", "/api/auth/signup", "/api/auth/reissue"]
+        
+        if let url = request.url?.absoluteString,
+           whiteList.contains(where: { url.contains($0) }) {
             completion(.success(request))
             return
         }
