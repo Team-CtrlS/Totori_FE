@@ -38,9 +38,9 @@ class AudioRecorderManager: NSObject {
                 try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
                 try session.setActive(true)
                 
-                let documentOath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                let tempDirectory = FileManager.default.temporaryDirectory
                 let filename = "totori_record_\(Int(Date().timeIntervalSince1970)).m4a"
-                let audioFileURL = documentOath.appendingPathComponent(filename)
+                let audioFileURL = tempDirectory.appendingPathComponent(filename)
                 self.currentAudioURL = audioFileURL
                 
                 let settings: [String: Any] = [
