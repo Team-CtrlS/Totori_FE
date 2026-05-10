@@ -17,12 +17,19 @@ struct BookGenerateResponseDTO: Decodable {
     let totalPages: Int
     let coverImagePrompt: String?
     let coverImageUrl: String
-    let pages: [BookPageResponseDTO]
+    let pages: [PageDTO]
 }
 
-struct BookPageResponseDTO: Decodable {
+struct PageDTO: Codable {
     let pageId: Int
     let pageOrder: Int
-    let sentences: [String]
+    let imagePrompt: String
     let imageUrl: String
+    let sentences: [SentenceDTO]
+}
+
+struct SentenceDTO: Codable {
+    let text: String
+    let audioUrl: String?
+    let durationMs: Int?
 }
