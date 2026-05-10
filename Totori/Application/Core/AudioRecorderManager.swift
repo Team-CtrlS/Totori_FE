@@ -58,11 +58,23 @@ class AudioRecorderManager: NSObject {
             }
         }
         
-        func stopRecording() -> URL? {
-            audioRecorder?.stop()
-            audioRecorder = nil
-            print("🛑 오디오 녹음 완료. 저장 경로: \(currentAudioURL?.path ?? "없음")")
-            return currentAudioURL
+    func stopRecording() -> URL? {
+        audioRecorder?.stop()
+        audioRecorder = nil
+        
+        if let url = currentAudioURL {
+            do {
+                let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
+                let fileSize = attributes[.size] as? Int64 ?? 0
+                print("🛑 오디오 녹음 완료")
+                print("   📁 경로: \(url.path)")
+                print("   📦 크기: \(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file))")
+            } catch {
+                print("🛑 오디오 녹음 완료 (크기 확인 실패: \(error))")
+            }
         }
+        
+        return currentAudioURL
+    }
         
     }
