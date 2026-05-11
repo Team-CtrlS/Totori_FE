@@ -27,4 +27,5 @@ struct DisplayPage {
     let globalIndex: Int
     let imageUrl: String
     let text: String
+    let audioUrl: String?
 }
