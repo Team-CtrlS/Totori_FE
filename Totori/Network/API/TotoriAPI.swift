@@ -21,6 +21,14 @@ enum TotoriAPI {
     case generateBook(param: BookGenerateRequestDTO)
     case mainStatus
     case bookList(page: Int, size: Int)
+    
+    //member
+    case acorn
+    
+    //badge
+    case myRepresentativeBadge
+    case myAllBadges
+    case categoryBadges(category: String)
 }
 
 extension TotoriAPI: BaseTargetType {
@@ -43,6 +51,18 @@ extension TotoriAPI: BaseTargetType {
             return "/api/books/main-status"
         case .bookList:
             return "/api/books"
+            
+            //member
+        case .acorn:
+            return "/api/members/me/acorns"
+            
+            //badge
+        case .myRepresentativeBadge:
+            return "/api/badges/my/representative"
+        case .myAllBadges:
+            return "/api/badges/my"
+        case .categoryBadges(let category):
+            return "/api/badges/my/categories/\(category)"
         }
     }
     
@@ -50,7 +70,7 @@ extension TotoriAPI: BaseTargetType {
         switch self {
         case .login, .signUp, .generateBook, .reissue, .attendance:
             return .post
-        case .mainStatus, .bookList:
+        case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges:
             return .get
         }
     }
@@ -73,6 +93,14 @@ extension TotoriAPI: BaseTargetType {
                 encoding: URLEncoding.queryString
             )
         case .attendance:
+            return .requestPlain
+        case .acorn:
+            return .requestPlain
+        case .myRepresentativeBadge:
+            return .requestPlain
+        case .myAllBadges:
+            return .requestPlain
+        case .categoryBadges(_):
             return .requestPlain
         }
     }

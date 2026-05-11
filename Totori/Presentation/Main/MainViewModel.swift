@@ -43,6 +43,8 @@ class MainViewModel: ObservableObject {
     @Published var goalProgress: Double = 0.4
     @Published var goalImageURL: String? = nil
     @Published var hasBadge: Bool = false
+    @Published var goalCategory: BadgeCategory = .acorn
+    @Published var goalId: Int = 0
     
     // bookList
     @Published var bookItems: [BookList] = []
@@ -171,6 +173,8 @@ class MainViewModel: ObservableObject {
     }
     
     private func applyBadge(_ badge: BadgeDTO?) {
+        let category = BadgeCategory(rawValue: badge?.category ?? "") ?? .acorn
+        
         guard let badge = badge else {
             hasBadge = false
             goalTitle = "아직 획득한 뱃지가 없어요"
@@ -185,7 +189,12 @@ class MainViewModel: ObservableObject {
         let current = badge.targetValue
         let total = badge.targetValue
         
-        goalSubtitle = "\(badge.name) (\(current)/\(total))"
+        goalCategory = category
+        goalId = badge.id
+        goalSubtitle = category.getSubtitle(
+            current: badge.level,
+            target: badge.targetValue
+        )
         goalProgress = total > 0 ? Double(current) / Double(total) : 0.0
         goalImageURL = badge.imageUrl
     }

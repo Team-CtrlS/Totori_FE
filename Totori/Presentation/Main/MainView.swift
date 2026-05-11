@@ -12,7 +12,8 @@ struct MainView: View {
     @StateObject private var attendance = AttendanceViewModel()
     
     @State private var navigateToMyPage: Bool = false
-    @State private var navigateToBadgeInfo: Bool = false
+    @State private var selectedCategory: BadgeCategory?
+    @State private var selectedBadgeId: Int = 0
     @State private var navigateToSetting: Bool = false
     
     let columns = [
@@ -66,7 +67,8 @@ struct MainView: View {
                             progress: viewModel.goalProgress,
                             imageUrl: viewModel.goalImageURL,
                             onTap: {
-                                navigateToBadgeInfo = true
+                                selectedCategory = viewModel.goalCategory
+                                selectedBadgeId = viewModel.goalId
                             }
                         )
                         .padding(20)
@@ -123,8 +125,8 @@ struct MainView: View {
             MyPageMainView()
                 .navigationBarBackButtonHidden(true)
         }
-        .navigationDestination(isPresented: $navigateToBadgeInfo) {
-            MyPageBadgeView()
+        .navigationDestination(item: $selectedCategory) { category in
+            MyPageBadgeView(category: category, initialBadgeId: selectedBadgeId)
                 .navigationBarBackButtonHidden(true)
         }
     }

@@ -14,6 +14,8 @@ struct MyPageMainView: View {
     @State private var showPopOver = false
     @State private var goBadgeList = false
     @State private var goConnect = false
+    @State private var selectedCategory: BadgeCategory? = nil
+    @State private var selectedBadgeId: Int? = nil
     
     private let columns: [GridItem] = Array(
         repeating: GridItem(.flexible(), spacing: 8),
@@ -40,19 +42,17 @@ struct MyPageMainView: View {
                             progress: viewModel.progress,
                             imageUrl: viewModel.imageUrl,
                             onTap: {
-                                goBadgeList = true
+                                selectedCategory = viewModel.representativeCategory
                             }
                         )
-                        .navigationDestination(isPresented: $goBadgeList) {
-                            MyPageBadgeView()
-                                .navigationBarBackButtonHidden(true)
-                        }
                         
                         LazyVGrid(columns: columns, spacing: 8) {
                             ForEach(viewModel.badges) { badge in
                                 BadgeGridCell(badge: badge)
                                     .onTapGesture {
-                                        // TODO: 뱃지 상세/획득 팝업 등
+                                        let category = BadgeCategory(rawValue: badge.category) ?? .acorn
+                                        self.selectedCategory = category
+                                        self.selectedBadgeId = badge.id
                                     }
                             }
                         }
@@ -62,8 +62,17 @@ struct MyPageMainView: View {
                 }
             }
             .background(.main20)
+            .onAppear {
+                viewModel.fetchAll()
+            }
             .navigationDestination(isPresented: $goConnect) {
                 ConnectView(viewModel: ConnectViewModel(role: .child))
+            }
+            .navigationDestination(item: $selectedCategory) { category in
+                if let category = selectedCategory, let id = selectedBadgeId {
+                    MyPageBadgeView(category: category, initialBadgeId: id)
+                        .navigationBarBackButtonHidden(true)
+                }
             }
             
             if showPopOver {
