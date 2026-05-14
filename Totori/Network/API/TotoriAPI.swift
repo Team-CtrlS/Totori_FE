@@ -21,6 +21,7 @@ enum TotoriAPI {
     case generateBook(param: BookGenerateRequestDTO)
     case mainStatus
     case bookList(page: Int, size: Int)
+    case makeBook(audioURL: URL)
     
     //member
     case acorn
@@ -51,6 +52,7 @@ extension TotoriAPI: BaseTargetType {
             return "/api/books/main-status"
         case .bookList:
             return "/api/books"
+        case .makeBook: return "/api/books/make"
             
             //member
         case .acorn:
@@ -68,7 +70,7 @@ extension TotoriAPI: BaseTargetType {
     
     var method: Moya.Method {
         switch self {
-        case .login, .signUp, .generateBook, .reissue, .attendance:
+        case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook:
             return .post
         case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges:
             return .get
@@ -94,6 +96,19 @@ extension TotoriAPI: BaseTargetType {
             )
         case .attendance:
             return .requestPlain
+        case .makeBook(let audioURL):
+            guard let audioData = try? Data(contentsOf: audioURL) else {
+                return .requestPlain
+            }
+            
+            let formData = MultipartFormData(
+                provider: .data(audioData),
+                name: "audio",
+                fileName: audioURL.lastPathComponent,
+                mimeType: "audio/m4a"
+            )
+            
+            return .uploadMultipart([formData])
         case .acorn:
             return .requestPlain
         case .myRepresentativeBadge:
@@ -103,27 +118,27 @@ extension TotoriAPI: BaseTargetType {
         case .categoryBadges(_):
             return .requestPlain
         }
+}
+
+var headers: [String: String]? {
+    switch self {
+    case .reissue:
+        let refreshToken = KeychainManager.shared.load(key: .refreshToken) ?? ""
+        return [
+            "Content-Type": "application/json",
+            "RefreshToken": "Bearer \(refreshToken)"
+        ]
+    default:
+        return ["Content-Type": "application/json"]
     }
-    
-    var headers: [String: String]? {
-        switch self {
-        case .reissue:
-            let refreshToken = KeychainManager.shared.load(key: .refreshToken) ?? ""
-            return [
-                "Content-Type": "application/json",
-                "RefreshToken": "Bearer \(refreshToken)"
-            ]
-        default:
-            return ["Content-Type": "application/json"]
-        }
+}
+
+var authorizationType: AuthorizationType? {
+    switch self {
+    case .login, .signUp, .reissue:
+        return .none
+    default:
+        return .bearer
     }
-    
-    var authorizationType: AuthorizationType? {
-        switch self {
-        case .login, .signUp, .reissue:
-            return .none
-        default:
-            return .bearer
-        }
-    }
+}
 }

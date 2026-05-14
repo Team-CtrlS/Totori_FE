@@ -91,13 +91,13 @@ struct MakeStoryBookView: View {
     
     private var listeningView: some View {
         GifImage(viewModel.currentStep.gifFileName)
-                    .frame(width: 260, height: 260)
+            .frame(width: 260, height: 260)
     }
     
     private var processingView: some View {
         VStack(spacing: 46) {
             GifImage(viewModel.currentStep.gifFileName)
-                            .frame(width: 200, height: 302)
+                .frame(width: 200, height: 302)
             
             Text("동화 속 세상을 만드는 중...")
                 .font(.NotoSans_20_SB)
@@ -128,46 +128,43 @@ struct AutoScrollView: View {
             }
         }
     }
+    
     private func tipBox(index: Int) -> some View {
-            let titles = [
-                "새로운 이야기에 대해...",
-                "도토리에 대해....",
-                "도토리 전시장에 대해..."
-            ]
+        let titles = [
+            "새로운 이야기에 대해...",
+            "도토리에 대해....",
+            "도토리 전시장에 대해..."
+        ]
+        
+        let descriptions = [
+            "이야깃거리가 떠오르지 않는다면 아침에\n무슨 일이 있었는지 이야기해봐!",
+            "퀴즈의 답을 맞히면 도토리를 얻을 수 있어!\n도토리로 신나는 이야기를 만들어보자!",
+            "목표를 달성하면 도토리 훈장을 받을 수 있어!\n어떤 훈장들을 모았는지 확인해 보는 건 어때?"
+        ]
+        
+        let safeIndex = index % 3
+        
+        return HStack(spacing: 21) {
+            Image(.arconBadge)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 26.96, height: 37.88)
             
-            let descriptions = [
-                "이야깃거리가 떠오르지 않는다면 아침에\n무슨 일이 있었는지 이야기해봐!",
-                "퀴즈의 답을 맞히면 도토리를 얻을 수 있어!\n도토리로 신나는 이야기를 만들어보자!",
-                "목표를 달성하면 도토리 훈장을 받을 수 있어!\n어떤 훈장들을 모았는지 확인해 보는 건 어때?"
-            ]
-            
-            let safeIndex = index % 3
-            
-            return HStack(spacing: 21) {
-                Image(.arconBadge)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 26.96, height: 37.88)
+            VStack(alignment: .leading) {
+                Text(titles[safeIndex])
+                    .font(.NotoSans_16_SB)
+                    .foregroundColor(.tBlack)
                 
-                VStack(alignment: .leading) {
-                    Text(titles[safeIndex])
-                        .font(.NotoSans_16_SB)
-                        .foregroundColor(.tBlack)
-                    
-                    Text(descriptions[safeIndex])
-                        .font(.NotoSans_14_R)
-                        .foregroundColor(.textGray)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                Text(descriptions[safeIndex])
+                    .font(.NotoSans_14_R)
+                    .foregroundColor(.textGray)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .padding(10)
-            .frame(width: itemWidth, height: 82)
-            .background(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
-}
-
-#Preview {
-    MakeStoryBookView()
+        .padding(10)
+        .frame(width: itemWidth, height: 82)
+        .background(.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
 }

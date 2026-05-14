@@ -183,6 +183,9 @@ struct LoginView: View {
         .onChange(of: viewModel.isLoginSuccessful) { success in
             if success { dismiss() }
         }
+        .navigationDestination(isPresented: $navigateToSignUp) {
+            SignUpView(viewModel: SignUpViewModel(role: role))
+        }
         .navigationBarBackButtonHidden(true)
     }
 }

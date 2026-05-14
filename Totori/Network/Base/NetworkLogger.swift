@@ -12,7 +12,11 @@ import Moya
 final class NetworkLogger: PluginType {
     func willSend(_ request: RequestType, target: TargetType) {
         guard let request = request.request, let url = request.url else { return }
-        Logger.request(method: request.httpMethod ?? "", url: url.absoluteString)
+        print("🚀 [요청] \(request.httpMethod ?? "") \(url)")
+        print("📝 [요청 헤더] \(request.allHTTPHeaderFields ?? [:])")
+        if let body = request.httpBody {
+            print("📦 [요청 바디 크기] \(ByteCountFormatter.string(fromByteCount: Int64(body.count), countStyle: .file))")
+        }
     }
     
     func didReceive(_ result: Result<Response, MoyaError>, target: TargetType) {

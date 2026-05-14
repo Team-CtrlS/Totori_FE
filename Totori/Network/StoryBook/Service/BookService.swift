@@ -14,4 +14,8 @@ class BookService {
     func generateBook(param: BookGenerateRequestDTO) -> AnyPublisher<BookGenerateResponseDTO, NetworkError> {
         return networkService.request(.generateBook(param: param), responseType: BookGenerateResponseDTO.self)
     }
+    
+    func makeBook(audioURL: URL) -> AnyPublisher<BookGenerateResponseDTO, NetworkError> {
+        return networkService.request(.makeBook(audioURL: audioURL), responseType: BookGenerateResponseDTO.self)
+    }
 }

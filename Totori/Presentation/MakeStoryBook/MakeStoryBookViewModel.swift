@@ -55,6 +55,9 @@ class MakeStoryBookViewModel: ObservableObject {
     @Published var navigateToBookInfo: Bool = false
     @Published var generatedBookData: BookGenerateResponseDTO? = nil
     
+    private let audioRecorder = AudioRecorderManager()
+    @Published var recordedAudioURL: URL? = nil
+    
     private let bookService = BookService()
     private var cancellables = Set<AnyCancellable>()
     
@@ -97,19 +100,33 @@ class MakeStoryBookViewModel: ObservableObject {
             
         case .speak:
             print("🔊 TTS 재생 및 마이크 켜기 API 준비")
-            // TODO: 서버에 음성 데이터 보내고 응답받으면 아래 코드로 스텝 전환
             withAnimation { currentStep = .listening }
             
         case .listening:
             if !isRecording {
-                print("🎙️ 첫 번째 탭: 녹음 시작")
-                withAnimation { isRecording = true }
+                audioRecorder.requestPermission { [weak self] granted in
+                    guard let self = self else { return }
+                    if granted {
+                        print("녹음 시작")
+                        self.audioRecorder.startRecoding()
+                        withAnimation { self.isRecording = true }
+                    } else {
+                        print("⚠️ 마이크 권한이 거부되었습니다. 설정에서 권한을 허용해주세요.")
+                    }
+                }
             } else {
-                print("🎙️ 두 번째 탭: 녹음 중지 및 STT(음성->텍스트) API 전송 준비")
-                withAnimation { isRecording = false }
-                withAnimation { currentStep = .processing }
+                print("🎙️ 녹음 중지 및 API 전송 준비")
+                let fileURL = audioRecorder.stopRecording()
+                self.recordedAudioURL = fileURL
                 
-                requestBookGeneration()
+                withAnimation { self.isRecording = false }
+                withAnimation { self.currentStep = .processing }
+                
+                if let validURL = fileURL {
+                    requestBookGeneration(audioURL: validURL)
+                } else {
+                    withAnimation { self.currentStep = .speak }
+                }
             }
             
         case .processing:
@@ -117,18 +134,14 @@ class MakeStoryBookViewModel: ObservableObject {
         }
     }
     
-    private func requestBookGeneration() {
+    private func requestBookGeneration(audioURL: URL) {
         guard !isLoading else { return }
         isLoading = true
         
-        let mockSTT = "우주선, 달, 지구"
-        let param = BookGenerateRequestDTO(sttText: mockSTT)
-        
-        bookService.generateBook(param: param)
+        bookService.makeBook(audioURL: audioURL)
             .receive(on: DispatchQueue.main)
             .sink{ [weak self] completion in
                 self?.isLoading = false
-                
                 switch completion {
                 case .finished: break
                 case .failure(let error):
