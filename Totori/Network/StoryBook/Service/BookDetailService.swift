@@ -16,11 +16,14 @@ class BookDetailService {
         return networkService.request(.bookDetail(bookId: bookId), responseType: BookDetailResponseDTO.self)
             .handleEvents(
                 receiveOutput: { response in
+                    print("🌐 BookDetailService - 응답 수신: \(response.cover.title)")
                 },
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
+                        print("🌐 BookDetailService - 완료")
                     case .failure(let error):
+                        print("🌐 BookDetailService - 에러: \(error)")
                     }
                 }
             )
