@@ -18,4 +18,11 @@ class BookService {
     func makeBook(audioURL: URL) -> AnyPublisher<BookGenerateResponseDTO, NetworkError> {
         return networkService.request(.makeBook(audioURL: audioURL), responseType: BookGenerateResponseDTO.self)
     }
+    
+    func uploadReadingAudio(bookId: Int, sentenceNum: Int, audioURL: URL) -> AnyPublisher<EmptyData, NetworkError> {
+        return networkService.request(
+            .uploadReadingAudio(bookId: bookId, sentenceNum: sentenceNum, audioURL: audioURL),
+            responseType: EmptyData.self
+        )
+    }
 }
