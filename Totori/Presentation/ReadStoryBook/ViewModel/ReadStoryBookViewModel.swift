@@ -28,10 +28,15 @@ class ReadStoryBookViewModel: ObservableObject {
     private var audioPlayer: AVPlayer?
     private var playerObserver: Any?
     
+    private let bookService = BookService()
+    private var cancellables = Set<AnyCancellable>()
+    private var bookId: Int = 0
+    
     init() {}
     
     // BookGenerateResponseDTO 버전
     func setUpData(bookData: BookGenerateResponseDTO) {
+        self.bookId = bookData.bookId
         var flatList: [DisplayPage] = []
         var globalIdx = 0
         
@@ -161,6 +166,7 @@ class ReadStoryBookViewModel: ObservableObject {
     }
     
     // 페이지가 넘어갈 때 재생 중인 오디오 강제 종료
+    
     // MARK: - Recording Flow
     
     private func startRecordingFlow() {
@@ -190,8 +196,21 @@ class ReadStoryBookViewModel: ObservableObject {
     }
     
     private func handleRecordedAudio(url: URL) {
-        // TODO: 서버 업로드 / STT 호출 등 후처리
-        print("📤 녹음 파일 처리: \(url.lastPathComponent)")
+        let sentenceNum = currentDisplayPage.globalIndex
+        
+        bookService.uploadReadingAudio(bookId: bookId, sentenceNum: sentenceNum, audioURL: url)
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { completion in
+                    if case .failure(let error) = completion {
+                        print("❌ 업로드 실패: \(error)")
+                    }
+                },
+                receiveValue: { _ in
+                    print("✅ 녹음 업로드 완료 (sentenceNum: \(sentenceNum))")
+                }
+            )
+            .store(in: &cancellables)
     }
     
     private func resetPageStates() {
