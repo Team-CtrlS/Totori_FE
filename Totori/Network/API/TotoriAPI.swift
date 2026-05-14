@@ -29,6 +29,9 @@ enum TotoriAPI {
     case myRepresentativeBadge
     case myAllBadges
     case categoryBadges(category: String)
+    
+    //report
+    case weeklyReport
 }
 
 extension TotoriAPI: BaseTargetType {
@@ -63,6 +66,10 @@ extension TotoriAPI: BaseTargetType {
             return "/api/badges/my"
         case .categoryBadges(let category):
             return "/api/badges/my/categories/\(category)"
+            
+            //report
+        case .weeklyReport:
+            return "/api/reports/week"
         }
     }
     
@@ -70,7 +77,7 @@ extension TotoriAPI: BaseTargetType {
         switch self {
         case .login, .signUp, .generateBook, .reissue, .attendance:
             return .post
-        case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges:
+        case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges, .weeklyReport:
             return .get
         }
     }
@@ -101,6 +108,8 @@ extension TotoriAPI: BaseTargetType {
         case .myAllBadges:
             return .requestPlain
         case .categoryBadges(_):
+            return .requestPlain
+        case .weeklyReport:
             return .requestPlain
         }
     }

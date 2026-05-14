@@ -53,6 +53,9 @@ struct WeeklyReportView: View {
                     }
                 }
                 .background(Color.backgroundGray)
+                .onAppear {
+                    viewModel.fetchAll()
+                }
                 .navigationBarHidden(true)
                 .navigationDestination(isPresented: $isNavigatingToTotal) {
                     TotalReportView()
@@ -173,14 +176,14 @@ struct WeeklyReportView: View {
                 Text("도서 완독률")
                     .font(.NotoSans_16_SB)
                 Spacer()
-                Text("\(Int((viewModel.quizAccuracyProgress * 100).rounded()))%")
+                Text("\(Int((viewModel.completionProgress * 100).rounded()))%")
                     .font(.NotoSans_16_SB)
                     .foregroundStyle(.main)
             }
             .padding(.bottom, 20)
 
             ProgressBar(
-                progress: viewModel.quizAccuracyProgress,
+                progress: viewModel.completionProgress,
                 height: .h8,
                 style: .purple,
                 backColor: .lightgray
@@ -189,7 +192,7 @@ struct WeeklyReportView: View {
 
             HStack(spacing: 0){
                 Spacer()
-                Text("\(viewModel.quizAccuracy.correctCount)/\(viewModel.quizAccuracy.totalCount)")
+                Text("\(viewModel.completion.completedBookCount)/\(viewModel.completion.totalBookCount)")
                     .font(.NotoSans_12_R)
                     .foregroundStyle(.textGray)
             }

@@ -12,19 +12,19 @@ import Foundation
 
 struct Child: Codable {
     let name: String
-    let age: Int
+    let age: Int?
     let profileUrl: String?
 }
 
 enum DayOfWeek: String, Codable, CaseIterable {
     // TODO: 백엔드 응답값에 맞춰서 수정
-    case mon = "MON"
-    case tue = "TUE"
-    case wed = "WED"
-    case thu = "THU"
-    case fri = "FRI"
-    case sat = "SAT"
-    case sun = "SUN"
+    case mon = "MONDAY"
+    case tue = "TUESDAY"
+    case wed = "WEDNESDAY"
+    case thu = "THURSDAY"
+    case fri = "FRIDAY"
+    case sat = "SATURDAY"
+    case sun = "SUNDAY"
 
     var koreanShort: String {
         switch self {
@@ -109,10 +109,6 @@ final class WeeklyReportViewModel: ObservableObject {
         .init(id: 2, title: "반딧불이를 만나요", isCompleted: true),
         .init(id: 3, title: "돔돔의 영어교실", isCompleted: true)
     ]
-    @Published var quizAccuracy = QuizAccuracy (
-        correctCount: 15,
-        totalCount: 30
-    )
     @Published var completion = Completion (
         completedBookCount: 3,
         totalBookCount: 6
@@ -129,14 +125,74 @@ final class WeeklyReportViewModel: ObservableObject {
             .init(id:7, book: "책읽기는 재밌어", wcpm: 79),
         ]
     )
-
-    var quizAccuracyProgress: Double {
-        guard quizAccuracy.totalCount > 0 else { return 0 }
-        return Double(quizAccuracy.correctCount) / Double(quizAccuracy.totalCount)
-    }
     
     var completionProgress: Double {
         guard completion.totalBookCount > 0 else { return 0 }
         return Double(completion.completedBookCount) / Double(completion.totalBookCount)
+    }
+    
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
+        
+    private let reportService = ReportService()
+    private var cancellables = Set<AnyCancellable>()
+    
+    func fetchAll() {
+        fetchWeeklyReport()
+    }
+    
+    func fetchWeeklyReport() {
+        isLoading = true
+            
+        reportService.getWeeklyReport()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                self?.isLoading = false
+                if case .failure(let error) = completion {
+                    print("주간 리포트 로드 실패: \(error.localizedDescription)")
+                    self?.errorMessage = error.localizedDescription
+                }
+            } receiveValue: { [weak self] response in
+                self?.applyWeeklyReport(response)
+            }
+            .store(in: &cancellables)
+    }
+        
+    private func applyWeeklyReport(_ dto: WeeklyReportDTO) {
+        self.child = Child(
+            name: dto.child.name,
+            age: dto.child.age,
+            profileUrl: self.child.profileUrl
+        )
+            
+        // 주간 학습 현황
+        self.weeklyLearning = dto.weeklyLearning.map {
+            WeeklyLearningDay(
+                date: $0.date,
+                dayOfWeek: DayOfWeek(rawValue: $0.dayOfWeek) ?? .mon,
+                studied: $0.studied,
+                bookCount: $0.bookCount
+            )
+        }
+            
+        // 도서 완독률
+        self.completion = Completion(
+            completedBookCount: dto.completion.completedBookCount,
+            totalBookCount: dto.completion.totalBookCount
+        )
+            
+        // wcpm 그래프
+        let dailyWcpm = dto.wcpm.daily.enumerated().map { (index, point) in
+            WCPMDaily(
+                id: index,
+                book: point.label, // 우선 날짜를 이름 대용으로 사용
+                wcpm: Double(point.value)
+            )
+        }
+            
+        self.wcpm = WCPM(
+            average: Double(dto.wcpm.average),
+            daily: dailyWcpm
+        )
     }
 }

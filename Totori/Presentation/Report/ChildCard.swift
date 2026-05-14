@@ -11,7 +11,7 @@ struct ChildCard: View {
     
     let imageUrl: String?
     let childName: String
-    let childAge: Int
+    let childAge: Int?
     
     var body: some View{
         ZStack{
@@ -42,7 +42,7 @@ struct ChildCard: View {
                         .font(.NotoSans_24_SB)
                         .foregroundStyle(.black)
 
-                    Text("\(childAge)세 아동")
+                    Text(childAge != nil ? "\(childAge!)세 아동" : "아동")
                         .font(.NotoSans_16_R)
                         .foregroundStyle(.textGray)
                 }
