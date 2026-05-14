@@ -12,7 +12,21 @@ import Kingfisher
 struct BookInfoView: View {
     @StateObject private var viewModel = BookInfoViewModel()
     
-    let bookData: BookGenerateResponseDTO
+    private enum Source {
+        case generated(BookGenerateResponseDTO)
+        case detail(Int) // bookId
+    }
+    private let source: Source
+    
+    // 생성 후 진입
+    init(bookData: BookGenerateResponseDTO) {
+        self.source = .generated(bookData)
+    }
+    
+    // 상세 조회 후 진입
+    init(bookId: Int) {
+        self.source = .detail(bookId)
+    }
     
     var body: some View {
         ZStack {
@@ -78,11 +92,18 @@ struct BookInfoView: View {
             }
         }
         .onAppear {
-            viewModel.setupData(with: bookData)
+            switch source {
+            case .generated(let bookData):
+                print("🟢 generated 경로")
+                viewModel.setupData(with: bookData)
+            case .detail(let bookId):
+                print("🟢 detail 경로 - bookId: \(bookId)")
+                viewModel.fetchDetail(bookId: bookId)
+            }
         }
         .navigationDestination(isPresented: $viewModel.navigateToReadStoryBook) {
-            if let data = viewModel.bookData {
-                ReadStoryBookView(bookData: data)
+            if let source = viewModel.readSource {
+                ReadStoryBookView(source: source)
                     .navigationBarBackButtonHidden(true)
             }
         }
