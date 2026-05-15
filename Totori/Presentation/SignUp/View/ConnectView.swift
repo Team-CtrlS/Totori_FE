@@ -72,14 +72,14 @@ struct ConnectView: View {
             
             if viewModel.role == .child {
                 VStack(spacing: 8) {
-                    Text("위의 5자리 코드를 보호자의 휴대폰 화면에 입력해주세요.\n이 코드는 30초간 유효합니다.")
+                    Text("위의 5자리 코드를 보호자의 휴대폰 화면에 입력해주세요.\n이 코드는 10분간 유효합니다.")
                         .font(.NotoSans_14_R)
                         .foregroundColor(.textGray)
                         .multilineTextAlignment(.center)
                         .padding(.bottom, 14)
                     
                     HStack(spacing: 1) {
-                        Text("\(viewModel.timeRemaining)초 ")
+                        Text("\(viewModel.timeString)")
                             .font(.NotoSans_14_SB)
                             .foregroundColor(.tBlack)
                         

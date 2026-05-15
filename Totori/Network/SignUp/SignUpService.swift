@@ -17,4 +17,8 @@ class SignUpService {
     func signUp(param: SignUpRequestDTO) -> AnyPublisher<EmptyData, NetworkError> {
         return networkService.request(.signUp(param: param), responseType: EmptyData.self)
     }
+    
+    func getConnectCode() -> AnyPublisher<ConnectCodeResponseDTO, NetworkError> {
+        return networkService.request(.connectCode, responseType: ConnectCodeResponseDTO.self)
+    }
 }

@@ -37,6 +37,9 @@ enum TotoriAPI {
     case weeklyReport
     case totalReport
     case weeklyBook
+    
+    //connect
+    case connectCode
 }
 
 extension TotoriAPI: BaseTargetType {
@@ -84,6 +87,10 @@ extension TotoriAPI: BaseTargetType {
             return "/api/reports/total"
         case .weeklyBook:
             return "/api/books/week"
+            
+            //connect
+        case .connectCode:
+            return "/api/connect/code"
         }
     }
     
@@ -153,6 +160,8 @@ extension TotoriAPI: BaseTargetType {
         case .totalReport:
             return .requestPlain
         case .weeklyBook:
+            return .requestPlain
+        case .connectCode:
             return .requestPlain
         }
     }

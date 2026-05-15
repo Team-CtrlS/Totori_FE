@@ -20,7 +20,21 @@ class ConnectViewModel: ObservableObject {
     }
     
     @Published var timeRemaining: Int = 30
+    
+    var timeString: String {
+        let minutes = timeRemaining / 60
+        let seconds = timeRemaining % 60
+        return String(format: "%d분 %02d초", minutes, seconds)
+    }
+    
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
+    
     private var timer: Timer?
+    private let connectService = SignUpService()
+    private var cancellables = Set<AnyCancellable>()
+    
+
     
     init(role: SignUpType) {
         self.role = role
@@ -31,12 +45,26 @@ class ConnectViewModel: ObservableObject {
     }
     
     func fetchNewPinCode() {
-        // 지금은 임시로 랜덤 5자리 숫자를 생성
-        let randomPin = String(format: "%05d", Int.random(in: 0...99999))
-        self.pinCode = randomPin
-        
-        self.timeRemaining = 30
-        startTimer()
+        isLoading = true
+        errorMessage = nil
+            
+        connectService.getConnectCode()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                self?.isLoading = false
+                if case .failure(let error) = completion {
+                    print("코드 발급 실패: \(error.localizedDescription)")
+                    self?.errorMessage = "코드를 불러올 수 없습니다."
+                }
+            } receiveValue: { [weak self] response in
+                guard let self = self else { return }
+                    
+                self.pinCode = response.code
+                self.timeRemaining = response.validTime
+                    
+                self.startTimer()
+            }
+            .store(in: &cancellables)
     }
     
     private func startTimer() {
