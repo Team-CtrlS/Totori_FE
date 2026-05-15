@@ -18,6 +18,10 @@ class ReportService {
         return networkService.request(.weeklyReport, responseType: WeeklyReportDTO.self)
     }
     
+    func getWeeklyBook() -> AnyPublisher<WeeklyLearningResponseDTO, NetworkError> {
+        return networkService.request(.weeklyBook, responseType: WeeklyLearningResponseDTO.self)
+    }
+    
     func getTotalReport() -> AnyPublisher<TotalReportDTO, NetworkError> {
         return networkService.request(.totalReport, responseType: TotalReportDTO.self)
     }

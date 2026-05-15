@@ -17,7 +17,6 @@ struct Child: Codable {
 }
 
 enum DayOfWeek: String, Codable, CaseIterable {
-    // TODO: 백엔드 응답값에 맞춰서 수정
     case mon = "MONDAY"
     case tue = "TUESDAY"
     case wed = "WEDNESDAY"
@@ -84,35 +83,26 @@ struct WCPMDaily: Codable, Identifiable {
 
 final class WeeklyReportViewModel: ObservableObject {
     
-    @Published var selectedDate: String = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: Date())
-    }()
-    
     @Published var child = Child (
         name: "김밤톨",
         age: 7,
         profileUrl: "https://picsum.photos/100"
     )
-    @Published var weeklyLearning: [WeeklyLearningDay] = [
-        .init(date: "2026-03-10", dayOfWeek: .mon, studied: true,  bookCount: 2),
-        .init(date: "2026-03-11", dayOfWeek: .tue, studied: false, bookCount: 0),
-        .init(date: "2026-03-12", dayOfWeek: .wed, studied: true,  bookCount: 1),
-        .init(date: "2026-03-13", dayOfWeek: .thu, studied: true,  bookCount: 1),
-        .init(date: "2026-03-14", dayOfWeek: .fri, studied: true,  bookCount: 4),
-        .init(date: "2026-03-15", dayOfWeek: .sat, studied: false,  bookCount: 0),
-        .init(date: "2026-03-16", dayOfWeek: .sun, studied: false,  bookCount: 0)
-    ]
-    @Published var selectedBooks: [BookItem] = [
-        .init(id: 1, title: "도토리 숲의 비밀 모험", isCompleted: false),
-        .init(id: 2, title: "반딧불이를 만나요", isCompleted: true),
-        .init(id: 3, title: "돔돔의 영어교실", isCompleted: true)
-    ]
+    
+    // 주간 학습 현황
+    @Published var weeklyLearning: [WeeklyLearningDay] = []
+    
+    @Published var selectedDate: String = ""
+    @Published var selectedBooks: [BookItem] = []
+    private var rawWeeklyData: [String: [BookItem]] = [:]
+    
+    // 도서 완독률
     @Published var completion = Completion (
         completedBookCount: 3,
         totalBookCount: 6
     )
+    
+    // wcpm 그래프
     @Published var wcpm = WCPM (
         average: 73,
         daily: [
@@ -137,8 +127,21 @@ final class WeeklyReportViewModel: ObservableObject {
     private let reportService = ReportService()
     private var cancellables = Set<AnyCancellable>()
     
+    init() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        self.selectedDate = formatter.string(from: Date())
+        
+        $selectedDate
+            .sink { [weak self] date in
+                self?.updateSelectedBooks(for: date)
+            }
+            .store(in: &cancellables)
+    }
+    
     func fetchAll() {
         fetchWeeklyReport()
+        fetchWeeklyLearningData()
     }
     
     func fetchWeeklyReport() {
@@ -154,6 +157,22 @@ final class WeeklyReportViewModel: ObservableObject {
                 }
             } receiveValue: { [weak self] response in
                 self?.applyWeeklyReport(response)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func fetchWeeklyLearningData() {
+        isLoading = true
+        
+        reportService.getWeeklyBook()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                self?.isLoading = false
+                if case .failure(let error) = completion {
+                    print("주간 도서 목록 로드 실패: \(error.localizedDescription)")
+                }
+            } receiveValue: { [weak self] response in
+                self?.applyWeeklyLearningData(response)
             }
             .store(in: &cancellables)
     }
@@ -194,5 +213,23 @@ final class WeeklyReportViewModel: ObservableObject {
             average: Double(dto.wcpm.average),
             daily: dailyWcpm
         )
+    }
+    
+    private func applyWeeklyLearningData(_ dto: WeeklyLearningResponseDTO) {
+        var tempDict: [String: [BookItem]] = [:]
+            
+        for (date, books) in dto.weeklyData {
+            tempDict[date] = books.map {
+                BookItem(id: $0.bookId, title: $0.title, isCompleted: $0.isCompleted)
+            }
+        }
+            
+        self.rawWeeklyData = tempDict
+        
+        updateSelectedBooks(for: selectedDate)
+    }
+    
+    private func updateSelectedBooks(for date: String) {
+        self.selectedBooks = rawWeeklyData[date] ?? []
     }
 }
