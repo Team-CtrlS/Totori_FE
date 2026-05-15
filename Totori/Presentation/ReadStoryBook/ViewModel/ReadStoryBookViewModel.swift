@@ -21,6 +21,9 @@ class ReadStoryBookViewModel: ObservableObject {
     @Published var navigateToBadge: Bool = false
     @Published var navigateToFinish: Bool = false
     
+    @Published var navigateToQuiz: Bool = false
+    @Published var pendingQuizData: QuizResponseDTO? = nil
+    
     private let audioRecorder = AudioRecorderManager()
     
     private(set) var lastRecordedURL: URL?
@@ -32,6 +35,9 @@ class ReadStoryBookViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var bookId: Int = 0
     
+    private var quizInterval: Int = 18
+    private var quizImageCount: Int = 6
+    
     init() {}
     
     // BookGenerateResponseDTO 버전
@@ -42,6 +48,7 @@ class ReadStoryBookViewModel: ObservableObject {
         var globalIdx = 0
         
         let sortedPages = bookData.pages.sorted { $0.pageOrder < $1.pageOrder }
+        
         
         for page in sortedPages {
             for sentence in page.sentences {

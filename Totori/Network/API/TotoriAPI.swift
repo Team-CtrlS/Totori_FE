@@ -25,6 +25,9 @@ enum TotoriAPI {
     case bookDetail(bookId: Int)
     case uploadReadingAudio(bookId: Int, sentenceNum: Int, audioURL: URL)
     
+    //quiz
+    case makeQuiz(bookId: Int)
+    
     //member
     case acorn
     
@@ -68,6 +71,10 @@ extension TotoriAPI: BaseTargetType {
             return "/api/books/\(bookId)"
         case .uploadReadingAudio(let bookId, let sentenceNum, _):
             return "/api/books/\(bookId)/reading/\(sentenceNum)"
+            
+            //quiz
+        case .makeQuiz:
+            return "/api/quiz/generate"
             
             //member
         case .acorn:
@@ -168,6 +175,11 @@ extension TotoriAPI: BaseTargetType {
             return .requestPlain
         case .connectParent(let param):
             return .requestJSONEncodable(param)
+        case .makeQuiz(let bookId):
+            return .requestParameters(
+                parameters: ["bookId": bookId],
+                encoding: URLEncoding.queryString
+            )
         }
     }
     
