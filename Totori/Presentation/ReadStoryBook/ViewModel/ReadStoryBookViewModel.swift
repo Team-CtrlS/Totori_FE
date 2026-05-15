@@ -30,11 +30,34 @@ class ReadStoryBookViewModel: ObservableObject {
     
     init() {}
     
+    // BookGenerateResponseDTO 버전
     func setUpData(bookData: BookGenerateResponseDTO) {
         var flatList: [DisplayPage] = []
         var globalIdx = 0
         
         let sortedPages = bookData.pages.sorted { $0.pageOrder < $1.pageOrder }
+        
+        for page in sortedPages {
+            for sentence in page.sentences {
+                let displayPage = DisplayPage(
+                    globalIndex: globalIdx,
+                    imageUrl: page.imageUrl,
+                    text: sentence.text,
+                    audioUrl: sentence.audioUrl
+                )
+                flatList.append(displayPage)
+                globalIdx += 1
+            }
+        }
+        self.displayPages = flatList
+    }
+
+    // BookDetailResponseDTO 버전
+    func setUpData(bookDetail: BookDetailResponseDTO) {
+        var flatList: [DisplayPage] = []
+        var globalIdx = 0
+        
+        let sortedPages = bookDetail.pages.sorted { $0.pageOrder < $1.pageOrder }
         
         for page in sortedPages {
             for sentence in page.sentences {

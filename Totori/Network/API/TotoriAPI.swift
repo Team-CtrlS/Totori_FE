@@ -22,6 +22,7 @@ enum TotoriAPI {
     case mainStatus
     case bookList(page: Int, size: Int)
     case makeBook(audioURL: URL)
+    case bookDetail(bookId: Int)
     
     //member
     case acorn
@@ -53,6 +54,8 @@ extension TotoriAPI: BaseTargetType {
         case .bookList:
             return "/api/books"
         case .makeBook: return "/api/books/make"
+        case .bookDetail(let bookId):
+            return "/api/books/\(bookId)"
             
             //member
         case .acorn:
@@ -72,7 +75,7 @@ extension TotoriAPI: BaseTargetType {
         switch self {
         case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook:
             return .post
-        case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges:
+        case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges, .bookDetail:
             return .get
         }
     }
@@ -94,6 +97,8 @@ extension TotoriAPI: BaseTargetType {
                 parameters: ["page": page, "size": size],
                 encoding: URLEncoding.queryString
             )
+        case .bookDetail:
+            return .requestPlain
         case .attendance:
             return .requestPlain
         case .makeBook(let audioURL):

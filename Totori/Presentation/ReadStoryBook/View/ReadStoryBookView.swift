@@ -13,10 +13,22 @@ struct ReadStoryBookView: View {
     @StateObject private var viewModel = ReadStoryBookViewModel()
     @Environment(\.dismiss) private var dismiss
     
-    let bookData: BookGenerateResponseDTO
-    
     @State private var showModal: Bool = false
     @State private var navigateToStart: Bool = false
+    
+    private let source: ReadStoryBookSource
+    
+    init(bookData: BookGenerateResponseDTO) {
+        self.source = .generated(bookData)
+    }
+    
+    init(bookDetail: BookDetailResponseDTO) {
+        self.source = .detail(bookDetail)
+    }
+    
+    init(source: ReadStoryBookSource) {
+        self.source = source
+    }
     
     var body: some View {
         ZStack {
@@ -64,7 +76,12 @@ struct ReadStoryBookView: View {
             }
         }
         .onAppear {
-            viewModel.setUpData(bookData: bookData)
+            switch source {
+            case .generated(let bookData):
+                viewModel.setUpData(bookData: bookData)
+            case .detail(let bookDetail):
+                viewModel.setUpData(bookDetail: bookDetail)
+            }
         }
         .navigationDestination(isPresented: $navigateToStart) {
             MainView()
