@@ -22,6 +22,7 @@ class ReadStoryBookViewModel: ObservableObject {
     @Published var navigateToFinish: Bool = false
     
     @Published var navigateToQuiz: Bool = false
+    @Published var pendingQuizData: QuizResponseDTO? = nil
     
     private let audioRecorder = AudioRecorderManager()
     
@@ -33,8 +34,8 @@ class ReadStoryBookViewModel: ObservableObject {
     private let bookService = BookService()
     private var cancellables = Set<AnyCancellable>()
     
-    private(set) var bookId: Int = 0
-    private var quizInterval: Int = 6
+    private var quizInterval: Int = 18
+    private var quizImageCount: Int = 6
     
     init() {}
     
@@ -46,7 +47,10 @@ class ReadStoryBookViewModel: ObservableObject {
         var flatList: [DisplayPage] = []
         var globalIdx = 0
         
-        for page in bookData.pages.sorted(by: { $0.pageOrder < $1.pageOrder }) {
+        let sortedPages = bookData.pages.sorted { $0.pageOrder < $1.pageOrder }
+        
+        
+        for page in sortedPages {
             for sentence in page.sentences {
                 flatList.append(DisplayPage(
                     globalIndex: globalIdx,
