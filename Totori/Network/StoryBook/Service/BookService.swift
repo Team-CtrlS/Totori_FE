@@ -9,7 +9,7 @@ import Combine
 import Foundation
 
 class BookService {
-    private let networkService = BaseService<TotoriAPI>()
+    private let networkService = BaseService<TotoriAPI>(timeoutInterval: 300)
     
     func generateBook(param: BookGenerateRequestDTO) -> AnyPublisher<BookGenerateResponseDTO, NetworkError> {
         return networkService.request(.generateBook(param: param), responseType: BookGenerateResponseDTO.self)
