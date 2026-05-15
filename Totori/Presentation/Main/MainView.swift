@@ -83,17 +83,8 @@ struct MainView: View {
                             .buttonStyle(.plain)
                             
                             ForEach(viewModel.bookItems) { item in
-                                let mockBookData = BookGenerateResponseDTO(
-                                    bookId: item.id,
-                                    title: item.title,
-                                    totalPages: 10,
-                                    coverImagePrompt: nil,
-                                    coverImageUrl: item.coverURL ?? "https://picsum.photos/id/10/800/1200",
-                                    pages: []
-                                )
-                                
                                 NavigationLink(
-                                    destination: BookInfoView(bookData: mockBookData)
+                                    destination: BookInfoView(bookId: item.id)
                                         .navigationBarBackButtonHidden(true)
                                 ) {
                                     StoryBookView(type: item.type)

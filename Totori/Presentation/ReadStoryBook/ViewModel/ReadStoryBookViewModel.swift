@@ -5,6 +5,7 @@
 //  Created by 정윤아 on 3/1/26.
 //
 
+import AVFoundation
 import Combine
 import SwiftUI
 
@@ -20,63 +21,51 @@ class ReadStoryBookViewModel: ObservableObject {
     @Published var navigateToBadge: Bool = false
     @Published var navigateToFinish: Bool = false
     
+    private let audioRecorder = AudioRecorderManager()
+    
+    private(set) var lastRecordedURL: URL?
+    
+    private var audioPlayer: AVPlayer?
+    private var playerObserver: Any?
+    
     init() {}
     
-    //    private func loadData() {
-    //        let rawData = StoryBookData(
-    //            title: "거북이와 토끼의 모험",
-    //            scenes: [
-    //                StoryScene(sceneNumber: 1, imageUrl: "https://picsum.photos/id/10/800/1200", pages: [
-    //                    ScenePage(pageNumber: 1, text: "포근한 가을날, 도토리 숲 속에 작은 다람쥐 한 마리가 살고 있었어요."),
-    //                    ScenePage(pageNumber: 2, text: "숲에는 커다란 나무가 많았다."),
-    //                    ScenePage(pageNumber: 3, text: "햇빛이 나뭇잎 사이로 비췄다."),
-    //                    ScenePage(pageNumber: 4, text: "거북이는 길을 따라 걸어갔다.")
-    //                ]),
-    //                StoryScene(sceneNumber: 2, imageUrl: "https://picsum.photos/id/11/800/1200", pages: [
-    //                    ScenePage(pageNumber: 5, text: "토끼는 연못 옆을 뛰어다녔다."),
-    //                    ScenePage(pageNumber: 6, text: "연못에는 물고기가 헤엄쳤다."),
-    //                    ScenePage(pageNumber: 7, text: "토끼는 물고기를 신기하게 봤다."),
-    //                    ScenePage(pageNumber: 8, text: "거북이와 토끼가 서로 만났다.")
-    //                ]),
-    //                StoryScene(sceneNumber: 3, imageUrl: "https://picsum.photos/id/12/800/1200", pages: [
-    //                    ScenePage(pageNumber: 9, text: "거북이와 토끼는 인사를 나눴다."),
-    //                    ScenePage(pageNumber: 10, text: "둘은 함께 놀기로 했다."),
-    //                    ScenePage(pageNumber: 11, text: "거북이는 느리게 걸었다."),
-    //                    ScenePage(pageNumber: 12, text: "토끼는 빨리 뛰었다.")
-    //                ]),
-    //                StoryScene(sceneNumber: 4, imageUrl: "https://picsum.photos/id/13/800/1200", pages: [
-    //                    ScenePage(pageNumber: 13, text: "둘은 숲에서 경주를 했다."),
-    //                    ScenePage(pageNumber: 14, text: "거북이는 천천히 출발했다."),
-    //                    ScenePage(pageNumber: 15, text: "토끼는 빨리 달렸다."),
-    //                    ScenePage(pageNumber: 16, text: "거북이는 꾸준히 걸어갔다.")
-    //                ]),
-    //                StoryScene(sceneNumber: 5, imageUrl: "https://picsum.photos/id/14/800/1200", pages: [
-    //                    ScenePage(pageNumber: 17, text: "거북이는 결승선에 도착했다."),
-    //                    ScenePage(pageNumber: 18, text: "토끼는 거북이를 응원했다."),
-    //                    ScenePage(pageNumber: 19, text: "둘은 함께 웃었다."),
-    //                    ScenePage(pageNumber: 20, text: "거북이와 토끼는 친구였다."),
-    //                    ScenePage(pageNumber: 21, text: "그들은 즐거운 시간을 보냈다.")
-    //                ])
-    //            ]
-    //        )
-    
+    // BookGenerateResponseDTO 버전
     func setUpData(bookData: BookGenerateResponseDTO) {
-        //데이터 평탄화
         var flatList: [DisplayPage] = []
         var globalIdx = 0
         
-        // 페이지 순서 정렬
-        let sortedPages = bookData.pages.sorted {
-            $0.pageOrder < $1.pageOrder
-        }
+        let sortedPages = bookData.pages.sorted { $0.pageOrder < $1.pageOrder }
         
         for page in sortedPages {
             for sentence in page.sentences {
-                
                 let displayPage = DisplayPage(
                     globalIndex: globalIdx,
                     imageUrl: page.imageUrl,
-                    text: sentence
+                    text: sentence.text,
+                    audioUrl: sentence.audioUrl
+                )
+                flatList.append(displayPage)
+                globalIdx += 1
+            }
+        }
+        self.displayPages = flatList
+    }
+
+    // BookDetailResponseDTO 버전
+    func setUpData(bookDetail: BookDetailResponseDTO) {
+        var flatList: [DisplayPage] = []
+        var globalIdx = 0
+        
+        let sortedPages = bookDetail.pages.sorted { $0.pageOrder < $1.pageOrder }
+        
+        for page in sortedPages {
+            for sentence in page.sentences {
+                let displayPage = DisplayPage(
+                    globalIndex: globalIdx,
+                    imageUrl: page.imageUrl,
+                    text: sentence.text,
+                    audioUrl: sentence.audioUrl
                 )
                 flatList.append(displayPage)
                 globalIdx += 1
@@ -87,7 +76,7 @@ class ReadStoryBookViewModel: ObservableObject {
     
     var currentDisplayPage: DisplayPage {
         guard !displayPages.isEmpty else {
-            return DisplayPage(globalIndex: 0, imageUrl: "", text: "")
+            return DisplayPage(globalIndex: 0, imageUrl: "", text: "", audioUrl: "")
         }
         let safeIndex = min(max(currentIndex, 0), displayPages.count - 1)
         return displayPages[safeIndex]
@@ -106,6 +95,10 @@ class ReadStoryBookViewModel: ObservableObject {
     var isNextEnabled: Bool { !displayPages.isEmpty }
     
     func goNext() {
+        if isMicRecording {
+            stopRecordingFlow()
+        }
+        
         if currentIndex < displayPages.count - 1{
             withAnimation { currentIndex += 1 }
             resetPageStates()
@@ -115,20 +108,98 @@ class ReadStoryBookViewModel: ObservableObject {
     }
     
     func goPrev() {
-        if isPrevEnabled {
-            withAnimation { currentIndex -= 1 }
-            resetPageStates()
+        guard isPrevEnabled else { return }
+        
+        if isMicRecording {
+            stopRecordingFlow()
+        }
+        
+        withAnimation { currentIndex -= 1 }
+        resetPageStates()
+    }
+    
+    func toggleMic() {
+        if isMicRecording {
+            stopRecordingFlow()
+        } else {
+            startRecordingFlow()
+        }
+    }
+    func toggleTTS() {
+        // 이미 재생 중이면 멈춤
+        if isTTSSpeaking {
+            stopAudio()
+            return
+        }
+        
+        guard let urlString = currentDisplayPage.audioUrl,
+              let url = URL(string: urlString) else {
+            print("❌ 유효한 오디오 URL이 없습니다.")
+            return
+        }
+        
+        let playerItem = AVPlayerItem(url: url)
+        audioPlayer = AVPlayer(playerItem: playerItem)
+        audioPlayer?.play()
+        isTTSSpeaking = true
+        
+        NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: playerItem,
+            queue: .main
+        ) { [weak self] _ in
+            self?.isTTSSpeaking = false
         }
     }
     
-    func toggleMic() { withAnimation { isMicRecording.toggle() } }
-    func toggleTTS() { withAnimation { isTTSSpeaking.toggle() } }
-    func togglePanel() { withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) { isPanelVisible.toggle() } }
+    private func stopAudio() {
+        audioPlayer?.pause()
+        audioPlayer = nil
+        isTTSSpeaking = false
+        
+        NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
+    }
+    
+    // 페이지가 넘어갈 때 재생 중인 오디오 강제 종료
+    // MARK: - Recording Flow
+    
+    private func startRecordingFlow() {
+        if isTTSSpeaking {
+            withAnimation{ isTTSSpeaking = false }
+        }
+        
+        audioRecorder.requestPermission { [weak self] granted in
+            guard let self = self else { return }
+            if granted {
+                self.audioRecorder.startRecoding()
+                withAnimation{ self.isMicRecording = true }
+            } else {
+                print("마이크 권한 거부됨")
+            }
+        }
+    }
+    
+    private func stopRecordingFlow() {
+        let savedURL = audioRecorder.stopRecording()
+        self.lastRecordedURL = savedURL
+        withAnimation { self.isMicRecording = false }
+        
+        if let url = savedURL {
+            handleRecordedAudio(url: url)
+        }
+    }
+    
+    private func handleRecordedAudio(url: URL) {
+        // TODO: 서버 업로드 / STT 호출 등 후처리
+        print("📤 녹음 파일 처리: \(url.lastPathComponent)")
+    }
     
     private func resetPageStates() {
         isMicRecording = false
-        isTTSSpeaking = false
+        stopAudio()
     }
+    
+    func togglePanel() { withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) { isPanelVisible.toggle() } }
     
     private func checkBadgeCompletion() {
         // TODO: 서버에 뱃지 획득 확인 API 전송

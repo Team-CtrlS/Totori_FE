@@ -16,7 +16,10 @@ final class TokenInterceptor: RequestInterceptor {
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var request = urlRequest
         
-        if let url = request.url?.absoluteString, url.contains("/api/auth/reissue") {
+        let whiteList = ["/api/auth/login", "/api/auth/signup", "/api/auth/reissue"]
+        
+        if let url = request.url?.absoluteString,
+           whiteList.contains(where: { url.contains($0) }) {
             completion(.success(request))
             return
         }
@@ -34,10 +37,11 @@ final class TokenInterceptor: RequestInterceptor {
             return
         }
         
-        if let url = request.request?.url?.absoluteString, url.contains("/api/auth/reissue") {
-            Logger.error(.token, "reissue 자체가 401 - 강제 로그아웃")
-            forceLogout()
-            completion(.doNotRetryWithError(NetworkError.tokenExpired))
+        let noAuthPaths = ["/api/auth/login", "/api/auth/signup", "/api/auth/reissue"]
+        if let url = request.request?.url?.absoluteString,
+           noAuthPaths.contains(where: { url.contains($0) }) {
+            Logger.error(.token, "인증 불필요 API 401 - 재시도하지 않음 (\(url))")
+            completion(.doNotRetryWithError(error))
             return
         }
         
