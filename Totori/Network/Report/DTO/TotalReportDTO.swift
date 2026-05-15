@@ -10,17 +10,13 @@ import Foundation
 struct TotalReportDTO: Decodable {
     let child: ChildDTO
     let wcpm: TotalWCPMDTO
-    let wrongAnalysis: WrongAnalysisDTO
+    let wrongAnalysis: [WrongAnalysisItemDTO]
 }
 
 struct TotalWCPMDTO: Decodable {
     let average: Double
-    let childAverage: Int
+    let childAverage: Double
     let monthly: [DataPointDTO]
-}
-
-struct WrongAnalysisDTO: Decodable {
-    let items: [WrongAnalysisItemDTO]
 }
 
 struct WrongAnalysisItemDTO: Decodable {

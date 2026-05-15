@@ -90,4 +90,62 @@ final class TotalReportViewModel: ObservableObject {
             return .chart80
         }
     }
+    
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
+        
+    private let reportService = ReportService()
+    private var cancellables = Set<AnyCancellable>()
+    
+    func fetchAll() {
+        fetchTotalReport()
+    }
+    
+    func fetchTotalReport() {
+        isLoading = true
+            
+        reportService.getTotalReport()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                self?.isLoading = false
+                if case .failure(let error) = completion {
+                    print("주간 리포트 로드 실패: \(error.localizedDescription)")
+                    self?.errorMessage = error.localizedDescription
+                }
+            } receiveValue: { [weak self] response in
+                self?.applyTotalReport(response)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func applyTotalReport(_ dto: TotalReportDTO) {
+        self.child = Child(
+            name: dto.child.name,
+            age: dto.child.age,
+            profileUrl: self.child.profileUrl
+        )
+        
+        // wcpm 그래프
+        let monthlyWcpm = dto.wcpm.monthly.enumerated().map { (index, point) in
+            WCPMMonth(
+                id: index,
+                month: point.label,
+                wcpm: Double(point.value)
+            )
+        }
+            
+        self.wcpm = WCPMTotal(
+            average: Double(dto.wcpm.average),
+            childAverage: dto.wcpm.childAverage,
+            total: monthlyWcpm
+        )
+        
+        self.wrong = dto.wrongAnalysis.map { item in
+            wrongAnalysis(
+                label: item.label,
+                wrongCount: item.wrongCount,
+                totalCount: item.totalCount
+            )
+        }
+    }
 }

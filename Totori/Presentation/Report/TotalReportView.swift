@@ -228,6 +228,9 @@ struct TotalReportView: View {
             RoundedRectangle(cornerRadius: 26)
                 .fill(.white)
         )
+        .onAppear {
+            viewModel.fetchAll()
+        }
     }
     
     // MARK: - footer

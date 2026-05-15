@@ -32,6 +32,7 @@ enum TotoriAPI {
     
     //report
     case weeklyReport
+    case totalReport
 }
 
 extension TotoriAPI: BaseTargetType {
@@ -70,6 +71,8 @@ extension TotoriAPI: BaseTargetType {
             //report
         case .weeklyReport:
             return "/api/reports/week"
+        case .totalReport:
+            return "/api/reports/total"
         }
     }
     
@@ -77,7 +80,7 @@ extension TotoriAPI: BaseTargetType {
         switch self {
         case .login, .signUp, .generateBook, .reissue, .attendance:
             return .post
-        case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges, .weeklyReport:
+        case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges, .weeklyReport, .totalReport:
             return .get
         }
     }
@@ -110,6 +113,8 @@ extension TotoriAPI: BaseTargetType {
         case .categoryBadges(_):
             return .requestPlain
         case .weeklyReport:
+            return .requestPlain
+        case .totalReport:
             return .requestPlain
         }
     }
