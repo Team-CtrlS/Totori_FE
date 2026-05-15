@@ -37,6 +37,7 @@ class ReadStoryBookViewModel: ObservableObject {
     // BookGenerateResponseDTO 버전
     func setUpData(bookData: BookGenerateResponseDTO) {
         self.bookId = bookData.bookId
+        print("📚 bookId 세팅: \(self.bookId)")
         var flatList: [DisplayPage] = []
         var globalIdx = 0
         
@@ -59,6 +60,8 @@ class ReadStoryBookViewModel: ObservableObject {
 
     // BookDetailResponseDTO 버전
     func setUpData(bookDetail: BookDetailResponseDTO) {
+        self.bookId = bookDetail.cover.bookId
+        print("📚 bookId 세팅: \(self.bookId)")
         var flatList: [DisplayPage] = []
         var globalIdx = 0
         
