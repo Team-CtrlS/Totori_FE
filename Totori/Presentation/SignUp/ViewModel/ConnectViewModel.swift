@@ -45,6 +45,9 @@ class ConnectViewModel: ObservableObject {
     }
     
     func fetchNewPinCode() {
+        timer?.invalidate()
+        timer = nil
+        
         isLoading = true
         errorMessage = nil
             
