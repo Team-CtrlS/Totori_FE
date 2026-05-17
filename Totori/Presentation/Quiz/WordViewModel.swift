@@ -196,7 +196,7 @@ final class WordViewModel: ObservableObject {
         isShowingQuizModal = false
     }
 
-    /// 퀴즈 완료 후 낭독 화면으로 복귀
+    // 퀴즈 완료 후 낭독 화면으로 복귀
     func completeQuiz() {
         isShowingQuizModal = false
         onQuizCompleted?()
