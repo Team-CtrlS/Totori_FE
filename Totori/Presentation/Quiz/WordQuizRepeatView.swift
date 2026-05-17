@@ -52,7 +52,7 @@ struct WordQuizRepeatView: View {
     let successQuizCount: Int
 
     // MARK: - State
-    @ObservedObject var viewModel = WordViewModel()
+    @ObservedObject var viewModel: WordViewModel
     
     @State private var isAnimating: Bool = false
     
