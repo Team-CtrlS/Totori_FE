@@ -29,6 +29,7 @@ class ConnectViewModel: ObservableObject {
     
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
+    @Published var isSuccess: Bool = false
     
     private var timer: Timer?
     private let connectService = SignUpService()
@@ -69,6 +70,27 @@ class ConnectViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+    
+    func connect() {
+        guard role == .parent, pinCode.count == 5 else { return }
+            
+        isLoading = true
+        errorMessage = nil
+            
+        connectService.postConnect(code: pinCode)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                self?.isLoading = false
+                if case .failure(let error) = completion {
+                    print("연동 실패: \(error.localizedDescription)")
+                    self?.errorMessage = "코드가 일치하지 않거나 만료되었습니다."
+                }
+            } receiveValue: { [weak self] _ in
+                self?.isSuccess = true
+                print("보호자-아동 연동 성공!")
+            }
+            .store(in: &cancellables)
+        }
     
     private func startTimer() {
         timer?.invalidate()

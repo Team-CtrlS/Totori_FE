@@ -95,12 +95,7 @@ class SignUpViewModel: ObservableObject {
                 guard let self = self else { return }
                 
                 print("✅ 회원가입 성공")
-                
-                if self.role == .child {
-                    self.navigateToFinalView = true
-                } else if self.role == .parent {
-                    self.navigateToConnectView = true
-                }
+                self.navigateToFinalView = true
             }
             .store(in: &cancellables)
     }

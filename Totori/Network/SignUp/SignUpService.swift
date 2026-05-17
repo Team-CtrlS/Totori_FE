@@ -21,4 +21,9 @@ class SignUpService {
     func getConnectCode() -> AnyPublisher<ConnectCodeResponseDTO, NetworkError> {
         return networkService.request(.connectCode, responseType: ConnectCodeResponseDTO.self)
     }
+    
+    func postConnect(code: String) -> AnyPublisher<EmptyData, NetworkError> {
+        let requestDTO = ConnectRequestDTO(code: code)
+        return networkService.request(.connectParent(param: requestDTO), responseType: EmptyData.self)
+    }
 }

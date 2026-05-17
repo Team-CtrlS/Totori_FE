@@ -186,6 +186,9 @@ struct LoginView: View {
         .navigationDestination(isPresented: $navigateToSignUp) {
             SignUpView(viewModel: SignUpViewModel(role: role))
         }
+        .navigationDestination(isPresented: $viewModel.shouldNavigateToConnect) {
+            ConnectView(viewModel: ConnectViewModel(role: .parent))
+        }
         .navigationBarBackButtonHidden(true)
     }
 }

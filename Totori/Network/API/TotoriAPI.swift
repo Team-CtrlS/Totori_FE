@@ -40,6 +40,7 @@ enum TotoriAPI {
     
     //connect
     case connectCode
+    case connectParent(param: ConnectRequestDTO)
 }
 
 extension TotoriAPI: BaseTargetType {
@@ -91,6 +92,8 @@ extension TotoriAPI: BaseTargetType {
             //connect
         case .connectCode:
             return "/api/connect/code"
+        case .connectParent:
+            return "/api/connect"
         }
     }
     
@@ -163,6 +166,8 @@ extension TotoriAPI: BaseTargetType {
             return .requestPlain
         case .connectCode:
             return .requestPlain
+        case .connectParent(let param):
+            return .requestJSONEncodable(param)
         }
     }
     
