@@ -48,7 +48,7 @@ class MakeStoryBookViewModel: ObservableObject {
     @Published var currentStep: GenerationStep = .acorn
     @Published var userName: String = "김밤톨"
     @Published var userImage: String? = nil
-    @Published var acornCount: Int = 1
+    @Published var acornCount: Int = 5
     
     @Published var isRecording: Bool = false
     @Published var isLoading: Bool = false
