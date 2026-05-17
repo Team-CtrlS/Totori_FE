@@ -87,7 +87,7 @@ struct BarChart: View {
                 .fill(color)
                 .frame(height: 1)
             
-            Text("\(String(format: "%.0f", value))")
+            Text("\(String(format: "%.1f", value))")
                 .font(.NotoSans_12_R)
                 .foregroundStyle(color)
         }
