@@ -90,12 +90,18 @@ struct ReadStoryBookView: View {
                 .navigationBarBackButtonHidden(true)
         }
         .navigationDestination(isPresented: $viewModel.navigateToBadge) {
-            BadgeEarnedView()
-                .navigationBarBackButtonHidden(true)
+            BadgeEarnedView(
+                completeResult: viewModel.completeResult,
+                coverImageUrl: viewModel.coverImageUrl
+            )
+            .navigationBarBackButtonHidden(true)
         }
         .navigationDestination(isPresented: $viewModel.navigateToFinish) {
-            BookEndView()
-                .navigationBarBackButtonHidden(true)
+            BookEndView(
+                completeResult: viewModel.completeResult,
+                coverImageUrl: viewModel.coverImageUrl
+            )
+            .navigationBarBackButtonHidden(true)
         }
         .navigationDestination(isPresented: $viewModel.navigateToQuiz) {
             WordLearningView(
