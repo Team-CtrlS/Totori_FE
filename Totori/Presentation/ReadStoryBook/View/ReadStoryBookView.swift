@@ -35,7 +35,7 @@ struct ReadStoryBookView: View {
             VStack {
                 Button(action: {
                     showModal = true
-                }){
+                }) {
                     Image(.close)
                         .resizable()
                         .scaledToFit()
@@ -43,7 +43,6 @@ struct ReadStoryBookView: View {
                         .padding(.top, 80)
                         .padding(.leading, 322)
                 }
-                
                 Spacer()
             }
             .zIndex(2)
@@ -94,6 +93,13 @@ struct ReadStoryBookView: View {
         .navigationDestination(isPresented: $viewModel.navigateToFinish) {
             BookEndView()
                 .navigationBarBackButtonHidden(true)
+        }
+        .navigationDestination(isPresented: $viewModel.navigateToQuiz) {
+            WordLearningView(
+                successQuizCount: 0,
+                bookId: viewModel.bookId
+            )
+            .navigationBarBackButtonHidden(true)
         }
     }
     
