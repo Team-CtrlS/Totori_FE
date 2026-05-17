@@ -20,7 +20,7 @@ final class BaseService<Target: BaseTargetType> {
     
     // MARK: - Init
     
-    init(timeoutInterval: TimeInterval = 60) {
+    init(timeoutInterval: TimeInterval = 100) {
           let configuration = URLSessionConfiguration.default
           configuration.timeoutIntervalForRequest = timeoutInterval
           configuration.timeoutIntervalForResource = timeoutInterval
