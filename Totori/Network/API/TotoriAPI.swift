@@ -24,6 +24,7 @@ enum TotoriAPI {
     case makeBook(audioURL: URL)
     case bookDetail(bookId: Int)
     case uploadReadingAudio(bookId: Int, sentenceNum: Int, audioURL: URL)
+    case completeBook(bookId: Int, acornCount: Int)
     
     //quiz
     case makeQuiz(bookId: Int)
@@ -72,6 +73,8 @@ extension TotoriAPI: BaseTargetType {
             return "/api/books/\(bookId)"
         case .uploadReadingAudio(let bookId, let sentenceNum, _):
             return "/api/books/\(bookId)/reading/\(sentenceNum)"
+        case .completeBook(let bookId, _):
+            return "/api/books/\(bookId)/complete"
             
             //quiz
         case .makeQuiz:
@@ -195,6 +198,8 @@ extension TotoriAPI: BaseTargetType {
                 name: "original_quiz"
             )
             return .uploadMultipart([audioData, quizData])
+        case .completeBook(_, let acornCount):
+            return .requestJSONEncodable(["acornCount": acornCount])
         }
     }
     
