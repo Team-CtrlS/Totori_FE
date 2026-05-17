@@ -13,7 +13,7 @@ final class WordViewModel: ObservableObject {
     // chip
     @Published var userName: String = "김밤톨"
     @Published var profileUrl: String = "https://picsum.photos/100"
-    @Published var acornCount: Int = 10
+    @Published var acornCount: Int = 4
 
     // progress
     @Published var progress: CGFloat = 0.4
@@ -22,17 +22,21 @@ final class WordViewModel: ObservableObject {
     @Published var rewardCount: Int = 1
 
     // MARK: - Word list
+    
     @Published var words: [String] = []
 
     // MARK: - Quiz State
+    
     @Published var currentIndex: Int = 0
     @Published var stage: WordQuizStage = .mic
     @Published var isShowingQuizModal: Bool = false
     @Published var isFinished: Bool = false
 
     // MARK: - API State
+    
     @Published var isLoading: Bool = true
     @Published var errorMessage: String? = nil
+    @Published var isChecking: Bool = false
 
     private(set) var quizId: Int = 0
     private let bookId: Int
@@ -108,6 +112,8 @@ final class WordViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Recording
+
     private func startRecording() {
         audioRecorder.requestPermission { [weak self] granted in
             guard let self else { return }
@@ -120,38 +126,61 @@ final class WordViewModel: ObservableObject {
             }
         }
     }
-    
-    private func stopRecordingAndCheck() {
-          let savedURL = audioRecorder.stopRecording()
-          print("🛑 퀴즈 녹음 종료")
-   
-          if let url = savedURL {
-              // TODO: 녹음 파일을 서버에 전송하여 정답 판정 받기
-              // 현재는 임시로 랜덤 판정
-              print("📁 녹음 파일: \(url.lastPathComponent)")
-              checkAnswer()
-          } else {
-              print("❌ 녹음 파일 저장 실패")
-              stage = .fail
-          }
-      }
 
-    private func checkAnswer() {
-        print("STT 결과 판정 중...")
-        // TODO: 서버 정답 판정 API 연결
-        let isCorrect = Bool.random()
- 
-        if isCorrect {
-            stage = .success
-            print("✅ 정답!")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                self.moveToNextWord()
-            }
-        } else {
+    private func stopRecordingAndCheck() {
+        let savedURL = audioRecorder.stopRecording()
+        print("🛑 퀴즈 녹음 종료")
+
+        guard let audioURL = savedURL else {
+            print("❌ 녹음 파일 저장 실패")
             stage = .fail
-            isShowingQuizModal = true
-            print("❌ 오답!")
+            return
         }
+
+        print("📁 녹음 파일: \(audioURL.lastPathComponent)")
+        submitQuizAudio(audioURL: audioURL)
+    }
+
+    // MARK: - Quiz Check
+
+    private func submitQuizAudio(audioURL: URL) {
+        let originalQuiz = currentWord
+        isChecking = true
+        print("📡 퀴즈 채점 API 호출 - quizId: \(quizId), 원본: \(originalQuiz)")
+
+        quizService.checkQuiz(quizId: quizId, audioURL: audioURL, originalQuiz: originalQuiz)
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    guard let self else { return }
+                    self.isChecking = false
+                    if case .failure(let error) = completion {
+                        print("❌ 퀴즈 채점 API 실패: \(error)")
+                        self.stage = .fail
+                        self.isShowingQuizModal = true
+                    }
+                },
+                receiveValue: { [weak self] result in
+                    guard let self else { return }
+                    self.isChecking = false
+                    print("✅ 퀴즈 채점 결과 - isCorrect: \(result.isCorrect), rewarded: \(result.rewarded), acorn: \(result.currentAcorn)")
+
+                    self.acornCount = result.currentAcorn
+
+                    if result.isCorrect {
+                        self.stage = .success
+                        print("🎉 정답!")
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            self.moveToNextWord()
+                        }
+                    } else {
+                        self.stage = .fail
+                        self.isShowingQuizModal = true
+                        print("😢 오답!")
+                    }
+                }
+            )
+            .store(in: &cancellables)
     }
 
     func moveToNextWord() {
