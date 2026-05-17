@@ -11,3 +11,9 @@ struct QuizResponseDTO: Decodable {
     let quizId: Int
     let quizItems: [String]
 }
+
+struct QuizCheckResponseDTO: Decodable {
+    let isCorrect: Bool
+    let rewarded: Bool
+    let currentAcorn: Int
+}

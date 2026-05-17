@@ -17,4 +17,11 @@ final class QuizService {
             responseType: QuizResponseDTO.self
         )
     }
+    
+    func checkQuiz(quizId: Int, audioURL: URL, originalQuiz: String) -> AnyPublisher<QuizCheckResponseDTO, NetworkError> {
+        return networkService.request(
+            .checkQuiz(quizId: quizId, audioURL: audioURL, originalQuiz: originalQuiz),
+            responseType: QuizCheckResponseDTO.self
+        )
+    }
 }

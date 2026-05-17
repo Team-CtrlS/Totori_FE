@@ -27,6 +27,7 @@ enum TotoriAPI {
     
     //quiz
     case makeQuiz(bookId: Int)
+    case checkQuiz(quizId: Int, audioURL: URL, originalQuiz: String)
     
     //member
     case acorn
@@ -75,6 +76,8 @@ extension TotoriAPI: BaseTargetType {
             //quiz
         case .makeQuiz:
             return "/api/quiz/generate"
+        case .checkQuiz(let quizId, _, _):
+            return "/api/quiz/\(quizId)/check"
             
             //member
         case .acorn:
@@ -180,6 +183,18 @@ extension TotoriAPI: BaseTargetType {
                 parameters: ["bookId": bookId],
                 encoding: URLEncoding.queryString
             )
+        case .checkQuiz(_, let audioURL, let originalQuiz):
+            let audioData = MultipartFormData(
+                provider: .file(audioURL),
+                name: "audio",
+                fileName: audioURL.lastPathComponent,
+                mimeType: "audio/m4a"
+            )
+            let quizData = MultipartFormData(
+                provider: .data(originalQuiz.data(using: .utf8)!),
+                name: "original_quiz"
+            )
+            return .uploadMultipart([audioData, quizData])
         }
     }
     
