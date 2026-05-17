@@ -49,6 +49,7 @@ class ReadStoryBookViewModel: ObservableObject {
     // ✅ BookGenerateResponseDTO 버전
     func setUpData(bookData: BookGenerateResponseDTO) {
         self.bookId = bookData.bookId
+        self.coverImageUrl = bookData.coverImageUrl
         print("📚 bookId 세팅: \(self.bookId)")
         var flatList: [DisplayPage] = []
         var globalIdx = 0
@@ -74,7 +75,7 @@ class ReadStoryBookViewModel: ObservableObject {
     func setUpData(bookDetail: BookDetailResponseDTO) {
         self.bookId = bookDetail.cover.bookId
         print("📚 bookId 세팅: \(self.bookId)")
-        self.coverImageUrl = bookDetail.cover.coverImageUrl   // ← coverUrl이 아닌 coverImageUrl
+        self.coverImageUrl = bookDetail.cover.coverImageUrl
         var flatList: [DisplayPage] = []
         var globalIdx = 0
         
@@ -124,7 +125,7 @@ class ReadStoryBookViewModel: ObservableObject {
     
     func goNext() {
         if isMicRecording {
-//            stopRecordingFlow()
+            stopRecordingFlow()
         }
         
         if currentIndex < displayPages.count - 1 {
@@ -141,7 +142,7 @@ class ReadStoryBookViewModel: ObservableObject {
         guard isPrevEnabled else { return }
         
         if isMicRecording {
-//            stopRecordingFlow()
+            stopRecordingFlow()
         }
         
         withAnimation { currentIndex -= 1 }
@@ -193,7 +194,7 @@ class ReadStoryBookViewModel: ObservableObject {
     
     func toggleMic() {
         if isMicRecording {
-//            stopRecordingFlow()
+            stopRecordingFlow()
         } else {
             startRecordingFlow()
         }
@@ -255,9 +256,9 @@ class ReadStoryBookViewModel: ObservableObject {
         self.lastRecordedURL = savedURL
         withAnimation { self.isMicRecording = false }
         
-//        if let url = savedURL {
-//            handleRecordedAudio(url: url)
-//        }
+        if let url = savedURL {
+            handleRecordedAudio(url: url)
+        }
     }
     
     private func handleRecordedAudio(url: URL) {
