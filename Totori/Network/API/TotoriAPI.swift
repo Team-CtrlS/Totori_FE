@@ -99,7 +99,7 @@ extension TotoriAPI: BaseTargetType {
     
     var method: Moya.Method {
         switch self {
-        case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook, .uploadReadingAudio:
+        case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook, .uploadReadingAudio, .connectCode, .connectParent:
             return .post
         case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges, .bookDetail, .weeklyReport, .totalReport, .weeklyBook:
             return .get
