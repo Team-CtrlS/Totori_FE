@@ -23,6 +23,7 @@ enum TotoriAPI {
     case bookList(page: Int, size: Int)
     case makeBook(audioURL: URL)
     case bookDetail(bookId: Int)
+    case uploadReadingAudio(bookId: Int, sentenceNum: Int, audioURL: URL)
     
     //member
     case acorn
@@ -61,6 +62,8 @@ extension TotoriAPI: BaseTargetType {
         case .makeBook: return "/api/books/make"
         case .bookDetail(let bookId):
             return "/api/books/\(bookId)"
+        case .uploadReadingAudio(let bookId, let sentenceNum, _):
+            return "/api/books/\(bookId)/reading/\(sentenceNum)"
             
             //member
         case .acorn:
@@ -86,7 +89,7 @@ extension TotoriAPI: BaseTargetType {
     
     var method: Moya.Method {
         switch self {
-        case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook:
+        case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook, .uploadReadingAudio:
             return .post
         case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges, .bookDetail, .weeklyReport, .totalReport, .weeklyBook:
             return .get
@@ -125,7 +128,17 @@ extension TotoriAPI: BaseTargetType {
                 fileName: audioURL.lastPathComponent,
                 mimeType: "audio/m4a"
             )
-            
+            return .uploadMultipart([formData])
+        case .uploadReadingAudio(_, _, let audioURL):
+            guard let audioData = try? Data(contentsOf: audioURL) else {
+                return .requestPlain
+            }
+            let formData = MultipartFormData(
+                provider: .data(audioData),
+                name: "audio",
+                fileName: audioURL.lastPathComponent,
+                mimeType: "audio/m4a"
+            )
             return .uploadMultipart([formData])
         case .acorn:
             return .requestPlain
@@ -142,27 +155,27 @@ extension TotoriAPI: BaseTargetType {
         case .weeklyBook:
             return .requestPlain
         }
-}
-
-var headers: [String: String]? {
-    switch self {
-    case .reissue:
-        let refreshToken = KeychainManager.shared.load(key: .refreshToken) ?? ""
-        return [
-            "Content-Type": "application/json",
-            "RefreshToken": "Bearer \(refreshToken)"
-        ]
-    default:
-        return ["Content-Type": "application/json"]
     }
-}
-
-var authorizationType: AuthorizationType? {
-    switch self {
-    case .login, .signUp, .reissue:
-        return .none
-    default:
-        return .bearer
+    
+    var headers: [String: String]? {
+        switch self {
+        case .reissue:
+            let refreshToken = KeychainManager.shared.load(key: .refreshToken) ?? ""
+            return [
+                "Content-Type": "application/json",
+                "RefreshToken": "Bearer \(refreshToken)"
+            ]
+        default:
+            return ["Content-Type": "application/json"]
+        }
     }
-}
+    
+    var authorizationType: AuthorizationType? {
+        switch self {
+        case .login, .signUp, .reissue:
+            return .none
+        default:
+            return .bearer
+        }
+    }
 }

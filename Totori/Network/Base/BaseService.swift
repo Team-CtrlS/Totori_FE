@@ -20,15 +20,22 @@ final class BaseService<Target: BaseTargetType> {
     
     // MARK: - Init
     
-    init() {
-        let session = Session(interceptor: TokenInterceptor())
-        let loggerPlugin = NetworkLogger()
-        
-        self.provider = MoyaProvider<Target>(
-            session: session,
-            plugins: [loggerPlugin]
-        )
-    }
+    init(timeoutInterval: TimeInterval = 60) {
+          let configuration = URLSessionConfiguration.default
+          configuration.timeoutIntervalForRequest = timeoutInterval
+          configuration.timeoutIntervalForResource = timeoutInterval
+          
+          let session = Session(
+              configuration: configuration,
+              interceptor: TokenInterceptor()
+          )
+          let loggerPlugin = NetworkLogger()
+          
+          self.provider = MoyaProvider<Target>(
+              session: session,
+              plugins: [loggerPlugin]
+          )
+      }
     
     // MARK: - Request
     
