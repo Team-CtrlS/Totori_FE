@@ -6,14 +6,19 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct BadgeEarnedView: View {
     
-    // MARK: - State
-    
-    @StateObject private var viewModel = BadgeEarnedViewModel()
-    
     @State private var navigateToEnd: Bool = false
+    
+    let completeResult: BookCompleteResponseDTO?
+    let coverImageUrl: String
+
+    // 첫 번째 획득 뱃지 정보
+    private var badge: BadgeResponseDTO? {
+        completeResult?.newlyAcquiredBadges.first
+    }
 
     var body: some View {
         ZStack {
@@ -30,16 +35,29 @@ struct BadgeEarnedView: View {
             VStack(spacing: 40) {
                 Spacer()
 
-                // TODO: 뱃지 이미지 viewModel에서 받아온 imageUrl값의 이미지 사용하도록 수정
-                Image(.badgeMixed)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 150, height: 150)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 32)
-                            .stroke(Color.white, lineWidth: 7.5)
-                    )
-                    .shadow(color: Color.black.opacity(0.1), radius: 30, x: 0, y: 0)
+                if let badgeUrl = badge?.imageUrl, let url = URL(string: badgeUrl) {
+                    KFImage(url)
+                        .placeholder { ProgressView() }
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 150, height: 150)
+                        .clipShape(RoundedRectangle(cornerRadius: 32))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 32)
+                                .stroke(Color.white, lineWidth: 7.5)
+                        )
+                        .shadow(color: Color.black.opacity(0.1), radius: 30, x: 0, y: 0)
+                } else {
+                    Image(.badgeMixed)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 150, height: 150)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 32)
+                                .stroke(Color.white, lineWidth: 7.5)
+                        )
+                        .shadow(color: Color.black.opacity(0.1), radius: 30, x: 0, y: 0)
+                }
 
                 titleCard
 
@@ -52,8 +70,11 @@ struct BadgeEarnedView: View {
             }
         }
         .navigationDestination(isPresented: $navigateToEnd) {
-            BookEndView()
-                .navigationBarHidden(true)
+            BookEndView(
+                completeResult: completeResult,
+                coverImageUrl: coverImageUrl
+            )
+            .navigationBarHidden(true)
         }
     }
 
@@ -63,11 +84,11 @@ struct BadgeEarnedView: View {
         let boxWidth: CGFloat = 353
         
         return VStack(spacing: 10) {
-            Text(viewModel.title)
+            Text(badge?.name ?? "새로운 뱃지 획득!")
                 .font(.NotoSans_30_B)
                 .foregroundStyle(Color.mainVariation)
 
-            Text(viewModel.description)
+            Text("\(badge?.categoryName ?? "뱃지")를 획득했어요!")
                 .font(.NotoSans_16_R)
                 .foregroundStyle(Color.textGray)
         }
@@ -76,9 +97,4 @@ struct BadgeEarnedView: View {
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 26))
     }
-
-}
-
-#Preview {
-    BadgeEarnedView()
 }
