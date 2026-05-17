@@ -37,6 +37,10 @@ enum TotoriAPI {
     case weeklyReport
     case totalReport
     case weeklyBook
+    
+    //connect
+    case connectCode
+    case connectParent(param: ConnectRequestDTO)
 }
 
 extension TotoriAPI: BaseTargetType {
@@ -84,12 +88,18 @@ extension TotoriAPI: BaseTargetType {
             return "/api/reports/total"
         case .weeklyBook:
             return "/api/books/week"
+            
+            //connect
+        case .connectCode:
+            return "/api/connect/code"
+        case .connectParent:
+            return "/api/connect"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook, .uploadReadingAudio:
+        case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook, .uploadReadingAudio, .connectCode, .connectParent:
             return .post
         case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges, .bookDetail, .weeklyReport, .totalReport, .weeklyBook:
             return .get
@@ -154,6 +164,10 @@ extension TotoriAPI: BaseTargetType {
             return .requestPlain
         case .weeklyBook:
             return .requestPlain
+        case .connectCode:
+            return .requestPlain
+        case .connectParent(let param):
+            return .requestJSONEncodable(param)
         }
     }
     

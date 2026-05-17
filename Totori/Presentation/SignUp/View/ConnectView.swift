@@ -72,14 +72,14 @@ struct ConnectView: View {
             
             if viewModel.role == .child {
                 VStack(spacing: 8) {
-                    Text("위의 5자리 코드를 보호자의 휴대폰 화면에 입력해주세요.\n이 코드는 30초간 유효합니다.")
+                    Text("위의 5자리 코드를 보호자의 휴대폰 화면에 입력해주세요.\n이 코드는 10분간 유효합니다.")
                         .font(.NotoSans_14_R)
                         .foregroundColor(.textGray)
                         .multilineTextAlignment(.center)
                         .padding(.bottom, 14)
                     
                     HStack(spacing: 1) {
-                        Text("\(viewModel.timeRemaining)초 ")
+                        Text("\(viewModel.timeString)")
                             .font(.NotoSans_14_SB)
                             .foregroundColor(.tBlack)
                         
@@ -106,10 +106,7 @@ struct ConnectView: View {
                     type: viewModel.pinCode.count == 5 ? .purple : .gray,
                     width: 353,
                     action: {
-                        //TODO: - 연결되었는지 확인하는 API 연결
-                        print("연결 API 쏘기: \(viewModel.pinCode)")
-                        
-                        //TODO: - 학부모 페이지 연결
+                        viewModel.connect()
                     }
                 )
                 .disabled(viewModel.pinCode.count < 5)
@@ -122,12 +119,23 @@ struct ConnectView: View {
         }
         .padding(.horizontal, 20)
         .navigationBarBackButtonHidden(true)
+        .navigationDestination(isPresented: $viewModel.isSuccess) {
+            WeeklyReportView()
+        }
         .onAppear {
             if viewModel.role == .parent {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     isPinFocused = true
                 }
             }
+        }
+        .alert("연결 실패", isPresented: Binding<Bool>(
+            get: { viewModel.errorMessage != nil },
+                set: { _ in viewModel.errorMessage = nil }
+            )) {
+                Button("확인", role: .cancel) { }
+            } message: {
+                Text(viewModel.errorMessage ?? "알 수 없는 에러가 발생했습니다.")
         }
     }
     

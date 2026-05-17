@@ -11,6 +11,7 @@ struct SettingView: View {
     @State private var showModal: Bool = false
     @State private var navigateToStart: Bool = false
     @State private var navigateToInfoView: Bool = false
+    @State private var navigateToConnect = false
     
     var body: some View {
         ZStack {
@@ -27,7 +28,9 @@ struct SettingView: View {
                     }
                 )
                 RowView(title: "알림 설정", action: {print("클릭")})
-                RowView(title: "보호자 연결", action: {print("클릭")})
+                RowView(title: "보호자 연결", action: {
+                    navigateToConnect = true
+                })
                 RowView(title: "도움말(FAQ)", action: {print("클릭")})
                 RowView(
                     title: "로그아웃",
@@ -44,6 +47,10 @@ struct SettingView: View {
             }
             .navigationDestination(isPresented: $navigateToInfoView) {
                 InfoView()
+                    .navigationBarBackButtonHidden(true)
+            }
+            .navigationDestination(isPresented: $navigateToConnect) {
+                ConnectView(viewModel: ConnectViewModel(role: .child))
                     .navigationBarBackButtonHidden(true)
             }
             

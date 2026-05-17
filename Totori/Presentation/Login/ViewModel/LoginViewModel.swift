@@ -13,6 +13,7 @@ class LoginViewModel: ObservableObject {
     @Published var password: String = ""
     
     @Published var isLoginSuccessful: Bool = false
+    @Published var shouldNavigateToConnect: Bool = false
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
     
@@ -58,8 +59,12 @@ class LoginViewModel: ObservableObject {
                 KeychainManager.shared.save(token: data.refreshToken, for: .refreshToken)
                 UserDefaultManager.shared.saveRole(data.role)
                 
-                UserDefaults.standard.set(true, forKey: "isLoggedIn")
-                isLoginSuccessful = true
+                if data.role == "PARENT" && !(data.hasConnected ?? true) {
+                    self.shouldNavigateToConnect = true
+                } else {
+                    UserDefaults.standard.set(true, forKey: "isLoggedIn")
+                    self.isLoginSuccessful = true
+                }
             }
             .store(in: &cancellables)
     }
