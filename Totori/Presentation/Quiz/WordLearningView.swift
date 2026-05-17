@@ -10,8 +10,8 @@ import SwiftUI
 struct WordLearningView: View {
 
     let successQuizCount: Int
+    let onComplete: () -> Void
 
-    // MARK: - State
     @StateObject private var viewModel: WordViewModel
 
     @State private var selectedID: String? = nil
@@ -20,92 +20,94 @@ struct WordLearningView: View {
 
     // MARK: - Init
 
-    init(successQuizCount: Int, bookId: Int) {
+    init(successQuizCount: Int, bookId: Int, onComplete: @escaping () -> Void) {
         self.successQuizCount = successQuizCount
+        self.onComplete = onComplete
         _viewModel = StateObject(wrappedValue: WordViewModel(bookId: bookId))
     }
 
     // MARK: - Body
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                VStack(spacing: 0) {
+        ZStack {
+            VStack(spacing: 0) {
 
-                    header(
-                        name: viewModel.userName,
-                        profileUrl: viewModel.profileUrl,
-                        acornAmount: viewModel.acornCount,
-                        progress: viewModel.progress
-                    )
+                header(
+                    name: viewModel.userName,
+                    profileUrl: viewModel.profileUrl,
+                    acornAmount: viewModel.acornCount,
+                    progress: viewModel.progress
+                )
+                .padding(.horizontal, 20)
+
+                Spacer().frame(height: 60)
+
+                Text("먼저, 단어를 들어보자!")
+                    .font(.NotoSans_24_SB)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 20)
 
-                    Spacer().frame(height: 60)
+                Spacer().frame(height: 40)
 
-                    Text("먼저, 단어를 들어보자!")
-                        .font(.NotoSans_24_SB)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 20)
-
-                    Spacer().frame(height: 40)
-
-                    // 단어 리스트 or 로딩
-                    if viewModel.isLoading {
-                        Spacer()
-                        ProgressView("단어를 불러오는 중...")
+                if viewModel.isLoading {
+                    Spacer()
+                    ProgressView("단어를 불러오는 중...")
+                        .font(.NotoSans_24_R)
+                    Spacer()
+                } else if let error = viewModel.errorMessage {
+                    Spacer()
+                    VStack(spacing: 16) {
+                        Text(error)
                             .font(.NotoSans_24_R)
-                        Spacer()
-                    } else if let error = viewModel.errorMessage {
-                        Spacer()
-                        VStack(spacing: 16) {
-                            Text(error)
-                                .font(.NotoSans_24_R)
-                                .foregroundColor(.textGray)
-                            Button("다시 시도") {
-                                viewModel.fetchQuiz()
-                            }
-                            .font(.NotoSans_24_SB)
-                            .foregroundColor(.point)
+                            .foregroundColor(.textGray)
+                        Button("다시 시도") {
+                            viewModel.fetchQuiz()
                         }
-                        Spacer()
-                    } else {
-                        VStack(spacing: 20) {
-                            ForEach(viewModel.words, id: \.self) { item in
-                                wordRow(
-                                    title: item,
-                                    isSelected: selectedID == item,
-                                    isPlaying: (selectedID == item) && isPlaying,
-                                    onTap: { handleTap(itemID: item) }
-                                )
-                            }
-                        }
-                        .padding(.horizontal, 20)
-
-                        Spacer()
-
-                        AcornRewards(count: successQuizCount)
-
-                        Spacer()
-
-                        CTAButton(title: "다음", type: .purple) {
-                            viewModel.setupQuiz()
-                            isNavigatingToQuiz = true
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 60)
+                        .font(.NotoSans_24_SB)
+                        .foregroundColor(.point)
                     }
+                    Spacer()
+                } else {
+                    VStack(spacing: 20) {
+                        ForEach(viewModel.words, id: \.self) { item in
+                            wordRow(
+                                title: item,
+                                isSelected: selectedID == item,
+                                isPlaying: (selectedID == item) && isPlaying,
+                                onTap: { handleTap(itemID: item) }
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 20)
+
+                    Spacer()
+
+                    AcornRewards(count: successQuizCount)
+
+                    Spacer()
+
+                    CTAButton(title: "다음", type: .purple) {
+                        viewModel.setupQuiz()
+                        isNavigatingToQuiz = true
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 60)
                 }
-                .background(Color.white.ignoresSafeArea())
             }
-            .onAppear {
+            .background(Color.white.ignoresSafeArea())
+        }
+        .onAppear {
+            if viewModel.words.isEmpty {
                 viewModel.fetchQuiz()
             }
-            .navigationDestination(isPresented: $isNavigatingToQuiz) {
-                WordQuizRepeatView(
-                    successQuizCount: successQuizCount,
-                    viewModel: viewModel
-                )
-            }
+            // 콜백 연결
+            viewModel.onQuizCompleted = onComplete
+        }
+        .navigationDestination(isPresented: $isNavigatingToQuiz) {
+            WordQuizRepeatView(
+                successQuizCount: successQuizCount,
+                viewModel: viewModel
+            )
         }
     }
 

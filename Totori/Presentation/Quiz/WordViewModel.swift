@@ -13,7 +13,7 @@ final class WordViewModel: ObservableObject {
     // chip
     @Published var userName: String = "김밤톨"
     @Published var profileUrl: String = "https://picsum.photos/100"
-    @Published var acornCount: Int = 4
+    @Published var acornCount: Int = 10
 
     // progress
     @Published var progress: CGFloat = 0.4
@@ -22,21 +22,21 @@ final class WordViewModel: ObservableObject {
     @Published var rewardCount: Int = 1
 
     // MARK: - Word list
-    
     @Published var words: [String] = []
 
     // MARK: - Quiz State
-    
     @Published var currentIndex: Int = 0
     @Published var stage: WordQuizStage = .mic
     @Published var isShowingQuizModal: Bool = false
     @Published var isFinished: Bool = false
 
     // MARK: - API State
-    
     @Published var isLoading: Bool = true
     @Published var errorMessage: String? = nil
     @Published var isChecking: Bool = false
+
+    /// 퀴즈 완료 시 호출할 콜백
+    var onQuizCompleted: (() -> Void)?
 
     private(set) var quizId: Int = 0
     private let bookId: Int
@@ -141,7 +141,7 @@ final class WordViewModel: ObservableObject {
         submitQuizAudio(audioURL: audioURL)
     }
 
-    // MARK: - Quiz Check
+    // MARK: - Quiz Check API
 
     private func submitQuizAudio(audioURL: URL) {
         let originalQuiz = currentWord
@@ -164,8 +164,6 @@ final class WordViewModel: ObservableObject {
                     guard let self else { return }
                     self.isChecking = false
                     print("✅ 퀴즈 채점 결과 - isCorrect: \(result.isCorrect), rewarded: \(result.rewarded), acorn: \(result.currentAcorn)")
-
-                    self.acornCount = result.currentAcorn
 
                     if result.isCorrect {
                         self.stage = .success
@@ -196,5 +194,11 @@ final class WordViewModel: ObservableObject {
     func retryCurrentWord() {
         stage = .mic
         isShowingQuizModal = false
+    }
+
+    /// 퀴즈 완료 후 낭독 화면으로 복귀
+    func completeQuiz() {
+        isShowingQuizModal = false
+        onQuizCompleted?()
     }
 }

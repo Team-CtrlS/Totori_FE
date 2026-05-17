@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 import Kingfisher
 
 struct ReadStoryBookView: View {
@@ -77,9 +76,13 @@ struct ReadStoryBookView: View {
         .onAppear {
             switch source {
             case .generated(let bookData):
-                viewModel.setUpData(bookData: bookData)
+                if viewModel.displayPages.isEmpty {
+                    viewModel.setUpData(bookData: bookData)
+                }
             case .detail(let bookDetail):
-                viewModel.setUpData(bookDetail: bookDetail)
+                if viewModel.displayPages.isEmpty {
+                    viewModel.setUpData(bookDetail: bookDetail)
+                }
             }
         }
         .navigationDestination(isPresented: $navigateToStart) {
@@ -97,7 +100,12 @@ struct ReadStoryBookView: View {
         .navigationDestination(isPresented: $viewModel.navigateToQuiz) {
             WordLearningView(
                 successQuizCount: 0,
-                bookId: viewModel.bookId
+                bookId: viewModel.bookId,
+                onComplete: {
+                    // 퀴즈 완료 → navigateToQuiz를 false로 돌리면
+                    // navigationDestination이 자동으로 pop됨
+                    viewModel.navigateToQuiz = false
+                }
             )
             .navigationBarBackButtonHidden(true)
         }
