@@ -39,7 +39,7 @@ struct BadgeEarnedView: View {
                     KFImage(url)
                         .placeholder { ProgressView() }
                         .resizable()
-                        .scaledToFit()
+                        .scaledToFill()
                         .frame(width: 150, height: 150)
                         .clipShape(RoundedRectangle(cornerRadius: 32))
                         .overlay(
