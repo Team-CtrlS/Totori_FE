@@ -13,7 +13,7 @@ final class WordViewModel: ObservableObject {
     // chip
     @Published var userName: String = "김밤톨"
     @Published var profileUrl: String = "https://picsum.photos/100"
-    @Published var acornCount: Int = 10
+    @Published var acornCount: Int = 4
 
     // progress
     @Published var progress: CGFloat = 0.4
