@@ -25,6 +25,10 @@ enum TotoriAPI {
     case bookDetail(bookId: Int)
     case uploadReadingAudio(bookId: Int, sentenceNum: Int, audioURL: URL)
     
+    //quiz
+    case makeQuiz(bookId: Int)
+    case checkQuiz(quizId: Int, audioURL: URL, originalQuiz: String)
+    
     //member
     case acorn
     
@@ -69,6 +73,12 @@ extension TotoriAPI: BaseTargetType {
         case .uploadReadingAudio(let bookId, let sentenceNum, _):
             return "/api/books/\(bookId)/reading/\(sentenceNum)"
             
+            //quiz
+        case .makeQuiz:
+            return "/api/quiz/generate"
+        case .checkQuiz(let quizId, _, _):
+            return "/api/quiz/\(quizId)/check"
+            
             //member
         case .acorn:
             return "/api/members/me/acorns"
@@ -99,7 +109,7 @@ extension TotoriAPI: BaseTargetType {
     
     var method: Moya.Method {
         switch self {
-        case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook, .uploadReadingAudio, .connectCode, .connectParent:
+        case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook, .uploadReadingAudio, .connectCode, .connectParent, .makeQuiz, .checkQuiz:
             return .post
         case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges, .bookDetail, .weeklyReport, .totalReport, .weeklyBook:
             return .get
@@ -168,6 +178,23 @@ extension TotoriAPI: BaseTargetType {
             return .requestPlain
         case .connectParent(let param):
             return .requestJSONEncodable(param)
+        case .makeQuiz(let bookId):
+            return .requestParameters(
+                parameters: ["bookId": bookId],
+                encoding: URLEncoding.queryString
+            )
+        case .checkQuiz(_, let audioURL, let originalQuiz):
+            let audioData = MultipartFormData(
+                provider: .file(audioURL),
+                name: "audio",
+                fileName: audioURL.lastPathComponent,
+                mimeType: "audio/m4a"
+            )
+            let quizData = MultipartFormData(
+                provider: .data(originalQuiz.data(using: .utf8)!),
+                name: "original_quiz"
+            )
+            return .uploadMultipart([audioData, quizData])
         }
     }
     

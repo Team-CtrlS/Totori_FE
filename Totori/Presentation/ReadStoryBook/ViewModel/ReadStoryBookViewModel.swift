@@ -21,6 +21,8 @@ class ReadStoryBookViewModel: ObservableObject {
     @Published var navigateToBadge: Bool = false
     @Published var navigateToFinish: Bool = false
     
+    @Published var navigateToQuiz: Bool = false
+    
     private let audioRecorder = AudioRecorderManager()
     
     private(set) var lastRecordedURL: URL?
@@ -30,57 +32,62 @@ class ReadStoryBookViewModel: ObservableObject {
     
     private let bookService = BookService()
     private var cancellables = Set<AnyCancellable>()
-    private var bookId: Int = 0
+    
+    private(set) var bookId: Int = 0
+    private var quizInterval: Int = 6
     
     init() {}
     
-    // BookGenerateResponseDTO 버전
+    // MARK: - Setup
+    
     func setUpData(bookData: BookGenerateResponseDTO) {
         self.bookId = bookData.bookId
         print("📚 bookId 세팅: \(self.bookId)")
         var flatList: [DisplayPage] = []
         var globalIdx = 0
         
-        let sortedPages = bookData.pages.sorted { $0.pageOrder < $1.pageOrder }
-        
-        for page in sortedPages {
+        for page in bookData.pages.sorted(by: { $0.pageOrder < $1.pageOrder }) {
             for sentence in page.sentences {
-                let displayPage = DisplayPage(
+                flatList.append(DisplayPage(
                     globalIndex: globalIdx,
                     imageUrl: page.imageUrl,
                     text: sentence.text,
                     audioUrl: sentence.audioUrl
-                )
-                flatList.append(displayPage)
+                ))
                 globalIdx += 1
             }
         }
         self.displayPages = flatList
+        configureQuizInterval()
     }
-
-    // BookDetailResponseDTO 버전
+    
     func setUpData(bookDetail: BookDetailResponseDTO) {
         self.bookId = bookDetail.cover.bookId
         print("📚 bookId 세팅: \(self.bookId)")
         var flatList: [DisplayPage] = []
         var globalIdx = 0
         
-        let sortedPages = bookDetail.pages.sorted { $0.pageOrder < $1.pageOrder }
-        
-        for page in sortedPages {
+        for page in bookDetail.pages.sorted(by: { $0.pageOrder < $1.pageOrder }) {
             for sentence in page.sentences {
-                let displayPage = DisplayPage(
+                flatList.append(DisplayPage(
                     globalIndex: globalIdx,
                     imageUrl: page.imageUrl,
                     text: sentence.text,
                     audioUrl: sentence.audioUrl
-                )
-                flatList.append(displayPage)
+                ))
                 globalIdx += 1
             }
         }
         self.displayPages = flatList
+        configureQuizInterval()
     }
+    
+    private func configureQuizInterval() {
+        quizInterval = displayPages.count <= 18 ? 6 : 9
+        print("📝 퀴즈 간격: \(quizInterval) pages (총 \(displayPages.count)페이지)")
+    }
+    
+    // MARK: - Computed Properties
     
     var currentDisplayPage: DisplayPage {
         guard !displayPages.isEmpty else {
@@ -107,9 +114,10 @@ class ReadStoryBookViewModel: ObservableObject {
             stopRecordingFlow()
         }
         
-        if currentIndex < displayPages.count - 1{
+        if currentIndex < displayPages.count - 1 {
             withAnimation { currentIndex += 1 }
             resetPageStates()
+            checkQuizTrigger()
         } else {
             checkBadgeCompletion()
         }
@@ -126,6 +134,18 @@ class ReadStoryBookViewModel: ObservableObject {
         resetPageStates()
     }
     
+    // MARK: - Quiz Trigger
+    
+    private func checkQuizTrigger() {
+        let oneBased = currentIndex + 1
+        guard oneBased % quizInterval == 0 else { return }
+        print("🎯 퀴즈 트리거! page index: \(currentIndex)")
+        // 바로 화면 이동 — API는 WordViewModel에서 호출
+        navigateToQuiz = true
+    }
+    
+    // MARK: - TTS
+    
     func toggleMic() {
         if isMicRecording {
             stopRecordingFlow()
@@ -133,8 +153,8 @@ class ReadStoryBookViewModel: ObservableObject {
             startRecordingFlow()
         }
     }
+    
     func toggleTTS() {
-        // 이미 재생 중이면 멈춤
         if isTTSSpeaking {
             stopAudio()
             return
@@ -168,20 +188,18 @@ class ReadStoryBookViewModel: ObservableObject {
         NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
     }
     
-    // 페이지가 넘어갈 때 재생 중인 오디오 강제 종료
-    
     // MARK: - Recording Flow
     
     private func startRecordingFlow() {
         if isTTSSpeaking {
-            withAnimation{ isTTSSpeaking = false }
+            withAnimation { isTTSSpeaking = false }
         }
         
         audioRecorder.requestPermission { [weak self] granted in
             guard let self = self else { return }
             if granted {
                 self.audioRecorder.startRecoding()
-                withAnimation{ self.isMicRecording = true }
+                withAnimation { self.isMicRecording = true }
             } else {
                 print("마이크 권한 거부됨")
             }
@@ -224,10 +242,7 @@ class ReadStoryBookViewModel: ObservableObject {
     func togglePanel() { withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) { isPanelVisible.toggle() } }
     
     private func checkBadgeCompletion() {
-        // TODO: 서버에 뱃지 획득 확인 API 전송
         print("API Request: 뱃지 획득 여부 확인 중...")
-        
-        //TODO: 뱃지 획득 API 연결
         let isBadgeEarned = Bool.random()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

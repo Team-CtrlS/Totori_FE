@@ -50,9 +50,7 @@ enum WordQuizStage {
 struct WordQuizRepeatView: View {
     
     let successQuizCount: Int
-
-    // MARK: - State
-    @ObservedObject var viewModel = WordViewModel()
+    @ObservedObject var viewModel: WordViewModel
     
     @State private var isAnimating: Bool = false
     
@@ -60,7 +58,6 @@ struct WordQuizRepeatView: View {
         ZStack {
             VStack(spacing: 0) {
                 
-                // 헤더 (칩 + 프로그레스바)
                 header(
                     name: viewModel.userName,
                     profileUrl: viewModel.profileUrl,
@@ -133,10 +130,15 @@ struct WordQuizRepeatView: View {
             Color.black.opacity(0.5)
                 .ignoresSafeArea()
                 .onTapGesture {
-                    viewModel.isShowingQuizModal = false
+                    if viewModel.isFinished {
+                        // 퀴즈 완료 → 낭독 화면으로 복귀
+                        viewModel.completeQuiz()
+                    } else {
+                        viewModel.isShowingQuizModal = false
+                    }
                 }
             
-            if(!viewModel.isFinished){
+            if !viewModel.isFinished {
                 QuizModal(type: .retry(userName: viewModel.userName))
             } else {
                 QuizModal(type: .perfect(userName: viewModel.userName))
