@@ -21,8 +21,6 @@ class ReadStoryBookViewModel: ObservableObject {
     @Published var navigateToBadge: Bool = false
     @Published var navigateToFinish: Bool = false
     @Published var navigateToQuiz: Bool = false
-    
-    @Published var navigateToQuiz: Bool = false
     @Published var pendingQuizData: QuizResponseDTO? = nil
     
     // 낭독 완료 API 결과
@@ -40,6 +38,7 @@ class ReadStoryBookViewModel: ObservableObject {
     private var quizInterval: Int = 18
     private var quizImageCount: Int = 6
     
+    private(set) var bookId: Int = 0
     private(set) var coverImageUrl: String = ""
     private var earnedAcornCount: Int = 0
     init() {}

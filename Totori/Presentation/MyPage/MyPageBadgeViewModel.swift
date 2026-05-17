@@ -25,7 +25,7 @@ final class MyPageBadgeViewModel: ObservableObject {
 
     // 상단
     @Published var summayTitle: String = "도토리 수집가"
-    @Published var summaryTotalCount: Int = 10
+    @Published var summaryTotalCount: Int = 11
     @Published var summarysuccessCount: Int = 4
     @Published var summaryProgress: CGFloat = 0.7
     @Published var summaryBadgeUrl: String = ""

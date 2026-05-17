@@ -20,7 +20,7 @@ struct CurrentBookDTO: Decodable {
     let acornCount: Int
     let currentPage: Int
     let totalPage: Int
-    let progressPercentage: Double
+    let progress: Double
 }
 
 struct AcornDTO: Decodable {

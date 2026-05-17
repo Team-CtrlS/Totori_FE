@@ -53,7 +53,7 @@ final class TotalReportViewModel: ObservableObject {
     @Published var child = Child (
         name: "김밤톨",
         age: 7,
-        profileUrl: "https://picsum.photos/100"
+        profileUrl: ""
     )
 
     @Published var wcpm = WCPMTotal (

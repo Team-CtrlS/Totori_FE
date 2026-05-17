@@ -167,10 +167,17 @@ struct WordLearningView: View {
 
     private func handleTap(itemID: String) {
         if selectedID == itemID {
-            isPlaying.toggle()
+            if isPlaying {
+                isPlaying = false
+                viewModel.stopAudio()
+            } else {
+                isPlaying = true
+                viewModel.playAudio(for: itemID)
+            }
         } else {
             selectedID = itemID
             isPlaying = true
+            viewModel.playAudio(for: itemID)
         }
     }
 }

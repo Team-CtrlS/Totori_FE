@@ -112,7 +112,7 @@ extension TotoriAPI: BaseTargetType {
     
     var method: Moya.Method {
         switch self {
-        case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook, .uploadReadingAudio, .connectCode, .connectParent, .makeQuiz, .checkQuiz:
+        case .login, .signUp, .generateBook, .reissue, .attendance, .makeBook, .uploadReadingAudio, .connectCode, .connectParent, .makeQuiz, .checkQuiz, .completeBook:
             return .post
         case .mainStatus, .bookList, .acorn, .myRepresentativeBadge, .myAllBadges, .categoryBadges, .bookDetail, .weeklyReport, .totalReport, .weeklyBook:
             return .get

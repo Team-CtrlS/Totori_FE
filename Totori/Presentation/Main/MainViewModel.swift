@@ -166,7 +166,7 @@ class MainViewModel: ObservableObject {
             title: book.title,
             subtitle: "목표 달성까지 얼마 안남았어!",
             rewardCount: book.acornCount,
-            progress: book.progressPercentage,
+            progress: book.progress,
             currentPage: book.currentPage,
             totalPage: book.totalPage
         )
