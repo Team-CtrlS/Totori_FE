@@ -11,7 +11,7 @@ import Foundation
 final class QuizService {
     private let networkService = BaseService<TotoriAPI>()
  
-    func generateQuiz(bookId: Int) -> AnyPublisher<QuizResponseDTO, NetworkError> {
+    func makeQuiz(bookId: Int) -> AnyPublisher<QuizResponseDTO, NetworkError> {
         return networkService.request(
             .makeQuiz(bookId: bookId),
             responseType: QuizResponseDTO.self
