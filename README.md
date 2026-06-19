@@ -153,15 +153,15 @@ xcodebuild \
 
 ## 🚀 문제 해결
 
-### 앱이 시작하자마자 종료됩니다
+#### 앱이 시작하자마자 종료됩니다
 
 `Totori/Config.xcconfig`가 없거나 `BASE_URL`이 비어 있는지 확인하세요. 앱은 `Info.plist`에서 `BASE_URL`을 찾지 못하면 실행을 중단합니다.
 
-### Swift Package를 내려받지 못합니다
+#### Swift Package를 내려받지 못합니다
 
 Xcode에서 `File > Packages > Reset Package Caches`를 실행한 뒤 `Resolve Package Versions`를 다시 시도하세요.
 
-### 시뮬레이터에서는 되지만 실기기에서 서버에 연결되지 않습니다
+#### 시뮬레이터에서는 되지만 실기기에서 서버에 연결되지 않습니다
 
 `BASE_URL`을 Mac의 LAN IP로 변경하고 다음을 확인하세요.
 
@@ -169,7 +169,7 @@ Xcode에서 `File > Packages > Reset Package Caches`를 실행한 뒤 `Resolve P
 - 백엔드가 `localhost`가 아닌 외부 요청도 수신하는지
 - macOS 방화벽이 8080 포트를 차단하지 않는지
 
-## 관련 저장소
+## 📁 관련 저장소
 
 - 백엔드: [`Totori_BE`](https://github.com/Team-CtrlS/Totori_BE)
 - AI 서버: [`Totori_AI`](https://github.com/Team-CtrlS/Totori_AI)
