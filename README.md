@@ -71,6 +71,10 @@ Totori_FE/
 └── README.md
 ```
 
+## 🗺️ 전체 시스템 아키텍처
+<img width="1920" height="1080" alt="18 전체 시스템 구조도" src="https://github.com/user-attachments/assets/11c641b8-311d-4838-bffb-8e1a73660474" />
+
+
 ## 실행 환경
 
 - macOS
