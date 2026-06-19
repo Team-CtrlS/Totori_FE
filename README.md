@@ -34,7 +34,7 @@
 | <img width="120" alt="정윤아 GitHub 프로필" src="https://avatars.githubusercontent.com/u/166522604?v=4" />| <img width="120" alt="복지희 GitHub 프로필" src="https://avatars.githubusercontent.com/u/129582481?v=4" />
 | [`@laura-jung`](https://github.com/laura-jung) |[`@jettieb`](https://github.com/jettieb)|
 | **iOS Developer** | **iOS Developer** |
-|||
+| 프로젝트 view 기초 세팅<br> 네트워크 기초 세팅<br> 메인화면 view, API 연결<br> 동화 생성, 낭독 view , API 연결<br> 퀴즈 API 연결<br> STT, TTS 연결<br>||
 
 ## ⚒️ 기술 스택
 
