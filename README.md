@@ -72,7 +72,7 @@ Totori_FE/
 ```
 
 ## 🗺️ 전체 시스템 아키텍처
-<img width="1920" height="1080" alt="18 전체 시스템 구조도" src="https://github.com/user-attachments/assets/11c641b8-311d-4838-bffb-8e1a73660474" />
+<img width="3374" height="1939" alt="Frame 1739332346" src="https://github.com/user-attachments/assets/d349542c-5d00-4040-9fec-2ea0f66d5460" />
 
 
 ## 실행 환경
