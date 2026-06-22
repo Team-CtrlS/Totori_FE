@@ -25,4 +25,11 @@ class BookService {
             responseType: EmptyData.self
         )
     }
+    
+    func completeBook(bookId: Int, acornCount: Int) -> AnyPublisher<BookCompleteResponseDTO, NetworkError> {
+        return networkService.request(
+            .completeBook(bookId: bookId, acornCount: acornCount),
+            responseType: BookCompleteResponseDTO.self
+        )
+    }
 }

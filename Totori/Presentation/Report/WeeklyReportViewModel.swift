@@ -86,7 +86,7 @@ final class WeeklyReportViewModel: ObservableObject {
     @Published var child = Child (
         name: "김밤톨",
         age: 7,
-        profileUrl: "https://picsum.photos/100"
+        profileUrl: ""
     )
     
     // 주간 학습 현황

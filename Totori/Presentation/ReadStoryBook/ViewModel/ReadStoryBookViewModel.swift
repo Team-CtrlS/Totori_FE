@@ -20,11 +20,13 @@ class ReadStoryBookViewModel: ObservableObject {
     
     @Published var navigateToBadge: Bool = false
     @Published var navigateToFinish: Bool = false
-    
     @Published var navigateToQuiz: Bool = false
+    @Published var pendingQuizData: QuizResponseDTO? = nil
+    
+    // 낭독 완료 API 결과
+    @Published var completeResult: BookCompleteResponseDTO? = nil
     
     private let audioRecorder = AudioRecorderManager()
-    
     private(set) var lastRecordedURL: URL?
     
     private var audioPlayer: AVPlayer?
@@ -33,20 +35,28 @@ class ReadStoryBookViewModel: ObservableObject {
     private let bookService = BookService()
     private var cancellables = Set<AnyCancellable>()
     
-    private(set) var bookId: Int = 0
-    private var quizInterval: Int = 6
+    private var quizInterval: Int = 18
+    private var quizImageCount: Int = 6
     
+    private(set) var bookId: Int = 0
+    private(set) var coverImageUrl: String = ""
+    private var earnedAcornCount: Int = 0
     init() {}
     
     // MARK: - Setup
     
+    // ✅ BookGenerateResponseDTO 버전
     func setUpData(bookData: BookGenerateResponseDTO) {
         self.bookId = bookData.bookId
+        self.coverImageUrl = bookData.coverImageUrl
         print("📚 bookId 세팅: \(self.bookId)")
         var flatList: [DisplayPage] = []
         var globalIdx = 0
         
-        for page in bookData.pages.sorted(by: { $0.pageOrder < $1.pageOrder }) {
+        let sortedPages = bookData.pages.sorted { $0.pageOrder < $1.pageOrder }
+        
+        
+        for page in sortedPages {
             for sentence in page.sentences {
                 flatList.append(DisplayPage(
                     globalIndex: globalIdx,
@@ -64,6 +74,7 @@ class ReadStoryBookViewModel: ObservableObject {
     func setUpData(bookDetail: BookDetailResponseDTO) {
         self.bookId = bookDetail.cover.bookId
         print("📚 bookId 세팅: \(self.bookId)")
+        self.coverImageUrl = bookDetail.cover.coverImageUrl
         var flatList: [DisplayPage] = []
         var globalIdx = 0
         
@@ -109,6 +120,8 @@ class ReadStoryBookViewModel: ObservableObject {
     var isPrevEnabled: Bool { currentIndex > 0 }
     var isNextEnabled: Bool { !displayPages.isEmpty }
     
+    // MARK: - Navigation
+    
     func goNext() {
         if isMicRecording {
             stopRecordingFlow()
@@ -119,7 +132,8 @@ class ReadStoryBookViewModel: ObservableObject {
             resetPageStates()
             checkQuizTrigger()
         } else {
-            checkBadgeCompletion()
+            // 마지막 페이지 → 낭독 완료 API 호출
+            completeReading()
         }
     }
     
@@ -140,8 +154,39 @@ class ReadStoryBookViewModel: ObservableObject {
         let oneBased = currentIndex + 1
         guard oneBased % quizInterval == 0 else { return }
         print("🎯 퀴즈 트리거! page index: \(currentIndex)")
-        // 바로 화면 이동 — API는 WordViewModel에서 호출
         navigateToQuiz = true
+    }
+    
+    // MARK: - 낭독 완료 API
+    
+    private func completeReading() {
+        print("📡 동화 낭독 완료 API 호출 - bookId: \(bookId), acornCount: \(earnedAcornCount)")
+        
+        bookService.completeBook(bookId: bookId, acornCount: earnedAcornCount)
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { completion in
+                    if case .failure(let error) = completion {
+                        print("❌ 낭독 완료 API 실패: \(error)")
+                        // API 실패해도 완료 화면으로 이동
+                        self.navigateToFinish = true
+                    }
+                },
+                receiveValue: { [weak self] result in
+                    guard let self else { return }
+                    print("✅ 낭독 완료 - bookId: \(result.bookId), acorn: \(result.acornCount), totalAcorn: \(result.totalReceivedAcorn)")
+                    self.completeResult = result
+                    
+                    if !result.newlyAcquiredBadges.isEmpty {
+                        print("🏅 새로운 뱃지 \(result.newlyAcquiredBadges.count)개 획득!")
+                        self.navigateToBadge = true
+                    } else {
+                        print("📖 완독 화면으로 이동")
+                        self.navigateToFinish = true
+                    }
+                }
+            )
+            .store(in: &cancellables)
     }
     
     // MARK: - TTS
@@ -184,7 +229,6 @@ class ReadStoryBookViewModel: ObservableObject {
         audioPlayer?.pause()
         audioPlayer = nil
         isTTSSpeaking = false
-        
         NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
     }
     

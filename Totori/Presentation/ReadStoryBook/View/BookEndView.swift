@@ -6,9 +6,13 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct BookEndView: View {
     @EnvironmentObject var navState: NavigationState
+    
+    let completeResult: BookCompleteResponseDTO?
+    let coverImageUrl: String
     
     var body: some View {
         VStack(spacing: 20) {
@@ -50,20 +54,32 @@ struct BookEndView: View {
                     .foregroundStyle(Color.textGray)
             }.padding(.horizontal, 20)
             
-            // TODO: 표지 이미지 넣기, 크기 조정 가능하도록 컴포넌트 변경
-            StoryBookView(
-                type: .finished(
-                    title: nil,
-                    cover: nil,
-                    purpleBackground: true
+            // 표지 이미지
+            if !coverImageUrl.isEmpty, let url = URL(string: coverImageUrl) {
+                KFImage(url)
+                    .placeholder {
+                        ProgressView()
+                    }
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 200)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .padding(.horizontal, 40)
+            } else {
+                StoryBookView(
+                    type: .finished(
+                        title: nil,
+                        cover: nil,
+                        purpleBackground: true
+                    )
                 )
-            )
+            }
             
             Capsule()
                 .fill(Color.tGray)
                 .frame(width: 50, height: 6)
             
-            AcornRewards(count: 3)
+            AcornRewards(count: completeResult?.totalReceivedAcorn ?? 0)
             
             Spacer().frame(height: 20)
         }
@@ -73,8 +89,4 @@ struct BookEndView: View {
                 .fill(Color.white)
         )
     }
-}
-
-#Preview {
-    BookEndView()
 }

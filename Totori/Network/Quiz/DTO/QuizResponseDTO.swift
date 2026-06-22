@@ -10,6 +10,7 @@ import Foundation
 struct QuizResponseDTO: Decodable {
     let quizId: Int
     let quizItems: [String]
+    let audioUrls: [String]
 }
 
 struct QuizCheckResponseDTO: Decodable {

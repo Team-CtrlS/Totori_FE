@@ -5,6 +5,7 @@
 //  Created by 복지희 on 2/25/26.
 //
 
+import AVFoundation
 import Combine
 import Foundation
 
@@ -12,8 +13,8 @@ final class WordViewModel: ObservableObject {
 
     // chip
     @Published var userName: String = "김밤톨"
-    @Published var profileUrl: String = "https://picsum.photos/100"
-    @Published var acornCount: Int = 4
+    @Published var profileUrl: String = ""
+    @Published var acornCount: Int = 11
 
     // progress
     @Published var progress: CGFloat = 0.4
@@ -22,15 +23,20 @@ final class WordViewModel: ObservableObject {
     @Published var rewardCount: Int = 1
 
     // MARK: - Word list
+    
     @Published var words: [String] = []
+    @Published var audioUrls: [String] = []
+    private var audioPlayer: AVPlayer?
 
     // MARK: - Quiz State
+    
     @Published var currentIndex: Int = 0
     @Published var stage: WordQuizStage = .mic
     @Published var isShowingQuizModal: Bool = false
     @Published var isFinished: Bool = false
 
     // MARK: - API State
+    
     @Published var isLoading: Bool = true
     @Published var errorMessage: String? = nil
     @Published var isChecking: Bool = false
@@ -81,6 +87,7 @@ final class WordViewModel: ObservableObject {
                     self.isLoading = false
                     self.quizId = quizData.quizId
                     self.words = quizData.quizItems
+                    self.audioUrls = quizData.audioUrls
                     self.currentIndex = 0
                     self.stage = .mic
                     self.isFinished = false
@@ -180,6 +187,54 @@ final class WordViewModel: ObservableObject {
             )
             .store(in: &cancellables)
     }
+    
+    // MARK: - TTS
+
+    // 변경 후 — Combine 방식
+    func playAudio(for word: String) {
+        audioPlayer?.pause()
+        audioPlayer = nil
+        
+        guard let index = words.firstIndex(of: word),
+              index < audioUrls.count,
+              let url = URL(string: audioUrls[index]) else {
+            print("❌ 오디오 URL을 찾을 수 없습니다: \(word)")
+            return
+        }
+
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("❌ 오디오 세션 설정 실패: \(error)")
+        }
+
+        let playerItem = AVPlayerItem(url: url)
+        audioPlayer = AVPlayer(playerItem: playerItem)
+        audioPlayer?.volume = 1.0
+
+        // 상태 관찰 — 로드 실패 원인 확인용
+        playerItem.publisher(for: \.status)
+            .sink { status in
+                switch status {
+                case .readyToPlay:
+                    print("✅ 오디오 준비 완료: \(word)")
+                case .failed:
+                    print("❌ 오디오 로드 실패: \(playerItem.error?.localizedDescription ?? "unknown")")
+                default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
+
+        audioPlayer?.play()
+        print("🔊 TTS 재생 시도: \(word)")
+    }
+
+    func stopAudio() {
+        audioPlayer?.pause()
+        audioPlayer = nil
+    }
 
     func moveToNextWord() {
         if currentIndex < words.count - 1 {
@@ -196,7 +251,7 @@ final class WordViewModel: ObservableObject {
         isShowingQuizModal = false
     }
 
-    /// 퀴즈 완료 후 낭독 화면으로 복귀
+    // 퀴즈 완료 후 낭독 화면으로 복귀
     func completeQuiz() {
         isShowingQuizModal = false
         onQuizCompleted?()
